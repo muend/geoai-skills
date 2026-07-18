@@ -22,5 +22,8 @@ required before the first stable release.
   `swe-devops-standards`.
 - Per-skill `evals/evals.json` trigger + expected-behavior scenarios. These are
   evaluation definitions, not yet published benchmark results.
+- Provider-neutral deterministic evaluation harness with blind request
+  manifests, immutable raw-response caching, explicit criterion judgments,
+  and machine-readable routing, behavior, critical-failure, and usage metrics.
 - Repo tooling: `tools/validate_skills.py` frontmatter/structure linter,
   GitHub Actions CI, plugin marketplace manifest.

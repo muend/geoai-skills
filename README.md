@@ -119,7 +119,7 @@ Other things that just work:
 3. **Anti-leakage by default.** Spatial autocorrelation makes random splits fraudulent; one canonical [spatial CV protocol](skills/ml-experiment-standards/references/spatial-cv-protocol.md), referenced everywhere, restated nowhere.
 4. **Tool-pragmatic.** Open Python stack first (GeoPandas, rasterio, xarray, PySAL, PDAL, OSMnx, WhiteboxTools), with routes to PostGIS/DuckDB at scale, Earth Engine for planetary archives, and headless arcpy/PyQGIS for proprietary environments.
 5. **Progressive disclosure.** Descriptions are tuned for reliable triggering; bodies stay lean; long material lives in `references/` and `scripts/` at zero token cost until needed.
-6. **Evaluation-ready, not assumed.** Every skill ships three behavior scenarios (51 total), and CI validates structure on every PR. A behavioral runner, negative routing cases, and baseline comparisons are tracked in [ROADMAP.md](ROADMAP.md). Illustrative failure modes live in [CASE_STUDIES.md](CASE_STUDIES.md) until reproducible real-world evidence is available.
+6. **Measured, not assumed.** Every skill ships three behavior scenarios (51 total), including negative routing cases. The [provider-neutral evaluation harness](EVALUATION.md) creates blind requests, caches raw outputs, and emits deterministic machine-readable metrics. Runtime baselines and broader collision coverage remain tracked in [ROADMAP.md](ROADMAP.md). Illustrative failure modes live in [CASE_STUDIES.md](CASE_STUDIES.md) until reproducible real-world evidence is available.
 
 ## Repository structure
 
@@ -132,7 +132,10 @@ geoai-skills/
 │   └── evals/evals.json    # ≥3 trigger + behavior scenarios
 ├── tools/validate_skills.py  # spec linter (runs in CI)
 ├── tools/validate_evals.py   # strict, versioned eval schema validation
+├── tools/eval_runner.py      # deterministic prepare → ingest → score harness
 ├── evals/schema.json         # shared JSON Schema for all skill evals
+├── evals/run-schema.json     # manifests, responses, judgments, and results
+├── EVALUATION.md             # adapter-neutral benchmark protocol
 ├── .claude-plugin/           # marketplace + plugin manifests
 └── CASE_STUDIES.md           # reproducible or clearly labeled failure cases
 ```

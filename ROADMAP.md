@@ -30,7 +30,7 @@ Codex can prepare every file, command, release note, benchmark, demo, issue, PR,
 
 ## Current progress
 
-**29 / 49 tasks complete — 59%**
+**30 / 49 tasks complete — 61%**
 
 ### Phase 0 — Audit and direction
 
@@ -76,7 +76,7 @@ Codex can prepare every file, command, release note, benchmark, demo, issue, PR,
 ### Phase 3 — Build measurable skill quality
 
 - [x] Define and validate a strict eval JSON schema.
-- [ ] Build a deterministic eval runner with cached raw outputs and machine-readable results.
+- [x] Build a deterministic eval runner with cached raw outputs and machine-readable results.
 - [ ] Expand the suite to at least 120 cases: positive, negative, ambiguous/collision, and artifact correctness.
 - [ ] Measure trigger precision, trigger recall, behavior pass rate, and critical spatial failure rate.
 - [ ] Run skill-enabled versus skill-disabled baselines on supported agent runtimes.
@@ -123,4 +123,4 @@ The implementation can be compressed to roughly **7–10 focused working days**,
 
 ## Immediate next action
 
-Build the deterministic eval runner with cached raw outputs and machine-readable results.
+Expand the evaluation suite from 51 to at least 120 positive, negative, ambiguous/collision, and artifact-correctness cases.

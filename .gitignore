@@ -20,6 +20,7 @@ dist/
 *.skill
 artifacts/
 benchmark-results/raw/
+evals/runs/
 
 # Editors and operating systems
 .idea/
@@ -31,4 +32,3 @@ Thumbs.db
 .env
 .env.*
 !.env.example
-
