@@ -1,5 +1,7 @@
 # GeoAI Skills
 
+![GeoAI Skills — Reliable geospatial intelligence for AI agents](assets/social-preview.jpg)
+
 **Turn your AI agent into a senior geospatial data scientist.**
 
 17 [Agent Skills](https://agentskills.io) covering the full geospatial data science lifecycle — from STAC search and PostGIS to kriging uncertainty and U-Net inference — designed around documented silent failure modes in spatial computing.
