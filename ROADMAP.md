@@ -30,7 +30,7 @@ Codex can prepare every file, command, release note, benchmark, demo, issue, PR,
 
 ## Current progress
 
-**28 / 49 tasks complete — 57%**
+**29 / 49 tasks complete — 59%**
 
 ### Phase 0 — Audit and direction
 
@@ -69,7 +69,7 @@ Codex can prepare every file, command, release note, benchmark, demo, issue, PR,
 - [x] Harden `ahp_weights.py` for shape, positivity, finiteness, diagonal, reciprocity, and supported matrix sizes.
 - [x] Add pytest coverage for every bundled script, including edge and failure cases (13 tests passing).
 - [x] Add `agents/openai.yaml` metadata for all skills and validate it against each `SKILL.md`.
-- [ ] Run official Agent Skills validation in addition to the repository linter.
+- [x] Run official Agent Skills validation in addition to the repository linter.
 
 **Phase 2 gate:** all 17 skills pass structural validation, script tests, reference checks, and trigger-overlap review.
 
@@ -123,4 +123,4 @@ The implementation can be compressed to roughly **7–10 focused working days**,
 
 ## Immediate next action
 
-Complete Phase 2 by running the pinned official Agent Skills validator in CI, then build the deterministic eval runner with cached raw outputs and machine-readable results.
+Build the deterministic eval runner with cached raw outputs and machine-readable results.
