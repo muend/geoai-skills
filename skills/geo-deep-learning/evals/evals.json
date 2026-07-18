@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "skill": "geo-deep-learning",
+  "evals": [
+    {
+      "id": "building-extraction",
+      "prompt": "Train a model to extract building footprints from aerial imagery tiles.",
+      "expected_behavior": [
+        "U-Net with pretrained encoder + Dice/CE hybrid for class imbalance",
+        "Spatially blocked split per the canonical spatial CV protocol, zero-overlap verified",
+        "Preserves chip georeferencing; sliding-window inference with overlap and blending"
+      ]
+    },
+    {
+      "id": "random-split-catch",
+      "prompt": "I randomly split my image chips 80/20 and get 0.95 IoU. Ready to publish?",
+      "expected_behavior": [
+        "Identifies spatial leakage from random chip splitting",
+        "Requires re-splitting by geographic block/scene and expects lower, honest metrics"
+      ]
+    },
+    {
+      "id": "baseline-first",
+      "prompt": "Should I use a vision transformer for classifying water pixels in Sentinel-2?",
+      "expected_behavior": [
+        "Requires a cheap baseline (thresholded NDWI / random forest) before deep models",
+        "Frames the DL model as justified only if it clearly beats the baseline"
+      ]
+    }
+  ]
+}

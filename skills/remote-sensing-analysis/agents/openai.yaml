@@ -1,0 +1,4 @@
+interface:
+  display_name: "Remote Sensing Analysis"
+  short_description: "Prepare and analyze Earth observation imagery"
+  default_prompt: "Use $remote-sensing-analysis to build a defensible imagery analysis workflow."

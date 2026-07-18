@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "skill": "network-accessibility-analysis",
+  "evals": [
+    {
+      "id": "hospital-access",
+      "prompt": "How accessible are hospitals for the residents of this city by public transport?",
+      "expected_behavior": [
+        "Uses r5py with OSM + GTFS; validates GTFS calendar coverage; computes over a time window, not a single departure",
+        "Picks an accessibility metric deliberately (e.g., E2SFCA) and states its weakness",
+        "Reports per-group distributions for equity, not just city means"
+      ]
+    },
+    {
+      "id": "euclidean-catch",
+      "prompt": "Buffer each fire station by 5 km to show response coverage.",
+      "expected_behavior": [
+        "Flags Euclidean buffers standing in for network service areas",
+        "Builds drive-time isochrones with edge-based polygons instead"
+      ]
+    },
+    {
+      "id": "od-matrix-scale",
+      "prompt": "Compute travel times between 5,000 origins and 3,000 destinations on the street network.",
+      "expected_behavior": [
+        "Avoids looping NetworkX shortest_path; uses pandana/r5py",
+        "Checks snap distances and connectivity; stores the matrix as Parquet"
+      ]
+    }
+  ]
+}

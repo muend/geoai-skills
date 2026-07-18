@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "skill": "ml-experiment-standards",
+  "evals": [
+    {
+      "id": "simple-fit-request",
+      "prompt": "Quickly fit a classifier on this CSV and tell me the accuracy.",
+      "expected_behavior": [
+        "Runs EDA first (target balance, missingness) and justifies the metric (F1/AUC-PR if imbalanced)",
+        "Uses a Pipeline so preprocessing fits on train only; documents the split rationale",
+        "Reports uncertainty (CV mean ± std), not a single number"
+      ]
+    },
+    {
+      "id": "spatial-split-routing",
+      "prompt": "Cross-validate my land-price model where each row is a parcel with coordinates.",
+      "expected_behavior": [
+        "Applies references/spatial-cv-protocol.md: block IDs, GroupKFold, overlap verification",
+        "Reports the blocked metric as THE metric"
+      ]
+    },
+    {
+      "id": "difference-honesty",
+      "prompt": "Model B beat model A by 0.4 points of F1. Write up that B is better.",
+      "expected_behavior": [
+        "Compares the gap against across-fold std / bootstrap CI",
+        "Says 'no clear difference' if the gap is within noise; refuses selective reporting"
+      ]
+    }
+  ]
+}

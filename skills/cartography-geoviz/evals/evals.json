@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "skill": "cartography-geoviz",
+  "evals": [
+    {
+      "id": "choropleth-request",
+      "prompt": "Map COVID cases by county.",
+      "expected_behavior": [
+        "Normalizes to rates per population before coloring (raw counts = population map)",
+        "States classification scheme with rationale; colorblind-safe ramp; NoData in neutral gray",
+        "Includes required furniture: units in legend, source, projection"
+      ]
+    },
+    {
+      "id": "map-series",
+      "prompt": "Make maps of the same indicator for 2010, 2015, 2020, 2025 side by side.",
+      "expected_behavior": [
+        "Uses manual/defined identical breaks, ramp, and extent across all panels",
+        "Rejects per-date Jenks breaks as incomparable"
+      ]
+    },
+    {
+      "id": "big-points-interactive",
+      "prompt": "Interactive web map of 800k GPS points.",
+      "expected_behavior": [
+        "Refuses raw GeoJSON into Leaflet; tiles (PMTiles) or GPU rendering (deck.gl/Kepler)",
+        "Ships a legend and formatted popups"
+      ]
+    }
+  ]
+}

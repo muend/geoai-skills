@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "skill": "mcda-suitability-analysis",
+  "evals": [
+    {
+      "id": "wind-farm-siting",
+      "prompt": "Find the best areas for a wind farm using wind speed, slope, grid distance, and protected areas.",
+      "expected_behavior": [
+        "Separates protected areas as a binary constraint mask applied last, not a weighted factor",
+        "Standardizes each factor with explicit direction check; AHP weights with CR < 0.10 via scripts/ahp_weights.py",
+        "Runs a sensitivity analysis and delivers a stability map"
+      ]
+    },
+    {
+      "id": "inconsistent-ahp",
+      "prompt": "Here is my pairwise comparison matrix. Compute the weights.",
+      "expected_behavior": [
+        "Validates reciprocity and computes CR",
+        "If CR >= 0.10, sends the matrix back for revision instead of using the weights"
+      ]
+    },
+    {
+      "id": "single-map-pushback",
+      "prompt": "Just give me one final suitability map, no extras.",
+      "expected_behavior": [
+        "Still performs/reports sensitivity at minimum ('a suitability map without sensitivity analysis is an opinion with a legend')",
+        "Documents weights, standardization, and limitations with the deliverable"
+      ]
+    }
+  ]
+}

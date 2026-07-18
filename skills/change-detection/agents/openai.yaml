@@ -1,0 +1,4 @@
+interface:
+  display_name: "Change Detection"
+  short_description: "Detect and verify geospatial change"
+  default_prompt: "Use $change-detection to design a defensible before-and-after change analysis."

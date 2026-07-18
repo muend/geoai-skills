@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "skill": "google-earth-engine",
+  "evals": [
+    {
+      "id": "country-composite",
+      "prompt": "Make a cloud-free Sentinel-2 composite of an entire country for 2025 and compute mean NDVI per province.",
+      "expected_behavior": [
+        "Stays server-side: filterBounds/filterDate, Cloud Score+ masking, median composite",
+        "reduceRegions with explicit scale and tileScale; exports the table instead of getInfo",
+        "Records collection IDs and mask threshold"
+      ]
+    },
+    {
+      "id": "getinfo-loop-catch",
+      "prompt": "Loop over my 500 points and call getInfo to get the NDVI value at each.",
+      "expected_behavior": [
+        "Rejects the per-element getInfo loop",
+        "Replaces it with sampleRegions/reduceRegions and a single export"
+      ]
+    },
+    {
+      "id": "trend-map",
+      "prompt": "Compute a per-pixel NDVI trend for 20 years of Landsat over a basin.",
+      "expected_behavior": [
+        "Applies Landsat C2 scale factors and consistent masking",
+        "Uses sensSlope/linearFit with a valid-observation-count mask",
+        "Notes significance/multiple-testing caveats for trend maps"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spatial Statistics"
+  short_description: "Run rigorous spatial statistical analysis"
+  default_prompt: "Use $spatial-statistics to select and verify the right spatial inference method."

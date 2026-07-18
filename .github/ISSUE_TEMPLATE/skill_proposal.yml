@@ -1,0 +1,32 @@
+name: Skill proposal
+description: Propose a new, non-overlapping GeoAI capability.
+title: "[Skill]: "
+labels: [enhancement, skill-proposal]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Proposed skill name
+      description: Use lowercase kebab-case.
+    validations:
+      required: true
+  - type: textarea
+    id: prompts
+    attributes:
+      label: Three concrete user prompts
+      description: Show realistic tasks that should trigger the skill.
+    validations:
+      required: true
+  - type: textarea
+    id: gap
+    attributes:
+      label: Why existing skills are insufficient
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Proposed verification and failure cases
+    validations:
+      required: true
+

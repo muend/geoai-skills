@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "skill": "terrain-hydrology",
+  "evals": [
+    {
+      "id": "watershed-delineation",
+      "prompt": "Delineate the watershed upstream of this gauge station from a 30 m DEM.",
+      "expected_behavior": [
+        "Uses a DTM, masks nodata, reprojects so horizontal units match vertical",
+        "Conditions with breach-before-fill, D8 flow direction, snaps the pour point to the high-accumulation cell",
+        "Cross-checks watershed area against authoritative basin data"
+      ]
+    },
+    {
+      "id": "slope-4326-catch",
+      "prompt": "Compute slope from this EPSG:4326 SRTM tile.",
+      "expected_behavior": [
+        "Flags the unit mismatch (degrees vs meters)",
+        "Reprojects to a projected CRS (or applies a latitude-dependent z-factor) before slope",
+        "States slope units and cell size with the result"
+      ]
+    },
+    {
+      "id": "viewshed-surface-choice",
+      "prompt": "What can be seen from this proposed observation tower site?",
+      "expected_behavior": [
+        "Uses a DSM (or DTM + feature heights), not bare earth, and says which",
+        "Sets observer/target heights explicitly and handles curvature/refraction beyond ~5 km",
+        "Delivers parameters in the output metadata"
+      ]
+    }
+  ]
+}

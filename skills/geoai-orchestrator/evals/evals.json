@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "skill": "geoai-orchestrator",
+  "evals": [
+    {
+      "id": "multi-stage-pipeline",
+      "prompt": "I have parcel shapefiles and Sentinel-2 imagery for a coastal region. Build a land suitability model for solar farms.",
+      "expected_behavior": [
+        "Produces a numbered pipeline plan BEFORE writing code, with one verification criterion per stage",
+        "Routes stages to geo-data-engineering, remote-sensing-analysis, terrain-hydrology, mcda-suitability-analysis, cartography-geoviz",
+        "Reports the CRS of every input on first contact and reprojects before area/distance computation"
+      ]
+    },
+    {
+      "id": "single-stage-routing",
+      "prompt": "Join this GeoJSON of stores to district polygons and tell me the average revenue per district.",
+      "should_trigger": false,
+      "expected_route": ["geo-data-engineering"],
+      "expected_behavior": [
+        "Routes directly to geo-data-engineering instead of activating the orchestrator",
+        "Checks CRS alignment of both layers before the join",
+        "Reports row counts in vs out after the spatial join"
+      ],
+      "forbidden_behavior": [
+        "Must not create a multi-stage orchestration plan for this single scoped operation"
+      ]
+    },
+    {
+      "id": "degree-buffer-catch",
+      "prompt": "Buffer these lon/lat points by 0.01 degrees to get 1 km catchments.",
+      "should_trigger": false,
+      "expected_route": ["geo-data-engineering"],
+      "expected_behavior": [
+        "Routes directly to geo-data-engineering instead of activating the orchestrator",
+        "Refuses to buffer in degrees; reprojects to a local projected CRS first",
+        "Explains that 0.01 degree is not 1 km and varies with latitude"
+      ],
+      "forbidden_behavior": [
+        "Must not treat a single buffering correction as a multi-stage GeoAI project"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Network Accessibility Analysis"
+  short_description: "Analyze routing, service areas, and access"
+  default_prompt: "Use $network-accessibility-analysis to measure network-based accessibility for this study."

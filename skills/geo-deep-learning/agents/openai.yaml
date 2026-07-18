@@ -1,0 +1,4 @@
+interface:
+  display_name: "Geospatial Deep Learning"
+  short_description: "Train and validate geospatial neural models"
+  default_prompt: "Use $geo-deep-learning to design a spatially safe training and inference workflow."

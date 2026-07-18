@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "skill": "geo-data-engineering",
+  "evals": [
+    {
+      "id": "messy-shapefile",
+      "prompt": "This shapefile has broken geometries and weird characters in the names column. Clean it up for analysis.",
+      "expected_behavior": [
+        "Uses make_valid (not buffer(0)) for repair, via scripts/clean_vector.py logic",
+        "Prints an accounting report (rows in/out, repaired count)",
+        "Handles encoding explicitly and normalizes text attributes; recommends GeoPackage/GeoParquet output over shapefile"
+      ]
+    },
+    {
+      "id": "osm-acquisition",
+      "prompt": "Get all schools and hospitals for a metropolitan area from OpenStreetMap.",
+      "expected_behavior": [
+        "Chooses osmnx for a city-scale area; inspects tag value distributions before filtering",
+        "Records source, query parameters, retrieval date, and provenance manifest"
+      ]
+    },
+    {
+      "id": "scale-strategy",
+      "prompt": "I need to spatially join 40 million building footprints to census blocks. GeoPandas crashes.",
+      "expected_behavior": [
+        "Routes to DuckDB spatial over GeoParquet or PostGIS instead of raising RAM",
+        "Mentions predicate pushdown / spatial indexing rather than hand-rolled loops"
+      ]
+    }
+  ]
+}

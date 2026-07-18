@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cartography and Geovisualization"
+  short_description: "Design clear, accessible geospatial maps"
+  default_prompt: "Use $cartography-geoviz to design an accessible map for this spatial dataset."

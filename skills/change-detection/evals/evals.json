@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "skill": "change-detection",
+  "evals": [
+    {
+      "id": "urban-growth",
+      "prompt": "Quantify urban expansion between 2015 and 2025 from Landsat.",
+      "expected_behavior": [
+        "Checks co-registration, same processing level, matched season, intersected cloud masks",
+        "Builds a transition matrix and screens impossible transitions",
+        "Reports error-adjusted area estimates with confidence intervals (Olofsson), not raw pixel counts"
+      ]
+    },
+    {
+      "id": "threshold-honesty",
+      "prompt": "Difference these two NDVI images and map the change.",
+      "expected_behavior": [
+        "Chooses a defensible threshold (k·sigma or Otsu) shown on the histogram",
+        "Reports sensitivity at k±0.5 and flags fragile detections"
+      ]
+    },
+    {
+      "id": "season-trap",
+      "prompt": "Compare this May scene to this September scene to find deforestation.",
+      "expected_behavior": [
+        "Flags the phenology impostor (detecting summer, not deforestation)",
+        "Proposes matched-season pairs, composites, or time-series methods"
+      ]
+    }
+  ]
+}

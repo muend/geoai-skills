@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "skill": "spatial-statistics",
+  "evals": [
+    {
+      "id": "hotspot-request",
+      "prompt": "Find crime hotspots in these neighborhood polygons.",
+      "expected_behavior": [
+        "Designs and reports spatial weights (type, islands) with a sensitivity alternative",
+        "Uses rates (with EB smoothing for small populations), not raw counts",
+        "FDR-corrects local statistics before mapping clusters"
+      ]
+    },
+    {
+      "id": "ols-on-spatial",
+      "prompt": "Run a regression of house prices on square footage and distance to center for these listings.",
+      "expected_behavior": [
+        "Runs OLS with spatial diagnostics first, then follows the LM-test decision path to SAR/SEM if indicated",
+        "Reports residual Moran's I for the final model",
+        "In SAR, reports direct/indirect effects instead of reading raw coefficients"
+      ]
+    },
+    {
+      "id": "maup-awareness",
+      "prompt": "Aggregate these points to grid cells and tell me if the pattern is clustered.",
+      "expected_behavior": [
+        "Uses permutation inference for Moran's I",
+        "Discloses MAUP and tests one alternative aggregation"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Geostatistics and Interpolation"
+  short_description: "Interpolate spatial surfaces with uncertainty"
+  default_prompt: "Use $geostatistics-interpolation to estimate a surface and quantify uncertainty."

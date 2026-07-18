@@ -1,0 +1,4 @@
+interface:
+  display_name: "Geospatial Data Engineering"
+  short_description: "Build reliable geospatial data pipelines"
+  default_prompt: "Use $geo-data-engineering to inspect, clean, and prepare this spatial dataset."

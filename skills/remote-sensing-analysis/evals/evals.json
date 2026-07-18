@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "skill": "remote-sensing-analysis",
+  "evals": [
+    {
+      "id": "ndvi-request",
+      "prompt": "Compute NDVI for my study area from Sentinel-2 for last summer.",
+      "expected_behavior": [
+        "Uses STAC search with sentinel-2-l2a (surface reflectance), records item IDs",
+        "Applies SCL cloud masking BEFORE computing the index and reports valid-pixel %",
+        "Uses B8/B4 explicitly and warns against hardcoded NDVI thresholds"
+      ]
+    },
+    {
+      "id": "mixed-level-trap",
+      "prompt": "Compare vegetation between this 2018 L1C scene and this 2025 L2A scene.",
+      "expected_behavior": [
+        "Flags TOA vs BOA mismatch and refuses to compare directly",
+        "Proposes consistent atmospheric correction or same-level reacquisition"
+      ]
+    },
+    {
+      "id": "classification-validation",
+      "prompt": "Classify land cover from this imagery and report accuracy.",
+      "expected_behavior": [
+        "Uses a spatially independent test set (block split), citing the spatial CV protocol",
+        "Reports per-class F1/IoU and confusion matrix, not overall accuracy alone",
+        "Maps misclassifications spatially"
+      ]
+    }
+  ]
+}

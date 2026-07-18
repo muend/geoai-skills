@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "skill": "geostatistics-interpolation",
+  "evals": [
+    {
+      "id": "rainfall-surface",
+      "prompt": "Interpolate annual rainfall from 60 stations into a raster.",
+      "expected_behavior": [
+        "Explores first: duplicates, skew (log transform if needed), trend check",
+        "Models the variogram deliberately (nugget/sill/range reported, anisotropy checked)",
+        "Delivers prediction AND kriging SD raster; LOOCV plus block CV reported"
+      ]
+    },
+    {
+      "id": "idw-only",
+      "prompt": "Quick IDW heatmap of these sensor readings please.",
+      "expected_behavior": [
+        "Delivers IDW but states it has no error model and bullseyes extremes",
+        "Reports the power parameter and works in a projected CRS"
+      ]
+    },
+    {
+      "id": "extrapolation-honesty",
+      "prompt": "Extend the interpolated surface to the whole province even where we have no stations.",
+      "expected_behavior": [
+        "Masks or flags cells beyond the variogram range from nearest samples",
+        "Refuses to present extrapolated areas at equal confidence"
+      ]
+    }
+  ]
+}

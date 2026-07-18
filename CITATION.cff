@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If these skills materially support your work, cite this repository and the upstream methods and software you used."
+title: "GeoAI Skills: Agent Skills for Reliable Geospatial Computing"
+type: software
+authors:
+  - family-names: "Duran"
+    given-names: "Muhammed Enes"
+version: "0.1.0"
+license: MIT
+repository-code: "https://github.com/muend/geoai-skills"
+keywords:
+  - GeoAI
+  - geospatial
+  - agent-skills
+  - remote-sensing
+  - spatial-data-science

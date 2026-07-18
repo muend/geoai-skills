@@ -1,0 +1,4 @@
+interface:
+  display_name: "Geospatial SWE and DevOps"
+  short_description: "Ship reliable geospatial code and pipelines"
+  default_prompt: "Use $swe-devops-standards to make this geospatial code production-ready."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Point Clouds and LiDAR"
+  short_description: "Process LiDAR and 3D point cloud data"
+  default_prompt: "Use $point-cloud-lidar to validate and process this point cloud workflow."

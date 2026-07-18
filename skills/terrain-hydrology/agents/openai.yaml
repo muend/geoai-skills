@@ -1,0 +1,4 @@
+interface:
+  display_name: "Terrain and Hydrology"
+  short_description: "Analyze terrain, drainage, and watersheds"
+  default_prompt: "Use $terrain-hydrology to design and verify this DEM-based terrain workflow."

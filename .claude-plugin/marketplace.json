@@ -1,0 +1,11 @@
+{
+  "name": "geoai-skills",
+  "owner": { "name": "Muhammed Enes Duran" },
+  "plugins": [
+    {
+      "name": "geoai",
+      "source": "./",
+      "description": "Turn your agent into a senior geospatial data scientist: 17 skills for the full GeoAI lifecycle with spatial failure modes designed out."
+    }
+  ]
+}

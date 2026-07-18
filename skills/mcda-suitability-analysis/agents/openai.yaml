@@ -1,0 +1,4 @@
+interface:
+  display_name: "MCDA Suitability Analysis"
+  short_description: "Build transparent spatial suitability models"
+  default_prompt: "Use $mcda-suitability-analysis to create and stress-test this site suitability model."

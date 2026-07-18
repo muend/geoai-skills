@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "skill": "point-cloud-lidar",
+  "evals": [
+    {
+      "id": "dtm-from-laz",
+      "prompt": "Make a 1 m DTM from these .laz tiles.",
+      "expected_behavior": [
+        "Runs pdal info first; reports density, CRS incl. vertical datum, classes",
+        "Denoises before ground classification (SMRF/CSF), audits vendor class 2 on cross-sections",
+        "Checks density supports 1 m; processes tiles with buffered edges; hillshade artifact check"
+      ]
+    },
+    {
+      "id": "chm-forestry",
+      "prompt": "Compute canopy height and tree count for this forest LiDAR.",
+      "expected_behavior": [
+        "Normalizes heights (HAG) against the DTM; pit-free CHM",
+        "Tree detection validated against field/manual samples",
+        "Reports height percentiles and canopy cover definitions"
+      ]
+    },
+    {
+      "id": "sfm-not-lidar",
+      "prompt": "Here is a drone photogrammetry point cloud of a forest. Give me the ground elevation model.",
+      "expected_behavior": [
+        "States SfM cannot penetrate canopy — a 'DTM' over forest from SfM is a canopy model",
+        "Limits claims accordingly or requests LiDAR"
+      ]
+    }
+  ]
+}

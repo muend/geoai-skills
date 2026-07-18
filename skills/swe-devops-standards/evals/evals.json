@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "skill": "swe-devops-standards",
+  "evals": [
+    {
+      "id": "geospatial-etl-script",
+      "prompt": "Write a production-ready geospatial ETL script that normalizes CRS and exports validated GeoParquet.",
+      "expected_behavior": [
+        "Uses pathlib, type hints, docstring, specific exceptions, main-guard",
+        "Defines explicit CRS, geometry, nodata, and row-accounting invariants",
+        "Ships pytest coverage for the core function and spatial edge cases"
+      ]
+    },
+    {
+      "id": "review-mode",
+      "prompt": "Review this PostGIS ingestion function that builds SQL from user input, swallows errors, and writes mixed-SRID geometries.",
+      "expected_behavior": [
+        "Orders findings by correctness, security, performance, then readability; flags SQL injection, bare except, and mixed SRIDs",
+        "Ships the fix as code using parameterized queries, specific exceptions, typed geometry, and validation"
+      ]
+    },
+    {
+      "id": "repro-setup",
+      "prompt": "Set up this raster-analysis pipeline so my teammate gets identical georeferenced outputs on Linux and Windows.",
+      "expected_behavior": [
+        "Creates a pinned environment and records GDAL/PROJ runtime versions plus seeded randomness",
+        "Adds cross-platform CI with tests for CRS, transform, nodata, dimensions, and deterministic outputs"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "GeoAI Orchestrator"
+  short_description: "Route complex GeoAI workflows safely"
+  default_prompt: "Use $geoai-orchestrator to plan and route this multi-stage geospatial project."

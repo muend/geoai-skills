@@ -1,0 +1,4 @@
+interface:
+  display_name: "PostGIS and Spatial SQL"
+  short_description: "Design and optimize spatial SQL workflows"
+  default_prompt: "Use $postgis-spatial-sql to diagnose and optimize this spatial database task."

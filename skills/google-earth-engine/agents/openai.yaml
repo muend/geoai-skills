@@ -1,0 +1,4 @@
+interface:
+  display_name: "Google Earth Engine"
+  short_description: "Build scalable Earth Engine workflows"
+  default_prompt: "Use $google-earth-engine to design a quota-aware server-side Earth observation workflow."

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "skill": "postgis-spatial-sql",
+  "evals": [
+    {
+      "id": "slow-join",
+      "prompt": "My spatial join between 10M points and country polygons takes 6 hours in PostGIS.",
+      "expected_behavior": [
+        "Runs EXPLAIN (ANALYZE, BUFFERS) to check index usage",
+        "Applies ST_Subdivide for the big polygons; ensures GiST + same SRID on both sides",
+        "Verifies ST_DWithin usage instead of ST_Distance < x where relevant"
+      ]
+    },
+    {
+      "id": "area-4326-catch",
+      "prompt": "SELECT ST_Area(geom) FROM parcels; -- geom is 4326. Why are the areas tiny?",
+      "expected_behavior": [
+        "Explains square degrees; proposes projected geometry or geography type",
+        "Recommends typed geometry columns with explicit SRID"
+      ]
+    },
+    {
+      "id": "duckdb-path",
+      "prompt": "One-off: count points per admin area across two big GeoParquet files without setting up a server.",
+      "expected_behavior": [
+        "Uses DuckDB spatial reading GeoParquet directly",
+        "Includes row-count accounting and a rendered sample check"
+      ]
+    }
+  ]
+}

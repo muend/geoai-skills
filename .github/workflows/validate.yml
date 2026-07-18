@@ -1,0 +1,34 @@
+name: validate-skills
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install validation and test dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Validate all skills
+        run: python tools/validate_skills.py
+      - name: Validate evaluation suite
+        run: python tools/validate_evals.py
+      - name: Install official Agent Skills reference validator
+        run: >-
+          pip install
+          "git+https://github.com/agentskills/agentskills.git@38a2ff82958afee88dadf4831509e6f7e9d8ef4e#subdirectory=skills-ref"
+      - name: Validate against the official Agent Skills specification
+        shell: bash
+        run: |
+          set -euo pipefail
+          for skill in skills/*; do
+            skills-ref validate "$skill"
+          done
+      - name: Test bundled scripts
+        run: python -m pytest

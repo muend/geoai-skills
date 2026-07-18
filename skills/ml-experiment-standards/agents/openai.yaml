@@ -1,0 +1,4 @@
+interface:
+  display_name: "ML Experiment Standards"
+  short_description: "Design honest, reproducible ML experiments"
+  default_prompt: "Use $ml-experiment-standards to audit this model experiment for leakage and metric validity."

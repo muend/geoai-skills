@@ -1,0 +1,4 @@
+interface:
+  display_name: "Movement and Trajectory Analytics"
+  short_description: "Analyze observed movement and GPS tracks"
+  default_prompt: "Use $movement-trajectory to clean and analyze these timestamped movement tracks."
