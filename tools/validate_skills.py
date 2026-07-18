@@ -189,7 +189,10 @@ def check_skill(folder: Path) -> None:
         try:
             verified = date.fromisoformat(verified_match.group(1))
             age_days = (date.today() - verified).days
-            if age_days < 0:
+            # A source may be verified just after local midnight while a CI
+            # runner is still on the previous UTC date. Allow that one-day
+            # timezone boundary, but reject genuinely future-dated records.
+            if age_days < -1:
                 err(name, "E12", "source registry verification date is in the future")
             elif age_days > 400:
                 warn(name, "W4", f"source registry is {age_days} days old")
