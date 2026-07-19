@@ -5,6 +5,7 @@
     {
       "id": "multi-stage-pipeline",
       "prompt": "I have parcel shapefiles and Sentinel-2 imagery for a coastal region. Build a land suitability model for solar farms.",
+      "case_types": ["positive"],
       "expected_behavior": [
         "Produces a numbered pipeline plan BEFORE writing code, with one verification criterion per stage",
         "Routes stages to geo-data-engineering, remote-sensing-analysis, terrain-hydrology, mcda-suitability-analysis, cartography-geoviz",
@@ -14,6 +15,7 @@
     {
       "id": "single-stage-routing",
       "prompt": "Join this GeoJSON of stores to district polygons and tell me the average revenue per district.",
+      "case_types": ["negative", "collision"],
       "should_trigger": false,
       "expected_route": ["geo-data-engineering"],
       "expected_behavior": [
@@ -28,6 +30,7 @@
     {
       "id": "degree-buffer-catch",
       "prompt": "Buffer these lon/lat points by 0.01 degrees to get 1 km catchments.",
+      "case_types": ["negative", "collision"],
       "should_trigger": false,
       "expected_route": ["geo-data-engineering"],
       "expected_behavior": [
@@ -37,6 +40,65 @@
       ],
       "forbidden_behavior": [
         "Must not treat a single buffering correction as a multi-stage GeoAI project"
+      ]
+    },
+    {
+      "id": "ambiguous-project-scope",
+      "prompt": "Help us assess flood exposure for new clinics using a DEM, roads, population, and candidate sites; the final decision product is not yet defined.",
+      "case_types": ["positive", "ambiguous"],
+      "expected_behavior": [
+        "Clarifies the decision, hazard scenario, accessibility metric, population unit, and deliverable before implementation",
+        "Creates a staged plan spanning data engineering, terrain hydrology, network accessibility, and cartographic delivery",
+        "Assigns an explicit verification gate and handoff artifact to every stage"
+      ]
+    },
+    {
+      "id": "pipeline-plan-audit",
+      "prompt": "Audit this GeoAI project plan: it buffers WGS84 points, randomly splits nearby image chips, reports raw changed pixels, and publishes a Web Mercator area map.",
+      "case_types": ["positive", "artifact-correctness"],
+      "critical": true,
+      "expected_behavior": [
+        "Finds the CRS, spatial leakage, change-area accuracy, and projection failures across the pipeline",
+        "Routes each correction to the appropriate specialist instead of treating failures independently",
+        "Produces a revised ordered plan with a measurable verification gate per stage"
+      ]
+    },
+    {
+      "id": "single-kriging-surface",
+      "prompt": "Fit a variogram and krige these 80 groundwater measurements, including an uncertainty raster.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["geostatistics-interpolation"],
+      "expected_behavior": [
+        "Routes directly to geostatistics-interpolation for the single scoped analysis",
+        "Does not create a multi-skill orchestration plan"
+      ]
+    },
+    {
+      "id": "single-devops-task",
+      "prompt": "Add Linux and Windows CI tests to this existing geospatial Python package; its scientific workflow is already complete.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["swe-devops-standards"],
+      "expected_behavior": [
+        "Routes directly to swe-devops-standards for geospatial CI and reproducibility checks",
+        "Does not activate the orchestrator for a bounded delivery task"
+      ]
+    },
+    {
+      "id": "disaster-response-fusion",
+      "prompt": "Build a rapid flood-impact workflow from Sentinel-1 imagery, a DEM, road closures, shelters, and population grids, then deliver prioritized access maps.",
+      "case_types": ["positive", "collision"],
+      "expected_route": [
+        "geoai-orchestrator",
+        "network-accessibility-analysis",
+        "remote-sensing-analysis",
+        "terrain-hydrology"
+      ],
+      "expected_behavior": [
+        "Activates the orchestrator and decomposes hazard mapping, terrain checks, network disruption, exposure, and delivery",
+        "Defines common CRS, time, resolution, uncertainty, and provenance contracts before specialist execution",
+        "Requires cross-stage consistency checks and a decision-ready final artifact"
       ]
     }
   ]

@@ -5,6 +5,7 @@
     {
       "id": "urban-growth",
       "prompt": "Quantify urban expansion between 2015 and 2025 from Landsat.",
+      "case_types": ["positive"],
       "expected_behavior": [
         "Checks co-registration, same processing level, matched season, intersected cloud masks",
         "Builds a transition matrix and screens impossible transitions",
@@ -14,6 +15,7 @@
     {
       "id": "threshold-honesty",
       "prompt": "Difference these two NDVI images and map the change.",
+      "case_types": ["positive", "artifact-correctness"],
       "expected_behavior": [
         "Chooses a defensible threshold (k·sigma or Otsu) shown on the histogram",
         "Reports sensitivity at k±0.5 and flags fragile detections"
@@ -22,9 +24,53 @@
     {
       "id": "season-trap",
       "prompt": "Compare this May scene to this September scene to find deforestation.",
+      "case_types": ["positive", "ambiguous"],
+      "critical": true,
       "expected_behavior": [
         "Flags the phenology impostor (detecting summer, not deforestation)",
         "Proposes matched-season pairs, composites, or time-series methods"
+      ]
+    },
+    {
+      "id": "change-accuracy-audit",
+      "prompt": "Audit this two-date change map, its confusion matrices, reference sample, and reported hectares before publication.",
+      "case_types": ["positive", "artifact-correctness"],
+      "expected_behavior": [
+        "Checks that the reference sample supports change-class accuracy and area estimation",
+        "Recomputes error-adjusted areas and confidence intervals from the stratified sample",
+        "Flags raw mapped pixel area as a biased final estimate when classification error is material"
+      ]
+    },
+    {
+      "id": "unclear-temporal-signal",
+      "prompt": "I have an irregular eight-year vegetation-index series and need to know when the landscape changed, but seasonal behavior is strong.",
+      "case_types": ["positive", "ambiguous"],
+      "expected_behavior": [
+        "Clarifies whether abrupt breaks, gradual trends, or class transitions define change",
+        "Uses seasonal or time-series break methods rather than arbitrary two-date differencing",
+        "Requires observation-count and uncertainty reporting"
+      ]
+    },
+    {
+      "id": "single-date-classification",
+      "prompt": "Classify land cover in one cloud-masked Sentinel-2 composite; there is no second date or temporal comparison.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["remote-sensing-analysis"],
+      "expected_behavior": [
+        "Routes to remote-sensing-analysis for a single-date classification workflow",
+        "Does not invent a change-detection stage without a temporal comparison"
+      ]
+    },
+    {
+      "id": "scene-correction-only",
+      "prompt": "Atmospherically correct and cloud-mask this single Landsat scene so it is ready for later analysis.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["remote-sensing-analysis"],
+      "expected_behavior": [
+        "Routes to remote-sensing-analysis for single-scene preprocessing",
+        "Does not activate change-detection when no change question is present"
       ]
     }
   ]

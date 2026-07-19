@@ -4,7 +4,8 @@
   "evals": [
     {
       "id": "simple-fit-request",
-      "prompt": "Quickly fit a classifier on this CSV and tell me the accuracy.",
+      "prompt": "Quickly fit a classifier on this geospatial feature table and tell me the accuracy.",
+      "case_types": ["positive"],
       "expected_behavior": [
         "Runs EDA first (target balance, missingness) and justifies the metric (F1/AUC-PR if imbalanced)",
         "Uses a Pipeline so preprocessing fits on train only; documents the split rationale",
@@ -14,6 +15,7 @@
     {
       "id": "spatial-split-routing",
       "prompt": "Cross-validate my land-price model where each row is a parcel with coordinates.",
+      "case_types": ["positive", "collision"],
       "expected_behavior": [
         "Applies references/spatial-cv-protocol.md: block IDs, GroupKFold, overlap verification",
         "Reports the blocked metric as THE metric"
@@ -22,9 +24,53 @@
     {
       "id": "difference-honesty",
       "prompt": "Model B beat model A by 0.4 points of F1. Write up that B is better.",
+      "case_types": ["positive", "artifact-correctness"],
       "expected_behavior": [
         "Compares the gap against across-fold std / bootstrap CI",
         "Says 'no clear difference' if the gap is within noise; refuses selective reporting"
+      ]
+    },
+    {
+      "id": "leakage-pipeline-audit",
+      "prompt": "Audit this parcel-risk notebook: imputation and scaling run before the split, nearby parcels appear in train and test, and the best test fold was reported.",
+      "case_types": ["positive", "artifact-correctness"],
+      "critical": true,
+      "expected_behavior": [
+        "Finds preprocessing, spatial, and selective-reporting leakage",
+        "Moves learned preprocessing into a pipeline fitted inside geographically blocked folds",
+        "Requires all-fold metrics, uncertainty, overlap checks, and a held-out final test policy"
+      ]
+    },
+    {
+      "id": "unknown-spatial-dependence",
+      "prompt": "Build a model from environmental samples that include coordinates, but I do not know the spatial correlation range or deployment geography.",
+      "case_types": ["positive", "ambiguous"],
+      "expected_behavior": [
+        "Clarifies the deployment domain and estimates spatial dependence before choosing blocks",
+        "Compares honest spatial validation designs and documents the selected buffer or group logic",
+        "Reports sensitivity to block size rather than one convenient split"
+      ]
+    },
+    {
+      "id": "unet-architecture-task",
+      "prompt": "Design a U-Net training and sliding-window inference pipeline for building masks from aerial image chips.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["geo-deep-learning"],
+      "expected_behavior": [
+        "Routes to geo-deep-learning for architecture, chipping, loss, and inference details",
+        "Does not let the cross-cutting experiment standard replace the specialist workflow"
+      ]
+    },
+    {
+      "id": "moran-hotspot-task",
+      "prompt": "Compute global Moran's I and FDR-corrected local clusters for district-level rates; no predictive model is requested.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["spatial-statistics"],
+      "expected_behavior": [
+        "Routes to spatial-statistics for weights and permutation inference",
+        "Does not impose an ML experiment workflow on a spatial inference task"
       ]
     }
   ]

@@ -5,6 +5,7 @@
     {
       "id": "country-composite",
       "prompt": "Make a cloud-free Sentinel-2 composite of an entire country for 2025 and compute mean NDVI per province.",
+      "case_types": ["positive"],
       "expected_behavior": [
         "Stays server-side: filterBounds/filterDate, Cloud Score+ masking, median composite",
         "reduceRegions with explicit scale and tileScale; exports the table instead of getInfo",
@@ -14,6 +15,8 @@
     {
       "id": "getinfo-loop-catch",
       "prompt": "Loop over my 500 points and call getInfo to get the NDVI value at each.",
+      "case_types": ["positive", "artifact-correctness"],
+      "critical": true,
       "expected_behavior": [
         "Rejects the per-element getInfo loop",
         "Replaces it with sampleRegions/reduceRegions and a single export"
@@ -22,10 +25,53 @@
     {
       "id": "trend-map",
       "prompt": "Compute a per-pixel NDVI trend for 20 years of Landsat over a basin.",
+      "case_types": ["positive", "collision"],
       "expected_behavior": [
         "Applies Landsat C2 scale factors and consistent masking",
         "Uses sensSlope/linearFit with a valid-observation-count mask",
         "Notes significance/multiple-testing caveats for trend maps"
+      ]
+    },
+    {
+      "id": "projection-scale-audit",
+      "prompt": "Review this Earth Engine script: it reduces a 10 m image at scale 1000 with the default projection and exports a table without collection IDs.",
+      "case_types": ["positive", "artifact-correctness"],
+      "expected_behavior": [
+        "Flags the scale/projection mismatch and inspects nominal scale and analysis intent",
+        "Sets explicit scale, CRS when justified, and reduction parameters without unnecessary reprojection",
+        "Records collection IDs, filters, mask thresholds, and export configuration"
+      ]
+    },
+    {
+      "id": "unclear-platform-choice",
+      "prompt": "Process a multi-year satellite archive for a large region, but I have not decided between local xarray workflows and Earth Engine.",
+      "case_types": ["positive", "ambiguous"],
+      "expected_behavior": [
+        "Clarifies archive size, algorithms, data locality, quotas, reproducibility, and export needs",
+        "Chooses Earth Engine only when server-side catalog and computation advantages outweigh constraints",
+        "Provides a quota-aware batching and provenance plan"
+      ]
+    },
+    {
+      "id": "local-scene-analysis",
+      "prompt": "Analyze one local GeoTIFF scene with rasterio, compute NDVI, and save a COG; do not use a cloud platform.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["remote-sensing-analysis"],
+      "expected_behavior": [
+        "Routes to remote-sensing-analysis for local single-scene processing",
+        "Respects the explicit constraint not to introduce Earth Engine"
+      ]
+    },
+    {
+      "id": "exported-map-styling",
+      "prompt": "Choose an accessible classification, legend, and layout for an already exported Earth Engine GeoTIFF; no server-side computation remains.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["cartography-geoviz"],
+      "expected_behavior": [
+        "Routes to cartography-geoviz for visual encoding and layout",
+        "Does not reactivate Earth Engine when the task is purely cartographic"
       ]
     }
   ]

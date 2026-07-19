@@ -5,6 +5,7 @@
     {
       "id": "wind-farm-siting",
       "prompt": "Find the best areas for a wind farm using wind speed, slope, grid distance, and protected areas.",
+      "case_types": ["positive"],
       "expected_behavior": [
         "Separates protected areas as a binary constraint mask applied last, not a weighted factor",
         "Standardizes each factor with explicit direction check; AHP weights with CR < 0.10 via scripts/ahp_weights.py",
@@ -14,6 +15,8 @@
     {
       "id": "inconsistent-ahp",
       "prompt": "Here is my pairwise comparison matrix. Compute the weights.",
+      "case_types": ["positive", "artifact-correctness"],
+      "critical": true,
       "expected_behavior": [
         "Validates reciprocity and computes CR",
         "If CR >= 0.10, sends the matrix back for revision instead of using the weights"
@@ -22,9 +25,52 @@
     {
       "id": "single-map-pushback",
       "prompt": "Just give me one final suitability map, no extras.",
+      "case_types": ["positive", "ambiguous"],
       "expected_behavior": [
         "Still performs/reports sensitivity at minimum ('a suitability map without sensitivity analysis is an opinion with a legend')",
         "Documents weights, standardization, and limitations with the deliverable"
+      ]
+    },
+    {
+      "id": "factor-direction-audit",
+      "prompt": "Audit this suitability model: slope and distance-to-roads were both min-max normalized as benefits, protected areas received a small weight, and no sensitivity analysis was run.",
+      "case_types": ["positive", "artifact-correctness"],
+      "expected_behavior": [
+        "Finds the incorrect factor directions and requires documented monotonic transformations",
+        "Moves protected areas from compensatory weighting to a hard constraint where policy requires exclusion",
+        "Recomputes weights/consistency and produces weight and threshold sensitivity results"
+      ]
+    },
+    {
+      "id": "missing-decision-preferences",
+      "prompt": "Rank candidate conservation sites from habitat, cost, access, and community data, but stakeholders have not agreed on trade-offs.",
+      "case_types": ["positive", "ambiguous"],
+      "expected_behavior": [
+        "Refuses to invent stakeholder preferences or present one weight set as objective",
+        "Elicits constraints, factor directions, and defensible weight scenarios",
+        "Delivers stability or rank-reversal analysis across plausible preferences"
+      ]
+    },
+    {
+      "id": "crime-hotspots-not-suitability",
+      "prompt": "Identify statistically significant clusters of high crime rates and correct for multiple local tests; no site ranking is requested.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["spatial-statistics"],
+      "expected_behavior": [
+        "Routes to spatial-statistics for local cluster inference",
+        "Does not convert observed outcomes into a weighted suitability score"
+      ]
+    },
+    {
+      "id": "travel-time-routing-not-mcda",
+      "prompt": "Compute public-transport travel times from neighborhoods to the nearest clinic; there are no weighted decision criteria.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["network-accessibility-analysis"],
+      "expected_behavior": [
+        "Routes to network-accessibility-analysis for timetable-aware travel times",
+        "Does not introduce MCDA without a multi-criteria ranking decision"
       ]
     }
   ]

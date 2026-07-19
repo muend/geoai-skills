@@ -5,6 +5,7 @@
     {
       "id": "hotspot-request",
       "prompt": "Find crime hotspots in these neighborhood polygons.",
+      "case_types": ["positive"],
       "expected_behavior": [
         "Designs and reports spatial weights (type, islands) with a sensitivity alternative",
         "Uses rates (with EB smoothing for small populations), not raw counts",
@@ -14,6 +15,8 @@
     {
       "id": "ols-on-spatial",
       "prompt": "Run a regression of house prices on square footage and distance to center for these listings.",
+      "case_types": ["positive", "artifact-correctness"],
+      "critical": true,
       "expected_behavior": [
         "Runs OLS with spatial diagnostics first, then follows the LM-test decision path to SAR/SEM if indicated",
         "Reports residual Moran's I for the final model",
@@ -23,9 +26,52 @@
     {
       "id": "maup-awareness",
       "prompt": "Aggregate these points to grid cells and tell me if the pattern is clustered.",
+      "case_types": ["positive", "ambiguous"],
       "expected_behavior": [
         "Uses permutation inference for Moran's I",
         "Discloses MAUP and tests one alternative aggregation"
+      ]
+    },
+    {
+      "id": "weights-result-audit",
+      "prompt": "Audit this LISA map: row-standardized queen weights were used without reporting islands, p < 0.05 was mapped uncorrected, and raw counts define high-high clusters.",
+      "case_types": ["positive", "artifact-correctness"],
+      "expected_behavior": [
+        "Audits weights construction, island handling, and sensitivity to an alternative defensible weights design",
+        "Uses exposure-adjusted rates and considers empirical Bayes smoothing where denominators are small",
+        "Applies FDR correction and reports permutation settings before interpreting clusters"
+      ]
+    },
+    {
+      "id": "unclear-analysis-unit",
+      "prompt": "Explain the spatial pattern in health outcomes, but I can aggregate by tract, municipality, or grid and have not selected a spatial hypothesis.",
+      "case_types": ["positive", "ambiguous"],
+      "expected_behavior": [
+        "Clarifies the inferential question, outcome denominator, support, and plausible spatial mechanism",
+        "Tests sensitivity to at least one alternative aggregation or weights design",
+        "Separates exploratory cluster mapping from confirmatory model claims"
+      ]
+    },
+    {
+      "id": "continuous-surface-not-clusters",
+      "prompt": "Interpolate groundwater concentration from monitoring wells and deliver prediction plus uncertainty rasters; no cluster inference is requested.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["geostatistics-interpolation"],
+      "expected_behavior": [
+        "Routes to geostatistics-interpolation for continuous-surface prediction",
+        "Does not substitute autocorrelation statistics for a prediction and uncertainty model"
+      ]
+    },
+    {
+      "id": "weighted-site-ranking",
+      "prompt": "Rank candidate sites from standardized cost, slope, access, and habitat criteria using stakeholder weights and sensitivity analysis.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["mcda-suitability-analysis"],
+      "expected_behavior": [
+        "Routes to mcda-suitability-analysis for compensatory scoring and sensitivity",
+        "Does not turn a decision-ranking workflow into spatial hypothesis testing"
       ]
     }
   ]

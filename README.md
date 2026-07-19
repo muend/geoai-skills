@@ -119,7 +119,7 @@ Other things that just work:
 3. **Anti-leakage by default.** Spatial autocorrelation makes random splits fraudulent; one canonical [spatial CV protocol](skills/ml-experiment-standards/references/spatial-cv-protocol.md), referenced everywhere, restated nowhere.
 4. **Tool-pragmatic.** Open Python stack first (GeoPandas, rasterio, xarray, PySAL, PDAL, OSMnx, WhiteboxTools), with routes to PostGIS/DuckDB at scale, Earth Engine for planetary archives, and headless arcpy/PyQGIS for proprietary environments.
 5. **Progressive disclosure.** Descriptions are tuned for reliable triggering; bodies stay lean; long material lives in `references/` and `scripts/` at zero token cost until needed.
-6. **Measured, not assumed.** Every skill ships three behavior scenarios (51 total), including negative routing cases. The [provider-neutral evaluation harness](EVALUATION.md) creates blind requests, caches raw outputs, and emits deterministic machine-readable metrics. Runtime baselines and broader collision coverage remain tracked in [ROADMAP.md](ROADMAP.md). Illustrative failure modes live in [CASE_STUDIES.md](CASE_STUDIES.md) until reproducible real-world evidence is available.
+6. **Measured, not assumed.** The suite contains 120 typed behavior scenarios across all 17 skills: 84 positive, 36 negative, 27 ambiguous, 41 collision, and 35 artifact-correctness cases (types may overlap). The [provider-neutral evaluation harness](EVALUATION.md) creates blind requests, caches raw outputs, and emits deterministic machine-readable metrics. Runtime baselines remain tracked in [ROADMAP.md](ROADMAP.md). Illustrative failure modes live in [CASE_STUDIES.md](CASE_STUDIES.md) until reproducible real-world evidence is available.
 
 ## Repository structure
 
@@ -129,7 +129,7 @@ geoai-skills/
 │   ├── SKILL.md            # the skill (agent-facing)
 │   ├── scripts/            # runnable code, loaded on demand
 │   ├── references/         # deep material, loaded on demand
-│   └── evals/evals.json    # ≥3 trigger + behavior scenarios
+│   └── evals/evals.json    # ≥7 typed routing + behavior scenarios
 ├── tools/validate_skills.py  # spec linter (runs in CI)
 ├── tools/validate_evals.py   # strict, versioned eval schema validation
 ├── tools/eval_runner.py      # deterministic prepare → ingest → score harness

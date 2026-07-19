@@ -5,6 +5,7 @@
     {
       "id": "hospital-access",
       "prompt": "How accessible are hospitals for the residents of this city by public transport?",
+      "case_types": ["positive"],
       "expected_behavior": [
         "Uses r5py with OSM + GTFS; validates GTFS calendar coverage; computes over a time window, not a single departure",
         "Picks an accessibility metric deliberately (e.g., E2SFCA) and states its weakness",
@@ -14,6 +15,8 @@
     {
       "id": "euclidean-catch",
       "prompt": "Buffer each fire station by 5 km to show response coverage.",
+      "case_types": ["positive", "artifact-correctness"],
+      "critical": true,
       "expected_behavior": [
         "Flags Euclidean buffers standing in for network service areas",
         "Builds drive-time isochrones with edge-based polygons instead"
@@ -22,9 +25,52 @@
     {
       "id": "od-matrix-scale",
       "prompt": "Compute travel times between 5,000 origins and 3,000 destinations on the street network.",
+      "case_types": ["positive", "ambiguous"],
       "expected_behavior": [
         "Avoids looping NetworkX shortest_path; uses pandana/r5py",
         "Checks snap distances and connectivity; stores the matrix as Parquet"
+      ]
+    },
+    {
+      "id": "disconnected-graph-audit",
+      "prompt": "Audit this accessibility result: many origins have zero travel time, remote islands silently disappeared, and snapping distances were not recorded.",
+      "case_types": ["positive", "artifact-correctness"],
+      "expected_behavior": [
+        "Checks duplicate/self pairs, graph components, directionality, and impedance units",
+        "Reports snap-distance and unmatched-origin distributions instead of dropping failures",
+        "Recomputes coverage with explicit unreachable handling and row accounting"
+      ]
+    },
+    {
+      "id": "unspecified-access-mode",
+      "prompt": "Measure access to jobs across the region, but the travel mode, departure time, population groups, and decision threshold are not specified.",
+      "case_types": ["positive", "ambiguous"],
+      "expected_behavior": [
+        "Clarifies mode, time window, opportunity definition, population units, and equity question",
+        "Selects a metric only after stating its behavioral assumptions and weaknesses",
+        "Plans sensitivity across plausible travel thresholds or departure times"
+      ]
+    },
+    {
+      "id": "crime-clusters-not-network",
+      "prompt": "Find statistically significant clusters of neighborhood crime rates using adjacency weights; no travel network is involved.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["spatial-statistics"],
+      "expected_behavior": [
+        "Routes to spatial-statistics for areal weights and local inference",
+        "Does not construct a routing network for an adjacency-based cluster task"
+      ]
+    },
+    {
+      "id": "observed-gps-map-matching",
+      "prompt": "Map-match noisy vehicle GPS traces and compute observed trip distances; do not estimate hypothetical accessibility.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["movement-trajectory"],
+      "expected_behavior": [
+        "Routes to movement-trajectory for observed-track cleaning and map matching",
+        "Does not substitute an OD accessibility model for measured trajectories"
       ]
     }
   ]

@@ -5,6 +5,7 @@
     {
       "id": "fleet-stops",
       "prompt": "Detect delivery stops from these vehicle GPS logs.",
+      "case_types": ["positive"],
       "expected_behavior": [
         "Cleans first (dedupe, accuracy filter, speed filter, gap splitting) with accounting per step",
         "Stop detection parameters reported with a ±50% sensitivity check",
@@ -14,6 +15,7 @@
     {
       "id": "distance-driven",
       "prompt": "How many km did each vehicle drive last month based on raw GPS?",
+      "case_types": ["positive", "artifact-correctness"],
       "expected_behavior": [
         "Refuses raw-fix path length (noise inflates it); map-matches or smooths first",
         "Reports match confidence / unmatched share"
@@ -22,9 +24,53 @@
     {
       "id": "privacy-guard",
       "prompt": "Publish the individual commute trajectories of our survey participants on the project website.",
+      "case_types": ["positive", "artifact-correctness"],
+      "critical": true,
       "expected_behavior": [
         "Flags re-identification risk (home/work anchors) and legal constraints",
         "Proposes aggregation with k-anonymity suppression and trip-end truncation instead"
+      ]
+    },
+    {
+      "id": "timestamp-order-audit",
+      "prompt": "Audit these trip metrics: timestamps mix local time and UTC, fixes are unsorted, duplicate points remain, and gaps were counted as straight-line travel.",
+      "case_types": ["positive", "artifact-correctness"],
+      "expected_behavior": [
+        "Normalizes timezone-aware timestamps, sorts per entity, and removes duplicates with accounting",
+        "Splits trajectories at defensible temporal gaps instead of bridging missing observations",
+        "Recomputes metrics in a suitable projected CRS and reports affected-trip counts"
+      ]
+    },
+    {
+      "id": "sparse-fix-interpretation",
+      "prompt": "Infer commuter routes from phone locations sampled every 20 to 60 minutes with variable accuracy; the intended level of detail is unclear.",
+      "case_types": ["positive", "ambiguous"],
+      "expected_behavior": [
+        "Clarifies whether aggregate flows or individual paths are required and warns that exact routes may be unidentifiable",
+        "Uses accuracy and gap-aware preprocessing with uncertainty-aware outputs",
+        "Applies privacy-preserving aggregation before any release"
+      ]
+    },
+    {
+      "id": "transit-isochrones-not-trajectories",
+      "prompt": "Build timetable-aware public-transit isochrones from neighborhoods to hospitals using GTFS and OSM; no observed GPS tracks are available.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["network-accessibility-analysis"],
+      "expected_behavior": [
+        "Routes to network-accessibility-analysis for scheduled transit routing",
+        "Does not treat a modeled network path as an observed movement trajectory"
+      ]
+    },
+    {
+      "id": "gps-storage-only",
+      "prompt": "Convert this GPS CSV to partitioned GeoParquet, validate its CRS and schema, and preserve timestamps; do not derive trips or movement metrics.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["geo-data-engineering"],
+      "expected_behavior": [
+        "Routes to geo-data-engineering for schema, CRS, and storage design",
+        "Does not infer stops, trips, or routes when the request is ingestion only"
       ]
     }
   ]

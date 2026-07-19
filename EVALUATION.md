@@ -19,6 +19,8 @@ The canonical case definitions live beside each skill in `skills/<name>/evals/ev
 - `evals/schema.json` — authoring schema for skill cases;
 - `evals/run-schema.json` — manifests, requests, runtime responses, judgments, case results, and aggregate metrics.
 
+Every case declares one or more `case_types`: `positive`, `negative`, `ambiguous`, `collision`, or `artifact-correctness`. Exactly one polarity (`positive` or `negative`) is required. CI enforces at least 120 total cases, at least seven per skill, balanced suite-level category floors, valid cross-skill routes, and at least one critical case per skill.
+
 Generated local runs live under `evals/runs/` and are ignored by Git. Deliberately reviewed benchmark artifacts can later be copied into a versioned benchmark-results location.
 
 ## 1. Prepare blind requests
