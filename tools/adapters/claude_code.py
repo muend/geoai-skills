@@ -359,13 +359,14 @@ def execute_one(
     trace = process.stdout
     trace_path = trace_dir / f"{case['case_sha256']}.jsonl"
     atomic_write(trace_path, trace)
-    if process.returncode != 0:
-        detail = process.stderr.strip() or f"Claude Code exited with {process.returncode}"
-        return response_from_failure(manifest=manifest, case_id=case["case_id"], message=detail)
     try:
         parsed = parse_stream_trace(trace, known_skills={item["skill"] for item in manifest["cases"]})
     except AdapterError as exc:
-        return response_from_failure(manifest=manifest, case_id=case["case_id"], message=str(exc))
+        detail = process.stderr.strip() if process.returncode != 0 else ""
+        if not detail and process.returncode != 0:
+            detail = f"Claude Code exited with {process.returncode}"
+        message = "; ".join(item for item in (detail, str(exc)) if item)
+        return response_from_failure(manifest=manifest, case_id=case["case_id"], message=message)
     response = {
         "schema_version": 1,
         "case_id": case["case_id"],
@@ -379,8 +380,13 @@ def execute_one(
         "cost_usd": parsed["cost_usd"],
         "trace_sha256": sha256_text(trace),
     }
+    errors = []
     if parsed["error"]:
-        response["error"] = parsed["error"]
+        errors.append(parsed["error"])
+    if process.returncode != 0:
+        errors.append(process.stderr.strip() or f"Claude Code exited with {process.returncode}")
+    if errors:
+        response["error"] = "; ".join(dict.fromkeys(errors))[:2000]
     return response
 
 

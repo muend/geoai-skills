@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
 
 from tools.adapters.claude_code import (
     AdapterError,
+    execute_one,
     execution_command,
     judgment_schema,
     parse_json_result,
@@ -52,6 +54,64 @@ def test_parse_stream_trace_captures_skill_tool_and_usage() -> None:
     assert parsed["usage"] == {"input_tokens": 100, "output_tokens": 50}
     assert parsed["cost_usd"] == 0.0125
     assert parsed["error"] is None
+
+
+def test_execute_one_preserves_error_trace_cost_and_activation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    events = [
+        {
+            "type": "assistant",
+            "message": {
+                "content": [
+                    {
+                        "type": "tool_use",
+                        "name": "Skill",
+                        "input": {"skill": "geoai:terrain-hydrology"},
+                    }
+                ]
+            },
+        },
+        {
+            "type": "result",
+            "subtype": "error_max_budget_usd",
+            "is_error": True,
+            "duration_ms": 2000,
+            "total_cost_usd": 0.11002,
+            "usage": {"input_tokens": 2, "output_tokens": 175},
+            "result": "",
+        },
+    ]
+    trace = "".join(json.dumps(event) + "\n" for event in events)
+    process = subprocess.CompletedProcess(
+        args=["claude"], returncode=1, stdout=trace, stderr=""
+    )
+    monkeypatch.setattr(
+        "tools.adapters.claude_code.run_process", lambda *args, **kwargs: process
+    )
+
+    response = execute_one(
+        request={"prompt": "Compute slope"},
+        case={
+            "case_id": "terrain-hydrology/slope-4326-catch",
+            "case_sha256": "a" * 64,
+        },
+        manifest={
+            "runtime": "claude-code-2.1.214",
+            "model": "claude-sonnet-5",
+            "condition": "skills-enabled",
+            "cases": [{"skill": "terrain-hydrology"}],
+        },
+        command=["claude"],
+        workspace=tmp_path,
+        trace_dir=tmp_path / "traces",
+        timeout_seconds=30,
+    )
+
+    assert response["activated_skills"] == ["terrain-hydrology"]
+    assert response["cost_usd"] == pytest.approx(0.11002)
+    assert response["usage"] == {"input_tokens": 2, "output_tokens": 175}
+    assert response["error"] == "error_max_budget_usd; Claude Code exited with 1"
 
 
 def test_execution_commands_isolate_enabled_and_disabled_conditions(tmp_path: Path) -> None:
