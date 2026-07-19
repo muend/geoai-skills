@@ -152,6 +152,7 @@ def test_score_emits_perfect_machine_readable_metrics(tmp_path: Path) -> None:
         "input_tokens": case_count * 20,
         "output_tokens": case_count * 30,
         "latency_ms": case_count * 10,
+        "cost_usd": 0.0,
     }
     assert len((run_dir / "results" / "cases.jsonl").read_text().splitlines()) == case_count
 

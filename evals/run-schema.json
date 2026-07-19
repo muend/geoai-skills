@@ -141,6 +141,8 @@
         },
         "latency_ms": {"type": "integer", "minimum": 0},
         "usage": {"$ref": "#/$defs/usage"},
+        "cost_usd": {"type": "number", "minimum": 0},
+        "trace_sha256": {"$ref": "#/$defs/sha256"},
         "error": {"type": "string", "minLength": 1}
       }
     },
@@ -314,11 +316,12 @@
         "usage": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["input_tokens", "output_tokens", "latency_ms"],
+          "required": ["input_tokens", "output_tokens", "latency_ms", "cost_usd"],
           "properties": {
             "input_tokens": {"type": "integer", "minimum": 0},
             "output_tokens": {"type": "integer", "minimum": 0},
-            "latency_ms": {"type": "integer", "minimum": 0}
+            "latency_ms": {"type": "integer", "minimum": 0},
+            "cost_usd": {"type": "number", "minimum": 0}
           }
         }
       }

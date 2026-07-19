@@ -63,6 +63,55 @@ python tools/eval_runner.py ingest \
 
 Ingestion requires exactly one valid response for every manifest case. It rejects missing, extra, duplicate, mismatched-runtime, and unknown-skill rows. The normalized batch is stored at `raw/responses.jsonl`; every case is also cached by its content hash under `cache/`.
 
+### Reproducible Claude Code adapter
+
+The optional `tools/adapters/claude_code.py` adapter uses Claude Code print mode and its documented JSON output. It is resumable, captures actual `Skill` tool-use events for routing, hashes raw traces, and requires both per-case and total cost caps. See Anthropic's official [CLI reference](https://docs.anthropic.com/en/docs/claude-code/cli-usage) and [authentication options](https://docs.anthropic.com/en/docs/claude-code/getting-started).
+
+Authenticate once outside the repository:
+
+```bash
+claude auth login
+claude auth status
+```
+
+Prepare separate manifests with an exact runtime version and model ID:
+
+```bash
+claude --version
+python tools/eval_runner.py prepare \
+  --runtime claude-code-<exact-version> \
+  --model <exact-model-id> \
+  --condition skills-enabled
+```
+
+Inspect the command without a model call:
+
+```bash
+python tools/adapters/claude_code.py execute \
+  --run-dir evals/runs/<run-id> \
+  --max-case-cost-usd <cap> \
+  --max-total-cost-usd <cap> \
+  --dry-run
+```
+
+Execute after reviewing the declared caps:
+
+```bash
+python tools/adapters/claude_code.py execute \
+  --run-dir evals/runs/<run-id> \
+  --workers 4 \
+  --max-case-cost-usd <approved-per-case-cap> \
+  --max-total-cost-usd <approved-run-cap>
+
+python tools/eval_runner.py ingest \
+  --run-dir evals/runs/<run-id> \
+  --input evals/runs/<run-id>/adapter/claude-code.responses.jsonl
+```
+
+For `skills-enabled`, the adapter creates a temporary plugin containing skill runtime assets but no `evals/` folders. It runs from an empty workspace, disables user-level settings and MCP servers, and permits only the `Skill` and `Read` tools. For `skills-disabled`, it enables Claude Code safe mode, disables slash commands, and exposes no tools. Prompts are passed over stdin rather than command-line arguments.
+
+Raw execution traces and partial checkpoints stay under the ignored run directory. Interrupted runs resume from validated completed cases. With multiple workers, the total cap can be exceeded by at most the in-flight cases, each still bounded by the per-case cap.
+
 ## 3. Judge explicit criteria
 
 Judging may be human, model-assisted, or deterministic rules, but it must produce one criterion-preserving judgment for every case. A judgment set follows `#/$defs/judgmentSet`:
@@ -87,6 +136,19 @@ Judging may be human, model-assisted, or deterministic rules, but it must produc
 ```
 
 Criterion text and order must exactly match the manifest. This prevents a judge or later edit from weakening the rubric after seeing outputs.
+
+The Claude Code adapter can produce a criterion-preserving model-judge file after responses are ingested:
+
+```bash
+python tools/adapters/claude_code.py judge \
+  --run-dir evals/runs/<run-id> \
+  --judge-model <exact-judge-model-id> \
+  --workers 4 \
+  --max-case-cost-usd <approved-per-case-cap> \
+  --max-total-cost-usd <approved-judge-cap>
+```
+
+The judge receives rubric text only after execution. Its structured output contains decisions and evidence by array position; the adapter restores exact manifest criterion text, so the model cannot rewrite the scoring standard. Model judgments remain reviewable evidence, not ground truth. Manually review all critical failures and a stratified sample before publishing metrics.
 
 ## 4. Score deterministically
 

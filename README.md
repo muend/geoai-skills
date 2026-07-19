@@ -133,6 +133,7 @@ geoai-skills/
 ├── tools/validate_skills.py  # spec linter (runs in CI)
 ├── tools/validate_evals.py   # strict, versioned eval schema validation
 ├── tools/eval_runner.py      # deterministic prepare → ingest → score harness
+├── tools/adapters/           # optional runtime and judge adapters
 ├── evals/schema.json         # shared JSON Schema for all skill evals
 ├── evals/run-schema.json     # manifests, responses, judgments, and results
 ├── EVALUATION.md             # adapter-neutral benchmark protocol

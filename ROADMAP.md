@@ -124,3 +124,5 @@ The implementation can be compressed to roughly **7–10 focused working days**,
 ## Immediate next action
 
 Measure trigger precision, trigger recall, behavior pass rate, and critical spatial failure rate on declared runtime/model pairs.
+
+Runtime adapter status: Claude Code execution and criterion-preserving judging are prepared; real runs require an authenticated Claude Code session and an explicitly approved cost cap.
