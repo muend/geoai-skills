@@ -119,7 +119,7 @@ Other things that just work:
 3. **Anti-leakage by default.** Spatial autocorrelation makes random splits fraudulent; one canonical [spatial CV protocol](skills/ml-experiment-standards/references/spatial-cv-protocol.md), referenced everywhere, restated nowhere.
 4. **Tool-pragmatic.** Open Python stack first (GeoPandas, rasterio, xarray, PySAL, PDAL, OSMnx, WhiteboxTools), with routes to PostGIS/DuckDB at scale, Earth Engine for planetary archives, and headless arcpy/PyQGIS for proprietary environments.
 5. **Progressive disclosure.** Descriptions are tuned for reliable triggering; bodies stay lean; long material lives in `references/` and `scripts/` at zero token cost until needed.
-6. **Measured, not assumed.** The suite contains 120 typed behavior scenarios across all 17 skills: 84 positive, 36 negative, 27 ambiguous, 41 collision, and 35 artifact-correctness cases (types may overlap). The [provider-neutral evaluation harness](EVALUATION.md) creates blind requests, caches raw outputs, and emits deterministic machine-readable metrics. Runtime baselines remain tracked in [ROADMAP.md](ROADMAP.md). Illustrative failure modes live in [CASE_STUDIES.md](CASE_STUDIES.md) until reproducible real-world evidence is available.
+6. **Measured, not assumed.** The suite contains 120 typed behavior scenarios across all 17 skills: 84 positive, 36 negative, 27 ambiguous, 41 collision, and 35 artifact-correctness cases (types may overlap). The [provider-neutral evaluation harness](EVALUATION.md) creates blind requests, caches raw outputs, and emits deterministic machine-readable metrics. No runtime baseline is claimed until its raw evidence and exact configuration are publishable. Illustrative failure modes live in [CASE_STUDIES.md](CASE_STUDIES.md) until reproducible real-world evidence is available.
 
 ## Repository structure
 
@@ -144,10 +144,6 @@ geoai-skills/
 ## Contributing
 
 PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). The bar: passes the linter, ships evals, doesn't duplicate a canonical rule, and ends with a verification protocol. Real-world catches belong in [CASE_STUDIES.md](CASE_STUDIES.md) only with reproducible, privacy-safe evidence.
-
-## Roadmap
-
-3D city models (CityGML/3D Tiles) · geospatial foundation models in production · GeoParquet-native lakehouse patterns · agentic field-data QA (ODK/Kobo).
 
 ## License
 
