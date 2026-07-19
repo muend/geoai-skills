@@ -365,6 +365,7 @@ def score_run(
     input_tokens = 0
     output_tokens = 0
     latency_ms = 0
+    cost_usd = 0.0
 
     for case in cases:
         case_id = case["case_id"]
@@ -411,6 +412,7 @@ def score_run(
         input_tokens += usage.get("input_tokens", 0)
         output_tokens += usage.get("output_tokens", 0)
         latency_ms += response.get("latency_ms", 0)
+        cost_usd += response.get("cost_usd", 0.0)
         result = {
             "case_id": case_id,
             "skill": case["skill"],
@@ -461,6 +463,7 @@ def score_run(
             "input_tokens": input_tokens,
             "output_tokens": output_tokens,
             "latency_ms": latency_ms,
+            "cost_usd": cost_usd,
         },
     }
     validate_instance(contract_validator(run_schema, "results"), metrics, label="metrics")

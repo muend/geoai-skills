@@ -26,5 +26,8 @@ required before the first stable release.
 - Provider-neutral deterministic evaluation harness with blind request
   manifests, immutable raw-response caching, explicit criterion judgments,
   and machine-readable routing, behavior, critical-failure, and usage metrics.
+- Resumable Claude Code execution and model-judge adapter with blind plugin
+  staging, trace-based skill activation, raw-trace hashes, and mandatory cost
+  caps.
 - Repo tooling: `tools/validate_skills.py` frontmatter/structure linter,
   GitHub Actions CI, plugin marketplace manifest.
