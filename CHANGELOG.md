@@ -28,6 +28,6 @@ required before the first stable release.
   and machine-readable routing, behavior, critical-failure, and usage metrics.
 - Resumable Claude Code execution and model-judge adapter with blind plugin
   staging, trace-based skill activation, raw-trace hashes, and mandatory cost
-  caps.
+  caps, including bounded `--case-id` pilots that resume into full runs.
 - Repo tooling: `tools/validate_skills.py` frontmatter/structure linter,
   GitHub Actions CI, plugin marketplace manifest.

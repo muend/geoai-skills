@@ -94,6 +94,17 @@ python tools/adapters/claude_code.py execute \
   --dry-run
 ```
 
+Run one bounded pilot before approving a full batch. The checkpoint is reused by the later full run:
+
+```bash
+python tools/adapters/claude_code.py execute \
+  --run-dir evals/runs/<run-id> \
+  --case-id terrain-hydrology/slope-4326-catch \
+  --workers 1 \
+  --max-case-cost-usd <approved-pilot-cap> \
+  --max-total-cost-usd <approved-pilot-cap>
+```
+
 Execute after reviewing the declared caps:
 
 ```bash

@@ -3,11 +3,15 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from tools.adapters.claude_code import (
+    AdapterError,
     execution_command,
     judgment_schema,
     parse_json_result,
     parse_stream_trace,
+    select_cases,
     stage_blind_plugin,
 )
 
@@ -128,3 +132,12 @@ def test_parse_json_result_accepts_structured_result_string() -> None:
 
     assert parsed["expected"][0]["met"] is True
     assert metadata["total_cost_usd"] == 0.02
+
+
+def test_select_cases_preserves_manifest_order_and_rejects_unknown() -> None:
+    cases = [{"case_id": "skill/a"}, {"case_id": "skill/b"}, {"case_id": "skill/c"}]
+
+    assert select_cases(cases, ["skill/c", "skill/a"]) == [cases[0], cases[2]]
+
+    with pytest.raises(AdapterError, match="Unknown requested case ids"):
+        select_cases(cases, ["skill/missing"])
