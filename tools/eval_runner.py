@@ -183,6 +183,7 @@ def load_suite(
                 "skill": skill_dir.name,
                 "eval_id": raw_case["id"],
                 "prompt": raw_case["prompt"],
+                "case_types": raw_case["case_types"],
                 "should_trigger": raw_case.get("should_trigger", True),
                 "expected_route": sorted(raw_case.get("expected_route", [])),
                 "expected_behavior": raw_case["expected_behavior"],
@@ -380,8 +381,8 @@ def score_run(
         target_active = case["skill"] in activated
         if case["should_trigger"]:
             outcome = "tp" if target_active else "fn"
-            expected_route = {case["skill"]}
-            route_match = target_active
+            expected_route = set(case["expected_route"] or [case["skill"]])
+            route_match = target_active and expected_route.issubset(activated)
         else:
             outcome = "fp" if target_active else "tn"
             expected_route = set(case["expected_route"])

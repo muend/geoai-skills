@@ -20,7 +20,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "prompt", "expected_behavior"],
+        "required": ["id", "prompt", "case_types", "expected_behavior"],
         "properties": {
           "id": {
             "type": "string",
@@ -31,6 +31,21 @@
             "type": "string",
             "minLength": 10,
             "maxLength": 2000
+          },
+          "case_types": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 3,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "positive",
+                "negative",
+                "ambiguous",
+                "collision",
+                "artifact-correctness"
+              ]
+            }
           },
           "expected_behavior": {
             "type": "array",

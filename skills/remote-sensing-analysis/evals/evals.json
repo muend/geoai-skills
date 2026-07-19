@@ -5,6 +5,7 @@
     {
       "id": "ndvi-request",
       "prompt": "Compute NDVI for my study area from Sentinel-2 for last summer.",
+      "case_types": ["positive"],
       "expected_behavior": [
         "Uses STAC search with sentinel-2-l2a (surface reflectance), records item IDs",
         "Applies SCL cloud masking BEFORE computing the index and reports valid-pixel %",
@@ -14,6 +15,8 @@
     {
       "id": "mixed-level-trap",
       "prompt": "Compare vegetation between this 2018 L1C scene and this 2025 L2A scene.",
+      "case_types": ["positive", "artifact-correctness"],
+      "critical": true,
       "expected_behavior": [
         "Flags TOA vs BOA mismatch and refuses to compare directly",
         "Proposes consistent atmospheric correction or same-level reacquisition"
@@ -22,10 +25,53 @@
     {
       "id": "classification-validation",
       "prompt": "Classify land cover from this imagery and report accuracy.",
+      "case_types": ["positive", "collision"],
       "expected_behavior": [
         "Uses a spatially independent test set (block split), citing the spatial CV protocol",
         "Reports per-class F1/IoU and confusion matrix, not overall accuracy alone",
         "Maps misclassifications spatially"
+      ]
+    },
+    {
+      "id": "cloud-mask-audit",
+      "prompt": "Audit this Sentinel-2 NDVI raster: clouds were masked after index calculation, shadows remain, and no valid-pixel percentage or item IDs were saved.",
+      "case_types": ["positive", "artifact-correctness"],
+      "expected_behavior": [
+        "Requires cloud and shadow masking on reflectance bands before index calculation",
+        "Recomputes valid-pixel coverage and inspects mask errors visually",
+        "Records collection, item IDs, acquisition dates, processing level, bands, and mask thresholds"
+      ]
+    },
+    {
+      "id": "vague-imagery-analysis",
+      "prompt": "Use satellite imagery to assess vegetation condition, but the sensor, season, scale, and meaning of condition are not specified.",
+      "case_types": ["positive", "ambiguous"],
+      "expected_behavior": [
+        "Clarifies decision variable, spatial and temporal scale, season, sensor constraints, and validation data",
+        "Selects processing level, masking, bands or indices only after those requirements are defined",
+        "Plans uncertainty and ground-reference validation rather than equating one index with condition"
+      ]
+    },
+    {
+      "id": "temporal-change-quantification",
+      "prompt": "Estimate deforestation transitions and error-adjusted changed area between 2018 and 2025 from two validated land-cover maps.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["change-detection"],
+      "expected_behavior": [
+        "Routes to change-detection for transition, sampling, and adjusted-area inference",
+        "Does not stop at generic image classification once temporal change is the requested product"
+      ]
+    },
+    {
+      "id": "planetary-server-workflow",
+      "prompt": "Compute monthly cloud-masked Landsat composites for an entire continent in Earth Engine and export provincial summaries.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["google-earth-engine"],
+      "expected_behavior": [
+        "Routes to google-earth-engine for planetary server-side collection processing",
+        "Does not default to a local raster workflow for the explicitly declared platform and scale"
       ]
     }
   ]

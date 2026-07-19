@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import sys
+from collections import Counter
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
@@ -12,6 +13,15 @@ ROOT = Path(__file__).resolve().parent.parent
 SKILLS = ROOT / "skills"
 SCHEMA_PATH = ROOT / "evals" / "schema.json"
 RUN_SCHEMA_PATH = ROOT / "evals" / "run-schema.json"
+MIN_SUITE_CASES = 120
+MIN_CASES_PER_SKILL = 7
+CATEGORY_MINIMUMS = {
+    "positive": 70,
+    "negative": 25,
+    "ambiguous": 17,
+    "collision": 17,
+    "artifact-correctness": 17,
+}
 
 
 def relative(path: Path) -> str:
@@ -26,8 +36,11 @@ def main() -> int:
     validator = Draft202012Validator(schema)
     errors: list[str] = []
     case_count = 0
+    category_counts: Counter[str] = Counter()
+    critical_skills: set[str] = set()
 
     skill_folders = sorted(path for path in SKILLS.iterdir() if path.is_dir())
+    skill_names = {folder.name for folder in skill_folders}
     for folder in skill_folders:
         eval_path = folder / "evals" / "evals.json"
         if not eval_path.exists():
@@ -50,6 +63,11 @@ def main() -> int:
 
         cases = data.get("evals", [])
         case_count += len(cases) if isinstance(cases, list) else 0
+        if isinstance(cases, list) and len(cases) < MIN_CASES_PER_SKILL:
+            errors.append(
+                f"{relative(eval_path)}: requires at least {MIN_CASES_PER_SKILL} cases, "
+                f"found {len(cases)}"
+            )
         ids = [case.get("id") for case in cases if isinstance(case, dict)] if isinstance(cases, list) else []
         duplicates = sorted({case_id for case_id in ids if ids.count(case_id) > 1})
         if duplicates:
@@ -58,17 +76,62 @@ def main() -> int:
         for case in cases if isinstance(cases, list) else []:
             if not isinstance(case, dict):
                 continue
+            case_id = case.get("id", "<unknown>")
+            case_types = set(case.get("case_types", []))
+            category_counts.update(case_types)
+            if case.get("critical") is True:
+                critical_skills.add(folder.name)
+            should_trigger = case.get("should_trigger", True)
+            if should_trigger and "positive" not in case_types:
+                errors.append(
+                    f"{relative(eval_path)}:{case_id}: triggering cases require the positive type"
+                )
+            if not should_trigger and "negative" not in case_types:
+                errors.append(
+                    f"{relative(eval_path)}:{case_id}: non-triggering cases require the negative type"
+                )
+            if "positive" in case_types and "negative" in case_types:
+                errors.append(
+                    f"{relative(eval_path)}:{case_id}: positive and negative are mutually exclusive"
+                )
             if case.get("should_trigger") is False and not case.get("expected_route"):
                 errors.append(
-                    f"{relative(eval_path)}:{case.get('id', '<unknown>')}: "
+                    f"{relative(eval_path)}:{case_id}: "
                     "negative routing cases require expected_route"
                 )
+            unknown_routes = sorted(set(case.get("expected_route", [])) - skill_names)
+            if unknown_routes:
+                errors.append(
+                    f"{relative(eval_path)}:{case_id}: unknown expected routes: "
+                    f"{', '.join(unknown_routes)}"
+                )
+            if not should_trigger and folder.name in case.get("expected_route", []):
+                errors.append(
+                    f"{relative(eval_path)}:{case_id}: negative case cannot route to its own skill"
+                )
+
+    if case_count < MIN_SUITE_CASES:
+        errors.append(f"evaluation suite requires at least {MIN_SUITE_CASES} cases, found {case_count}")
+    for category, minimum in CATEGORY_MINIMUMS.items():
+        if category_counts[category] < minimum:
+            errors.append(
+                f"evaluation suite requires at least {minimum} '{category}' cases, "
+                f"found {category_counts[category]}"
+            )
+    missing_critical = sorted(skill_names - critical_skills)
+    if missing_critical:
+        errors.append(
+            "every skill requires at least one critical case; missing: "
+            + ", ".join(missing_critical)
+        )
 
     for error in errors:
         print(f"ERROR {error}")
     print(
         f"\n{len(skill_folders)} eval files checked — "
-        f"{case_count} cases, {len(errors)} errors"
+        f"{case_count} cases, {len(errors)} errors\n"
+        f"Types: "
+        + ", ".join(f"{name}={category_counts[name]}" for name in CATEGORY_MINIMUMS)
     )
     return 1 if errors else 0
 

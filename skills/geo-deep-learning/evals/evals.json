@@ -5,6 +5,7 @@
     {
       "id": "building-extraction",
       "prompt": "Train a model to extract building footprints from aerial imagery tiles.",
+      "case_types": ["positive"],
       "expected_behavior": [
         "U-Net with pretrained encoder + Dice/CE hybrid for class imbalance",
         "Spatially blocked split per the canonical spatial CV protocol, zero-overlap verified",
@@ -14,6 +15,8 @@
     {
       "id": "random-split-catch",
       "prompt": "I randomly split my image chips 80/20 and get 0.95 IoU. Ready to publish?",
+      "case_types": ["positive", "artifact-correctness"],
+      "critical": true,
       "expected_behavior": [
         "Identifies spatial leakage from random chip splitting",
         "Requires re-splitting by geographic block/scene and expects lower, honest metrics"
@@ -22,9 +25,52 @@
     {
       "id": "baseline-first",
       "prompt": "Should I use a vision transformer for classifying water pixels in Sentinel-2?",
+      "case_types": ["positive", "ambiguous"],
       "expected_behavior": [
         "Requires a cheap baseline (thresholded NDWI / random forest) before deep models",
         "Frames the DL model as justified only if it clearly beats the baseline"
+      ]
+    },
+    {
+      "id": "seam-artifact-audit",
+      "prompt": "Review these segmentation predictions: accuracy is high, but tile borders form visible seams and some output masks have shifted georeferencing.",
+      "case_types": ["positive", "artifact-correctness"],
+      "expected_behavior": [
+        "Checks chip transforms and output CRS against the source imagery",
+        "Uses overlapping sliding windows with weighted blending to remove border seams",
+        "Requires a mosaic-level visual and numeric alignment check"
+      ]
+    },
+    {
+      "id": "few-labels-model-choice",
+      "prompt": "I have 40 labeled polygons and thousands of unlabeled aerial images. Should I fine-tune a large segmentation model or use a simpler approach?",
+      "case_types": ["positive", "ambiguous"],
+      "expected_behavior": [
+        "Quantifies label coverage and geographic diversity before selecting a model",
+        "Establishes a non-deep baseline and considers transfer learning or active learning",
+        "Requires geographically independent validation before claiming generalization"
+      ]
+    },
+    {
+      "id": "spectral-index-only",
+      "prompt": "Compute NDWI from a Sentinel-2 scene and threshold it into a preliminary water mask; do not train a model.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["remote-sensing-analysis"],
+      "expected_behavior": [
+        "Routes to remote-sensing-analysis for deterministic index computation",
+        "Does not introduce deep learning when no learned model is requested"
+      ]
+    },
+    {
+      "id": "earth-engine-composite",
+      "prompt": "Create a server-side annual median Sentinel-2 composite for a country and export it from Earth Engine.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["google-earth-engine"],
+      "expected_behavior": [
+        "Routes to google-earth-engine for server-side collection reduction and export",
+        "Does not activate geo-deep-learning without a training or inference task"
       ]
     }
   ]

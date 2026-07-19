@@ -30,7 +30,7 @@ Codex can prepare every file, command, release note, benchmark, demo, issue, PR,
 
 ## Current progress
 
-**30 / 49 tasks complete — 61%**
+**31 / 49 tasks complete — 63%**
 
 ### Phase 0 — Audit and direction
 
@@ -77,7 +77,7 @@ Codex can prepare every file, command, release note, benchmark, demo, issue, PR,
 
 - [x] Define and validate a strict eval JSON schema.
 - [x] Build a deterministic eval runner with cached raw outputs and machine-readable results.
-- [ ] Expand the suite to at least 120 cases: positive, negative, ambiguous/collision, and artifact correctness.
+- [x] Expand the suite to at least 120 cases: positive, negative, ambiguous/collision, and artifact correctness.
 - [ ] Measure trigger precision, trigger recall, behavior pass rate, and critical spatial failure rate.
 - [ ] Run skill-enabled versus skill-disabled baselines on supported agent runtimes.
 - [ ] Adapt a license-compatible subset of GeoAnalystBench as end-to-end tasks.
@@ -123,4 +123,4 @@ The implementation can be compressed to roughly **7–10 focused working days**,
 
 ## Immediate next action
 
-Expand the evaluation suite from 51 to at least 120 positive, negative, ambiguous/collision, and artifact-correctness cases.
+Measure trigger precision, trigger recall, behavior pass rate, and critical spatial failure rate on declared runtime/model pairs.

@@ -5,6 +5,7 @@
     {
       "id": "dtm-from-laz",
       "prompt": "Make a 1 m DTM from these .laz tiles.",
+      "case_types": ["positive"],
       "expected_behavior": [
         "Runs pdal info first; reports density, CRS incl. vertical datum, classes",
         "Denoises before ground classification (SMRF/CSF), audits vendor class 2 on cross-sections",
@@ -14,6 +15,7 @@
     {
       "id": "chm-forestry",
       "prompt": "Compute canopy height and tree count for this forest LiDAR.",
+      "case_types": ["positive"],
       "expected_behavior": [
         "Normalizes heights (HAG) against the DTM; pit-free CHM",
         "Tree detection validated against field/manual samples",
@@ -23,9 +25,53 @@
     {
       "id": "sfm-not-lidar",
       "prompt": "Here is a drone photogrammetry point cloud of a forest. Give me the ground elevation model.",
+      "case_types": ["positive", "ambiguous"],
+      "critical": true,
       "expected_behavior": [
         "States SfM cannot penetrate canopy — a 'DTM' over forest from SfM is a canopy model",
         "Limits claims accordingly or requests LiDAR"
+      ]
+    },
+    {
+      "id": "vertical-datum-audit",
+      "prompt": "Audit these LiDAR-derived building heights: tiles mix ellipsoidal and orthometric elevations, strip edges disagree, and the vertical CRS is missing.",
+      "case_types": ["positive", "artifact-correctness"],
+      "expected_behavior": [
+        "Stops height comparison until horizontal and vertical CRS and geoid transformations are resolved",
+        "Checks overlapping strips and tile seams numerically and with cross-sections",
+        "Records the verified vertical datum and transformation in output metadata"
+      ]
+    },
+    {
+      "id": "unknown-classification-quality",
+      "prompt": "Create terrain and canopy products from vendor-classified LAZ files, but there is no report on class quality or point density.",
+      "case_types": ["positive", "ambiguous"],
+      "expected_behavior": [
+        "Profiles density, returns, classes, CRS, and vertical datum before trusting vendor labels",
+        "Audits ground classification on representative cross-sections and difficult terrain",
+        "Chooses raster resolution from measured density and reports unsupported areas"
+      ]
+    },
+    {
+      "id": "raster-slope-not-lidar",
+      "prompt": "Compute slope and watershed boundaries from an existing bare-earth DEM; no point cloud files are available.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["terrain-hydrology"],
+      "expected_behavior": [
+        "Routes to terrain-hydrology for raster terrain and drainage analysis",
+        "Does not require a point-cloud workflow when a DTM is already provided"
+      ]
+    },
+    {
+      "id": "imagery-segmentation-not-lidar",
+      "prompt": "Train a deep neural network to segment roofs from RGB orthophotos; there are no LAS or LAZ inputs.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["geo-deep-learning"],
+      "expected_behavior": [
+        "Routes to geo-deep-learning for imagery segmentation",
+        "Does not activate point-cloud-lidar based only on a three-dimensional target concept"
       ]
     }
   ]

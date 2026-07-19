@@ -5,6 +5,7 @@
     {
       "id": "rainfall-surface",
       "prompt": "Interpolate annual rainfall from 60 stations into a raster.",
+      "case_types": ["positive"],
       "expected_behavior": [
         "Explores first: duplicates, skew (log transform if needed), trend check",
         "Models the variogram deliberately (nugget/sill/range reported, anisotropy checked)",
@@ -14,6 +15,7 @@
     {
       "id": "idw-only",
       "prompt": "Quick IDW heatmap of these sensor readings please.",
+      "case_types": ["positive", "ambiguous"],
       "expected_behavior": [
         "Delivers IDW but states it has no error model and bullseyes extremes",
         "Reports the power parameter and works in a projected CRS"
@@ -22,9 +24,53 @@
     {
       "id": "extrapolation-honesty",
       "prompt": "Extend the interpolated surface to the whole province even where we have no stations.",
+      "case_types": ["positive", "artifact-correctness"],
+      "critical": true,
       "expected_behavior": [
         "Masks or flags cells beyond the variogram range from nearest samples",
         "Refuses to present extrapolated areas at equal confidence"
+      ]
+    },
+    {
+      "id": "variogram-audit",
+      "prompt": "Audit this kriging result: the fitted variogram has zero nugget, a range larger than the study area, and no uncertainty raster or cross-validation table.",
+      "case_types": ["positive", "artifact-correctness"],
+      "expected_behavior": [
+        "Challenges the unsupported variogram fit using empirical bins, sample geometry, and alternative models",
+        "Requires LOOCV plus spatial block CV and reports bias and RMSE",
+        "Rejects delivery without kriging standard deviation and extrapolation flags"
+      ]
+    },
+    {
+      "id": "sparse-data-method-choice",
+      "prompt": "I have twelve unevenly distributed soil samples and need a continuous surface; I do not know whether kriging is defensible.",
+      "case_types": ["positive", "ambiguous"],
+      "expected_behavior": [
+        "Inspects sample spacing, clustering, trend, and support before promising a surface",
+        "Compares a transparent baseline with a variogram-based method only if the empirical structure is estimable",
+        "Limits spatial extent and communicates uncertainty when data support is weak"
+      ]
+    },
+    {
+      "id": "hotspot-inference-not-surface",
+      "prompt": "Test whether high disease rates form statistically significant spatial clusters; do not interpolate values between regions.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["spatial-statistics"],
+      "expected_behavior": [
+        "Routes to spatial-statistics for local cluster inference and multiple-testing control",
+        "Does not replace hotspot inference with an interpolated heatmap"
+      ]
+    },
+    {
+      "id": "dem-hole-repair",
+      "prompt": "Hydrologically condition this DEM and repair small nodata holes before watershed delineation; no sampled point variable is involved.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["terrain-hydrology"],
+      "expected_behavior": [
+        "Routes to terrain-hydrology for DEM conditioning and drainage-safe repair",
+        "Does not treat raster nodata repair as geostatistical interpolation by default"
       ]
     }
   ]

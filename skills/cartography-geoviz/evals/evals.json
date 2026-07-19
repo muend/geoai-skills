@@ -5,6 +5,8 @@
     {
       "id": "choropleth-request",
       "prompt": "Map COVID cases by county.",
+      "case_types": ["positive", "artifact-correctness"],
+      "critical": true,
       "expected_behavior": [
         "Normalizes to rates per population before coloring (raw counts = population map)",
         "States classification scheme with rationale; colorblind-safe ramp; NoData in neutral gray",
@@ -14,6 +16,7 @@
     {
       "id": "map-series",
       "prompt": "Make maps of the same indicator for 2010, 2015, 2020, 2025 side by side.",
+      "case_types": ["positive", "artifact-correctness"],
       "expected_behavior": [
         "Uses manual/defined identical breaks, ramp, and extent across all panels",
         "Rejects per-date Jenks breaks as incomparable"
@@ -22,9 +25,51 @@
     {
       "id": "big-points-interactive",
       "prompt": "Interactive web map of 800k GPS points.",
+      "case_types": ["positive"],
       "expected_behavior": [
         "Refuses raw GeoJSON into Leaflet; tiles (PMTiles) or GPU rendering (deck.gl/Kepler)",
         "Ships a legend and formatted popups"
+      ]
+    },
+    {
+      "id": "misleading-projection-audit",
+      "prompt": "Review this global Web Mercator map that compares forest area by the apparent size of each country.",
+      "case_types": ["positive", "artifact-correctness"],
+      "expected_behavior": [
+        "Flags Web Mercator area distortion as invalid for visual area comparison",
+        "Requires an equal-area projection or a non-area encoding and documents the projection",
+        "Checks legend units, source, and accessible color contrast before publication"
+      ]
+    },
+    {
+      "id": "underspecified-publication-map",
+      "prompt": "Make this spatial dataset into a professional map for stakeholders, but I have not chosen the medium or audience yet.",
+      "case_types": ["positive", "ambiguous"],
+      "expected_behavior": [
+        "Asks for audience, medium, geographic extent, and decision purpose before fixing the design",
+        "Offers a provisional layout while keeping classification, projection, and accessibility choices explicit"
+      ]
+    },
+    {
+      "id": "raster-classification-not-map",
+      "prompt": "Train and validate a classifier that labels crop types from a multispectral satellite image; no map design is needed.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["remote-sensing-analysis"],
+      "expected_behavior": [
+        "Routes to remote-sensing-analysis for imagery classification and spatial validation",
+        "Does not activate cartography-geoviz merely because the input is spatial"
+      ]
+    },
+    {
+      "id": "database-query-not-map",
+      "prompt": "Optimize the PostGIS query behind an existing map; the cartographic design and frontend are already complete.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["postgis-spatial-sql"],
+      "expected_behavior": [
+        "Routes to postgis-spatial-sql for query-plan and index analysis",
+        "Does not redesign the map when the request is exclusively database performance"
       ]
     }
   ]

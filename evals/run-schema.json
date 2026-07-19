@@ -19,6 +19,7 @@
         "skill",
         "eval_id",
         "prompt",
+        "case_types",
         "should_trigger",
         "expected_route",
         "expected_behavior",
@@ -32,6 +33,15 @@
         "skill": {"$ref": "#/$defs/skillName"},
         "eval_id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
         "prompt": {"type": "string", "minLength": 10},
+        "case_types": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["positive", "negative", "ambiguous", "collision", "artifact-correctness"]
+          }
+        },
         "should_trigger": {"type": "boolean"},
         "expected_route": {
           "type": "array",

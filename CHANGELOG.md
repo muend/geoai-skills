@@ -20,8 +20,9 @@ required before the first stable release.
 - 2 cross-cutting standards skills: `ml-experiment-standards` (canonical
   spatial CV protocol in `references/spatial-cv-protocol.md`),
   `swe-devops-standards`.
-- Per-skill `evals/evals.json` trigger + expected-behavior scenarios. These are
-  evaluation definitions, not yet published benchmark results.
+- A 120-case typed evaluation suite spanning positive, negative, ambiguous,
+  collision, artifact-correctness, and critical spatial failure scenarios.
+  These are evaluation definitions, not yet published benchmark results.
 - Provider-neutral deterministic evaluation harness with blind request
   manifests, immutable raw-response caching, explicit criterion judgments,
   and machine-readable routing, behavior, critical-failure, and usage metrics.

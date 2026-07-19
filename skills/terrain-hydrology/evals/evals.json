@@ -5,6 +5,7 @@
     {
       "id": "watershed-delineation",
       "prompt": "Delineate the watershed upstream of this gauge station from a 30 m DEM.",
+      "case_types": ["positive"],
       "expected_behavior": [
         "Uses a DTM, masks nodata, reprojects so horizontal units match vertical",
         "Conditions with breach-before-fill, D8 flow direction, snaps the pour point to the high-accumulation cell",
@@ -14,6 +15,8 @@
     {
       "id": "slope-4326-catch",
       "prompt": "Compute slope from this EPSG:4326 SRTM tile.",
+      "case_types": ["positive", "artifact-correctness"],
+      "critical": true,
       "expected_behavior": [
         "Flags the unit mismatch (degrees vs meters)",
         "Reprojects to a projected CRS (or applies a latitude-dependent z-factor) before slope",
@@ -23,10 +26,53 @@
     {
       "id": "viewshed-surface-choice",
       "prompt": "What can be seen from this proposed observation tower site?",
+      "case_types": ["positive", "ambiguous"],
       "expected_behavior": [
         "Uses a DSM (or DTM + feature heights), not bare earth, and says which",
         "Sets observer/target heights explicitly and handles curvature/refraction beyond ~5 km",
         "Delivers parameters in the output metadata"
+      ]
+    },
+    {
+      "id": "flow-direction-audit",
+      "prompt": "Audit this watershed output: flow was computed across nodata gaps, the pour point was not snapped, and the delineated basin crosses a verified ridge.",
+      "case_types": ["positive", "artifact-correctness"],
+      "expected_behavior": [
+        "Checks DEM type, nodata mask, CRS units, conditioning, and flow-direction convention",
+        "Snaps the pour point to a plausible high-accumulation cell within a documented tolerance",
+        "Uses ridge, drainage, area, and authoritative-basin comparisons to diagnose the failure"
+      ]
+    },
+    {
+      "id": "surface-choice-unclear",
+      "prompt": "Derive terrain metrics for urban heat analysis, but I have both a DTM and DSM and the relevant surface is not specified.",
+      "case_types": ["positive", "ambiguous"],
+      "expected_behavior": [
+        "Clarifies whether bare-earth terrain or buildings and vegetation represent the causal surface",
+        "Selects DTM, DSM, or both with explicit resolution and vertical-unit checks",
+        "Documents scale sensitivity and validates derived surfaces visually"
+      ]
+    },
+    {
+      "id": "rainfall-kriging-not-terrain",
+      "prompt": "Fit a variogram to rain-gauge observations and produce kriging prediction and standard-deviation rasters; no DEM analysis is requested.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["geostatistics-interpolation"],
+      "expected_behavior": [
+        "Routes to geostatistics-interpolation for sampled-field prediction",
+        "Does not activate terrain-hydrology merely because rainfall is hydrologically relevant"
+      ]
+    },
+    {
+      "id": "lidar-ground-classification",
+      "prompt": "Classify ground returns in raw LAZ tiles and create a density-supported DTM with buffered tile edges.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["point-cloud-lidar"],
+      "expected_behavior": [
+        "Routes to point-cloud-lidar for raw point classification and rasterization",
+        "Does not begin terrain derivatives before the point-cloud DTM is validated"
       ]
     }
   ]

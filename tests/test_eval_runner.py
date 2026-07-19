@@ -29,7 +29,11 @@ def prepared_run(tmp_path: Path) -> tuple[Path, dict]:
 def perfect_responses(manifest: dict) -> list[dict]:
     rows = []
     for case in manifest["cases"]:
-        activated = [case["skill"]] if case["should_trigger"] else case["expected_route"]
+        activated = (
+            case["expected_route"] or [case["skill"]]
+            if case["should_trigger"]
+            else case["expected_route"]
+        )
         rows.append(
             {
                 "schema_version": 1,
@@ -79,7 +83,7 @@ def test_prepare_is_stable_and_requests_are_blind(tmp_path: Path) -> None:
     )
 
     assert repeated == run_dir
-    assert len(manifest["cases"]) == 51
+    assert len(manifest["cases"]) == 120
     requests = [
         json.loads(line)
         for line in (run_dir / "requests.jsonl").read_text(encoding="utf-8").splitlines()
@@ -130,7 +134,12 @@ def test_score_emits_perfect_machine_readable_metrics(tmp_path: Path) -> None:
 
     negative_cases = sum(not case["should_trigger"] for case in manifest["cases"])
     positive_cases = len(manifest["cases"]) - negative_cases
-    assert metrics["coverage"] == {"cases": 51, "responses": 51, "judgments": 51}
+    case_count = len(manifest["cases"])
+    assert metrics["coverage"] == {
+        "cases": case_count,
+        "responses": case_count,
+        "judgments": case_count,
+    }
     assert metrics["routing"]["tp"] == positive_cases
     assert metrics["routing"]["tn"] == negative_cases
     assert metrics["routing"]["fp"] == 0
@@ -140,11 +149,11 @@ def test_score_emits_perfect_machine_readable_metrics(tmp_path: Path) -> None:
     assert metrics["routing"]["route_accuracy"] == 1.0
     assert metrics["behavior"]["pass_rate"] == 1.0
     assert metrics["usage"] == {
-        "input_tokens": 51 * 20,
-        "output_tokens": 51 * 30,
-        "latency_ms": 51 * 10,
+        "input_tokens": case_count * 20,
+        "output_tokens": case_count * 30,
+        "latency_ms": case_count * 10,
     }
-    assert len((run_dir / "results" / "cases.jsonl").read_text().splitlines()) == 51
+    assert len((run_dir / "results" / "cases.jsonl").read_text().splitlines()) == case_count
 
 
 def test_score_rejects_judgment_criterion_drift(tmp_path: Path) -> None:
