@@ -11,6 +11,7 @@ from jsonschema import Draft202012Validator
 ROOT = Path(__file__).resolve().parent.parent
 SKILLS = ROOT / "skills"
 SCHEMA_PATH = ROOT / "evals" / "schema.json"
+RUN_SCHEMA_PATH = ROOT / "evals" / "run-schema.json"
 
 
 def relative(path: Path) -> str:
@@ -20,6 +21,8 @@ def relative(path: Path) -> str:
 def main() -> int:
     schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
     Draft202012Validator.check_schema(schema)
+    run_schema = json.loads(RUN_SCHEMA_PATH.read_text(encoding="utf-8"))
+    Draft202012Validator.check_schema(run_schema)
     validator = Draft202012Validator(schema)
     errors: list[str] = []
     case_count = 0
