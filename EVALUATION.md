@@ -121,7 +121,7 @@ python tools/eval_runner.py ingest \
 
 For `skills-enabled`, the adapter creates a temporary plugin containing skill runtime assets but no `evals/` folders. It runs from an empty workspace, disables user-level settings and MCP servers, and permits only the `Skill` and `Read` tools. For `skills-disabled`, it enables Claude Code safe mode, disables slash commands, and exposes no tools. Prompts are passed over stdin rather than command-line arguments.
 
-Raw execution traces and partial checkpoints stay under the ignored run directory. Interrupted runs resume from validated completed cases. With multiple workers, the total cap can be exceeded by at most the in-flight cases, each still bounded by the per-case cap.
+Raw execution traces and partial checkpoints stay under the ignored run directory. Interrupted runs resume from validated completed cases. Claude Code evaluates `--max-budget-usd` at runtime checkpoints, so a terminal in-flight turn can exceed the declared per-case value. The adapter records the actual terminal cost even when Claude exits at the budget guardrail. With multiple workers, the total can additionally exceed the batch limit by the other in-flight cases. Treat both values as guardrails, disclose observed overruns, and obtain approval with an explicit margin rather than describing either value as a hard cap.
 
 ## 3. Judge explicit criteria
 
