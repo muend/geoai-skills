@@ -396,6 +396,19 @@ def read_partial_rows(path: Path) -> dict[str, dict[str, Any]]:
     return indexed
 
 
+def select_cases(
+    cases: list[dict[str, Any]], requested_ids: list[str] | None
+) -> list[dict[str, Any]]:
+    if not requested_ids:
+        return cases
+    requested = set(requested_ids)
+    known = {case["case_id"] for case in cases}
+    unknown = sorted(requested - known)
+    if unknown:
+        raise AdapterError(f"Unknown requested case ids: {', '.join(unknown)}")
+    return [case for case in cases if case["case_id"] in requested]
+
+
 def run_in_batches(
     items: list[Any],
     *,
@@ -428,6 +441,7 @@ def execute_run(args: argparse.Namespace) -> Path:
     cases = manifest["cases"]
     if set(request_by_id) != {case["case_id"] for case in cases}:
         raise AdapterError("requests.jsonl does not exactly match the manifest")
+    selected_cases = select_cases(cases, args.case_id)
     if args.dry_run:
         command = execution_command(
             claude_command=args.claude_command,
@@ -437,7 +451,12 @@ def execute_run(args: argparse.Namespace) -> Path:
             case_budget_usd=args.max_case_cost_usd,
             max_turns=args.max_turns,
         )
-        print(json.dumps(command, ensure_ascii=False))
+        print(
+            json.dumps(
+                {"command": command, "case_ids": [case["case_id"] for case in selected_cases]},
+                ensure_ascii=False,
+            )
+        )
         return run_dir / "adapter" / "claude-code.responses.jsonl"
     if not auth_available(args.claude_command):
         raise AdapterError("Claude Code is not authenticated; run `claude auth login` and retry")
@@ -455,7 +474,7 @@ def execute_run(args: argparse.Namespace) -> Path:
             if response[field] != manifest[field]:
                 raise AdapterError(f"Checkpoint {case_id} has mismatched {field}")
 
-    pending = [case for case in cases if case["case_id"] not in completed]
+    pending = [case for case in selected_cases if case["case_id"] not in completed]
     completed_cost = sum(float(row.get("cost_usd", 0.0)) for row in completed.values())
     with tempfile.TemporaryDirectory(prefix="geoai-claude-adapter-") as temporary:
         temporary_root = Path(temporary)
@@ -500,7 +519,7 @@ def execute_run(args: argparse.Namespace) -> Path:
             worker=worker,
             on_batch=save_batch,
         )
-    if len(completed) != len(cases):
+    if not args.case_id and len(completed) != len(cases):
         raise AdapterError(f"Incomplete execution: {len(completed)}/{len(cases)} responses")
     return checkpoint_path
 
@@ -615,6 +634,7 @@ def judge_run(args: argparse.Namespace) -> Path:
     cases = manifest["cases"]
     if set(responses) != {case["case_id"] for case in cases}:
         raise AdapterError("Ingested raw responses do not exactly match the manifest")
+    selected_cases = select_cases(cases, args.case_id)
     if args.dry_run:
         command = judge_command(
             claude_command=args.claude_command,
@@ -622,7 +642,12 @@ def judge_run(args: argparse.Namespace) -> Path:
             schema=judgment_schema(cases[0]),
             case_budget_usd=args.max_case_cost_usd,
         )
-        print(json.dumps(command, ensure_ascii=False))
+        print(
+            json.dumps(
+                {"command": command, "case_ids": [case["case_id"] for case in selected_cases]},
+                ensure_ascii=False,
+            )
+        )
         return run_dir / "adapter" / "judgments.json"
     if not auth_available(args.claude_command):
         raise AdapterError("Claude Code is not authenticated; run `claude auth login` and retry")
@@ -630,7 +655,7 @@ def judge_run(args: argparse.Namespace) -> Path:
     adapter_dir = run_dir / "adapter"
     partial_path = adapter_dir / "judgments.partial.jsonl"
     completed = read_partial_rows(partial_path)
-    pending = [case for case in cases if case["case_id"] not in completed]
+    pending = [case for case in selected_cases if case["case_id"] not in completed]
     completed_cost = sum(float(row.get("_cost_usd", 0.0)) for row in completed.values())
     with tempfile.TemporaryDirectory(prefix="geoai-claude-judge-") as temporary:
         workspace = Path(temporary)
@@ -666,6 +691,8 @@ def judge_run(args: argparse.Namespace) -> Path:
             worker=worker,
             on_batch=save_batch,
         )
+    if args.case_id:
+        return partial_path
     if len(completed) != len(cases):
         raise AdapterError(f"Incomplete judging: {len(completed)}/{len(cases)} judgments")
     clean_judgments = []
@@ -702,6 +729,11 @@ def add_shared_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--max-case-cost-usd", type=float, required=True)
     parser.add_argument("--max-total-cost-usd", type=float, required=True)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--case-id",
+        action="append",
+        help="Run only this manifest case; repeat for a bounded pilot. Later full runs resume.",
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
