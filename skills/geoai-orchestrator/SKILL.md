@@ -17,7 +17,7 @@ metadata:
 
 # GeoAI Orchestrator
 
-The hub of a 17-skill geospatial module. Activate it for routing or pipeline
+The hub of an 18-skill geospatial module. Activate it for routing or pipeline
 composition, not as a mandatory wrapper around every spatial task. Its job:
 (1) diagnose what kind of
 spatial problem the user actually has, (2) design the pipeline across
@@ -42,6 +42,7 @@ the module-wide invariants that every stage must obey.
 | Multi-temporal comparison, land cover change, trends | `change-detection` |
 | Map design, choropleths, web maps, publication figures | `cartography-geoviz` |
 | Spatial SQL, PostGIS, large-scale spatial joins | `postgis-spatial-sql` |
+| Local ArcGIS Pro, ArcPy, `.aprx`, or `.gdb` execution | `arcgis-pro-automation` |
 
 Invoke every selected specialist with the `Skill` tool before executing its
 stage; listing a specialist in a plan is not a completed handoff. For

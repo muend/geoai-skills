@@ -118,6 +118,64 @@ def test_execute_one_preserves_error_trace_cost_and_activation(
     assert response["error"] == "error_max_budget_usd; Claude Code exited with 1"
 
 
+def test_execute_one_classifies_success_subtype_api_error(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    events = [
+        {
+            "type": "assistant",
+            "message": {
+                "content": [
+                    {
+                        "type": "tool_use",
+                        "name": "Skill",
+                        "input": {"skill": "geoai:arcgis-pro-automation"},
+                    }
+                ]
+            },
+        },
+        {
+            "type": "result",
+            "subtype": "success",
+            "is_error": True,
+            "terminal_reason": "api_error",
+            "api_error_status": 429,
+            "duration_ms": 1200,
+            "total_cost_usd": 0.0,
+            "usage": {"input_tokens": 0, "output_tokens": 0},
+            "result": "You've hit your session limit",
+        },
+    ]
+    process = subprocess.CompletedProcess(
+        args=["claude"],
+        returncode=1,
+        stdout="".join(json.dumps(event) + "\n" for event in events),
+        stderr="",
+    )
+    monkeypatch.setattr(
+        "tools.adapters.claude_code.run_process", lambda *args, **kwargs: process
+    )
+
+    response = execute_one(
+        request={"prompt": "Inspect this geodatabase"},
+        case={"case_id": "arcgis-pro-automation/preflight", "case_sha256": "b" * 64},
+        manifest={
+            "runtime": "claude-code-2.1.214",
+            "model": "claude-sonnet-5",
+            "condition": "skills-enabled",
+            "cases": [{"skill": "arcgis-pro-automation"}],
+        },
+        command=["claude"],
+        workspace=tmp_path,
+        trace_dir=tmp_path / "traces",
+        timeout_seconds=30,
+    )
+
+    assert response["activated_skills"] == ["arcgis-pro-automation"]
+    assert response["response"] == "You've hit your session limit"
+    assert response["error"] == "api_error_http_429; Claude Code exited with 1"
+
+
 def test_execution_commands_isolate_enabled_and_disabled_conditions(tmp_path: Path) -> None:
     enabled = execution_command(
         claude_command="claude",

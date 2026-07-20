@@ -97,6 +97,8 @@ closed if behavior judgments are present.
 
 - Results apply only to the declared runtime/model pair. Triggering can differ across
   Claude, Codex, Cursor, versions, and model families.
+- The later `arcgis-pro-automation` skill and its evals are outside this frozen
+  17-skill suite and receive no headline metric until a new exact pair is published.
 - The model identifier is the adapter-reported runtime value. If a provider remaps
   an alias, the identifier alone cannot prove the underlying snapshot.
 - The public eval prompts are a regression suite, not an independently hidden test

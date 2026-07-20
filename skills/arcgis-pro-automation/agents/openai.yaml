@@ -1,0 +1,4 @@
+interface:
+  display_name: "ArcGIS Pro Automation"
+  short_description: "Automate guarded ArcGIS Pro and ArcPy work"
+  default_prompt: "Use $arcgis-pro-automation to plan and execute this ArcGIS Pro workflow safely."

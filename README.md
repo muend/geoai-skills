@@ -4,11 +4,11 @@
 
 **Turn your AI agent into a senior geospatial data scientist.**
 
-17 [Agent Skills](https://agentskills.io) covering the full geospatial data science lifecycle — from STAC search and PostGIS to kriging uncertainty and U-Net inference — designed around documented silent failure modes in spatial computing.
+18 [Agent Skills](https://agentskills.io) covering the full geospatial data science lifecycle — from STAC search and PostGIS to kriging uncertainty, U-Net inference, and guarded ArcGIS Pro automation — designed around documented silent failure modes in spatial computing.
 
 [![validate-skills](https://github.com/muend/geoai-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/muend/geoai-skills/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Skills](https://img.shields.io/badge/skills-17-brightgreen.svg)](#whats-inside)
+[![Skills](https://img.shields.io/badge/skills-18-brightgreen.svg)](#whats-inside)
 [![Routing: 100% precision, 92.9% recall](https://img.shields.io/badge/routing-100%25_precision_%7C_92.9%25_recall-2ea44f.svg)](BENCHMARK.md)
 [![Spec](https://img.shields.io/badge/agentskills.io-compliant-orange.svg)](https://agentskills.io)
 
@@ -48,6 +48,7 @@ These skills encode the discipline that separates a practitioner from an API cal
         └── movement-trajectory ─┴── network-accessibility-analysis
 
   cross-cutting: ml-experiment-standards · swe-devops-standards
+  proprietary execution: arcgis-pro-automation (guarded local ArcPy)
 ```
 
 | # | Skill | Covers |
@@ -69,6 +70,7 @@ These skills encode the discipline that separates a practitioner from an API cal
 | 15 | [`postgis-spatial-sql`](skills/postgis-spatial-sql/SKILL.md) | Spatial schema/indexing, predicate correctness, performance playbook, DuckDB Spatial |
 | 16 | [`ml-experiment-standards`](skills/ml-experiment-standards/SKILL.md) | Leakage audits, metric justification, reproducibility skeleton, canonical [spatial CV protocol](skills/ml-experiment-standards/references/spatial-cv-protocol.md) |
 | 17 | [`swe-devops-standards`](skills/swe-devops-standards/SKILL.md) | Production-grade Python defaults, testing, dependency pinning, git/CI practices |
+| 18 | [`arcgis-pro-automation`](skills/arcgis-pro-automation/SKILL.md) | Guarded local ArcGIS Pro/ArcPy execution through [`arcgis-mcp-bridge`](https://github.com/muend/arcgis-mcp-bridge): `.aprx`, `.gdb`, geoprocessing, raster/network/stats, layouts, mutation gates |
 
 ## Installation
 
@@ -79,7 +81,7 @@ These skills encode the discipline that separates a practitioner from an API cal
 /plugin install geoai@geoai-skills
 ```
 
-**Claude.ai / Claude desktop:** upload any skill folder (or zip it as `.skill`) via *Settings → Capabilities → Skills*. Skills install independently — install all 17 for full routing, or cherry-pick.
+**Claude.ai / Claude desktop:** upload any skill folder (or zip it as `.skill`) via *Settings → Capabilities → Skills*. Skills install independently — install all 18 for full routing, or cherry-pick. Real `arcgis-pro-automation` execution additionally requires Windows, licensed ArcGIS Pro, and a configured local `arcgis-mcp-bridge`.
 
 **Any Agent-Skills-compatible runtime:** copy folders from `skills/` into your agent's skills directory. Each skill is self-contained; cross-references degrade gracefully when a referenced skill is absent.
 
@@ -120,7 +122,7 @@ Other things that just work:
 3. **Anti-leakage by default.** Spatial autocorrelation makes random splits fraudulent; one canonical [spatial CV protocol](skills/ml-experiment-standards/references/spatial-cv-protocol.md), referenced everywhere, restated nowhere.
 4. **Tool-pragmatic.** Open Python stack first (GeoPandas, rasterio, xarray, PySAL, PDAL, OSMnx, WhiteboxTools), with routes to PostGIS/DuckDB at scale, Earth Engine for planetary archives, and headless arcpy/PyQGIS for proprietary environments.
 5. **Progressive disclosure.** Descriptions are tuned for reliable triggering; bodies stay lean; long material lives in `references/` and `scripts/` at zero token cost until needed.
-6. **Measured, not assumed.** The suite contains 120 typed routing scenarios across all 17 skills: 84 positive, 36 negative, 27 ambiguous, 41 collision, and 35 artifact-correctness candidates (types may overlap). The frozen Claude Code 2.1.214 / Claude Sonnet 5 baseline records [100% precision, 92.86% recall, and 92.5% route accuracy](BENCHMARK.md), with sanitized case-level evidence and a disabled-skills control. Behavior quality remains explicitly unevaluated until an independent-family judge and manual review are complete.
+6. **Measured, not assumed.** The current source suite contains 131 typed scenarios across 18 skills: 91 positive, 40 negative, 30 ambiguous, 46 collision, and 38 artifact-correctness candidates (types may overlap). The published [100% precision, 92.86% recall, and 92.5% route accuracy](BENCHMARK.md) remains tied to its frozen 17-skill, 120-case Claude Code 2.1.214 / Claude Sonnet 5 suite and disabled-skills control. `arcgis-pro-automation` is not included in that headline until a new exact enabled/disabled pair is published. Behavior quality remains explicitly unevaluated until an independent-family judge and manual review are complete.
 
 ## Repository structure
 
