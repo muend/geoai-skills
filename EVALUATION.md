@@ -194,12 +194,41 @@ python tools/eval_runner.py score \
   --judgments /path/to/judgments.json
 ```
 
+For a routing-scoped run, or a legacy combined manifest that must be published
+without behavior claims, use an empty schema-valid judgment set and opt in
+explicitly:
+
+```bash
+python tools/eval_runner.py score \
+  --routing-only \
+  --run-dir evals/runs/<run-id> \
+  --judgments /path/to/empty-routing-judgments.json
+```
+
+`--routing-only` sets behavior coverage to zero and behavior rates to `null`; it
+does not infer, waive, or fabricate behavior judgments.
+
 The command writes:
 
 - `results/cases.jsonl` — one routing and behavior result per case;
 - `results/metrics.json` — aggregate coverage, routing, behavior, critical-failure, usage, and latency metrics.
 
 Scoring contains no model call, timestamps, random sampling, or hidden heuristic. Given the same manifest, raw responses, and judgments, it emits byte-identical results. Different existing content is refused unless `--force` is explicitly supplied.
+
+To publish an enabled run and its disabled-skills control without exposing raw
+responses or traces:
+
+```bash
+python tools/publish_routing_benchmark.py \
+  --enabled-run evals/runs/<enabled-run-id> \
+  --disabled-run evals/runs/<disabled-run-id> \
+  --output-dir benchmarks/<runtime-model-suite-id>
+```
+
+The publisher recomputes routing aggregates, verifies exact runtime/model/suite
+parity and complete coverage, and emits only sanitized `metrics.json`,
+`per-skill.json`, and `cases.jsonl` evidence. It rejects behavior-scored runs so
+routing and behavior claims cannot be accidentally conflated.
 
 ## Reproducibility checklist
 

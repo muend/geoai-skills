@@ -400,6 +400,7 @@ def score_run(
     *,
     run_dir: Path,
     judgments_path: Path,
+    routing_only: bool = False,
     force: bool = False,
     run_schema_path: Path = RUN_SCHEMA_PATH,
 ) -> Path:
@@ -425,7 +426,7 @@ def score_run(
         raise EvalRunnerError("Judgment suite_sha256 does not match the manifest")
     behavior_cases = (
         []
-        if manifest.get("evaluation_scope", "all") == "routing"
+        if routing_only or manifest.get("evaluation_scope", "all") == "routing"
         else [
             case
             for case in cases
@@ -603,6 +604,11 @@ def build_parser() -> argparse.ArgumentParser:
     score = subparsers.add_parser("score", help="Score cached responses from explicit judgments")
     score.add_argument("--run-dir", type=Path, required=True)
     score.add_argument("--judgments", type=Path, required=True, dest="judgments_path")
+    score.add_argument(
+        "--routing-only",
+        action="store_true",
+        help="Score routing without behavior judgments, including legacy combined runs",
+    )
     score.add_argument("--force", action="store_true", help="Replace different result content")
     return parser
 
@@ -629,6 +635,7 @@ def main(argv: list[str] | None = None) -> int:
             output = score_run(
                 run_dir=args.run_dir,
                 judgments_path=args.judgments_path,
+                routing_only=args.routing_only,
                 force=args.force,
             )
     except (EvalRunnerError, OSError) as exc:

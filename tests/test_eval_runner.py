@@ -127,6 +127,34 @@ def test_prepare_routing_scope_needs_no_behavior_judgments(tmp_path: Path) -> No
     assert metrics["behavior"]["pass_rate"] is None
 
 
+def test_score_routing_only_overrides_combined_run(tmp_path: Path) -> None:
+    run_dir, manifest = prepared_run(tmp_path)
+    response_path = tmp_path / "combined-responses.jsonl"
+    write_jsonl(response_path, perfect_responses(manifest))
+    ingest_responses(run_dir=run_dir, input_path=response_path)
+    judgments = {
+        "schema_version": 1,
+        "suite_sha256": manifest["suite_sha256"],
+        "judge": {"kind": "rule", "name": "no-behavior-judge", "version": "1"},
+        "judgments": [],
+    }
+    judgment_path = tmp_path / "routing-only-judgments.json"
+    judgment_path.write_text(json.dumps(judgments), encoding="utf-8")
+
+    metrics_path = score_run(
+        run_dir=run_dir,
+        judgments_path=judgment_path,
+        routing_only=True,
+    )
+    metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+
+    assert manifest["evaluation_scope"] == "all"
+    assert metrics["routing"]["recall"] == 1.0
+    assert metrics["routing"]["route_accuracy"] == 1.0
+    assert metrics["behavior"]["judged_cases"] == 0
+    assert metrics["behavior"]["pass_rate"] is None
+
+
 def test_prepare_behavior_scope_fails_closed_without_classified_cases(tmp_path: Path) -> None:
     skills_dir = tmp_path / "skills"
     skill = skills_dir / "sample-skill"

@@ -1,0 +1,66 @@
+{
+  "behavior": {
+    "reason": "This release publishes routing evidence only; no behavior judgments are included.",
+    "status": "not_evaluated"
+  },
+  "case_mix": {
+    "case_types": {
+      "ambiguous": 27,
+      "artifact-correctness": 35,
+      "collision": 41,
+      "negative": 36,
+      "positive": 84
+    },
+    "negative": 36,
+    "positive": 84,
+    "total": 120
+  },
+  "conditions": {
+    "skills-disabled": {
+      "any_activation_cases": 0,
+      "errors": 0,
+      "routing": {
+        "accuracy": 0.3,
+        "fn": 84,
+        "fp": 0,
+        "precision": null,
+        "recall": 0.0,
+        "route_accuracy": 0.0,
+        "tn": 36,
+        "tp": 0
+      },
+      "usage": {
+        "cost_usd": 1.0547654000000009,
+        "input_tokens": 240,
+        "latency_ms": 670257,
+        "output_tokens": 42545
+      }
+    },
+    "skills-enabled": {
+      "any_activation_cases": 117,
+      "errors": 1,
+      "routing": {
+        "accuracy": 0.95,
+        "fn": 6,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.9285714285714286,
+        "route_accuracy": 0.925,
+        "tn": 36,
+        "tp": 78
+      },
+      "usage": {
+        "cost_usd": 11.2647719,
+        "input_tokens": 530,
+        "latency_ms": 1961849,
+        "output_tokens": 142620
+      }
+    }
+  },
+  "kind": "routing",
+  "model": "claude-sonnet-5",
+  "runtime": "claude-code-2.1.214",
+  "schema_version": 1,
+  "skills": 17,
+  "suite_sha256": "d45ad2c8263584f21dd500bcd6c4e8cdeeb38ed9cd18205f66a4570224ff8801"
+}
