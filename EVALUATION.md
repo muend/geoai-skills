@@ -186,6 +186,41 @@ python tools/adapters/claude_code.py judge \
 
 The judge receives rubric text only after execution. Its structured output contains decisions and evidence by array position; the adapter restores exact manifest criterion text, so the model cannot rewrite the scoring standard. Model judgments remain reviewable evidence, not ground truth. Prefer a judge from a different model family than the executor. Label same-family results preliminary, never use them as headline evidence, and disclose judge provider, model, family, prompt/schema version, retries, and missing/error cases. Manually review every critical case, every execution error, and a stratified sample of at least 20% of the remainder before publishing metrics.
 
+For an independent-family judgment through the Google Gemini REST API, set the
+key in `GEMINI_API_KEY` and run a bounded pilot first:
+
+```bash
+python tools/adapters/gemini_api.py judge \
+  --run-dir evals/runs/<run-id> \
+  --judge-model <exact-model-id> \
+  --requests-per-minute <current-model-rpm> \
+  --max-requests 5 \
+  --case-id <case-id-1> \
+  --case-id <case-id-2> \
+  --acknowledge-external-data-use
+```
+
+Repeat without `--case-id` only after the calibration gate passes, setting
+`--max-requests` to the number of still-pending cases. Check the active model
+limits in AI Studio before every run; RPM, TPM, and RPD limits vary by model and
+project. The adapter spaces calls at the declared RPM, performs no automatic
+retries, stops before the invocation request cap, records the requested model
+and provider-returned `modelVersion`, and fails if that version changes within a
+run. A dry run needs neither a key nor the external-data acknowledgement.
+
+The acknowledgement is intentionally mandatory for real calls. Only public or
+sanitized prompts, responses, artifacts, and criteria may be sent to an
+external judge. The API key is transmitted in the `x-goog-api-key` header and
+is never written to the request body, URL, checkpoint, metrics, or local trace.
+Provider responses and resumable partial judgments remain below a
+model-and-prompt-version namespace in the ignored `evals/runs/` directory, so
+different judge configurations cannot overwrite or resume from one another.
+Review Google's official
+[structured-output](https://ai.google.dev/gemini-api/docs/structured-output),
+[generateContent](https://ai.google.dev/api/generate-content), and
+[rate-limit](https://ai.google.dev/gemini-api/docs/rate-limits) documentation
+before choosing a model or quota cap.
+
 ## 4. Score deterministically
 
 ```bash

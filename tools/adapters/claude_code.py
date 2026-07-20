@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Run and judge GeoAI Skills evaluations through Claude Code."""
+
 from __future__ import annotations
 
 import argparse
@@ -29,6 +30,11 @@ from tools.eval_runner import (  # noqa: E402
     pretty_json,
     validate_instance,
 )
+from tools.adapters.judge_contract import (  # noqa: E402
+    judgment_prompt,
+    judgment_schema,
+    restore_judgment,
+)
 
 RUN_SCHEMA_PATH = ROOT / "evals" / "run-schema.json"
 ADAPTER_VERSION = "2"
@@ -53,7 +59,9 @@ def atomic_write(path: Path, content: str) -> None:
 def load_manifest(run_dir: Path) -> tuple[dict[str, Any], dict[str, Any]]:
     run_schema = load_json(RUN_SCHEMA_PATH)
     manifest = load_json(run_dir / "manifest.json")
-    validate_instance(contract_validator(run_schema, "manifest"), manifest, label="manifest")
+    validate_instance(
+        contract_validator(run_schema, "manifest"), manifest, label="manifest"
+    )
     return manifest, run_schema
 
 
@@ -62,7 +70,11 @@ def normalize_skill_reference(value: Any, known_skills: set[str]) -> str | None:
         return None
     candidate = value.strip().lstrip("/")
     for skill in known_skills:
-        if candidate == skill or candidate.endswith(f":{skill}") or candidate.endswith(f"/{skill}"):
+        if (
+            candidate == skill
+            or candidate.endswith(f":{skill}")
+            or candidate.endswith(f"/{skill}")
+        ):
             return skill
     return None
 
@@ -108,7 +120,9 @@ def parse_usage(result: dict[str, Any]) -> dict[str, int]:
             if not isinstance(entry, dict):
                 continue
             input_tokens += int(entry.get("inputTokens", entry.get("input_tokens", 0)))
-            output_tokens += int(entry.get("outputTokens", entry.get("output_tokens", 0)))
+            output_tokens += int(
+                entry.get("outputTokens", entry.get("output_tokens", 0))
+            )
         return {"input_tokens": input_tokens, "output_tokens": output_tokens}
     return {"input_tokens": 0, "output_tokens": 0}
 
@@ -144,7 +158,9 @@ def parse_stream_trace(
         try:
             event = json.loads(line)
         except json.JSONDecodeError as exc:
-            raise AdapterError(f"Invalid Claude stream JSON at line {line_number}: {exc}") from exc
+            raise AdapterError(
+                f"Invalid Claude stream JSON at line {line_number}: {exc}"
+            ) from exc
         events.append(event)
     if not events:
         raise AdapterError("Claude Code returned an empty stream")
@@ -213,7 +229,9 @@ def safe_workspace_path(workspace: Path, relative_path: str) -> Path:
     try:
         target.relative_to(workspace.resolve())
     except ValueError as exc:
-        raise AdapterError(f"Workspace path escapes case root: {relative_path}") from exc
+        raise AdapterError(
+            f"Workspace path escapes case root: {relative_path}"
+        ) from exc
     return target
 
 
@@ -229,7 +247,9 @@ def stage_case_workspace(
         try:
             source.relative_to(repository_root.resolve())
         except ValueError as exc:
-            raise AdapterError(f"Fixture escapes repository root: {fixture['source_path']}") from exc
+            raise AdapterError(
+                f"Fixture escapes repository root: {fixture['source_path']}"
+            ) from exc
         if not source.is_file():
             raise AdapterError(f"Missing fixture: {fixture['source_path']}")
         content = source.read_bytes()
@@ -250,7 +270,10 @@ def verify_staged_fixtures(case: dict[str, Any], workspace: Path) -> list[str]:
             errors.append(f"fixture removed: {fixture['workspace_path']}")
             continue
         content = path.read_bytes()
-        if len(content) != fixture["size_bytes"] or hashlib.sha256(content).hexdigest() != fixture["sha256"]:
+        if (
+            len(content) != fixture["size_bytes"]
+            or hashlib.sha256(content).hexdigest() != fixture["sha256"]
+        ):
             errors.append(f"fixture modified: {fixture['workspace_path']}")
     return errors
 
@@ -467,18 +490,27 @@ def execute_one(
     trace_dir: Path,
     timeout_seconds: int,
 ) -> dict[str, Any]:
-    process = run_process(command, prompt=request["prompt"], cwd=workspace, timeout_seconds=timeout_seconds)
+    process = run_process(
+        command,
+        prompt=request["prompt"],
+        cwd=workspace,
+        timeout_seconds=timeout_seconds,
+    )
     trace = process.stdout
     trace_path = trace_dir / f"{case['case_sha256']}.jsonl"
     atomic_write(trace_path, trace)
     try:
-        parsed = parse_stream_trace(trace, known_skills={item["skill"] for item in manifest["cases"]})
+        parsed = parse_stream_trace(
+            trace, known_skills={item["skill"] for item in manifest["cases"]}
+        )
     except AdapterError as exc:
         detail = process.stderr.strip() if process.returncode != 0 else ""
         if not detail and process.returncode != 0:
             detail = f"Claude Code exited with {process.returncode}"
         message = "; ".join(item for item in (detail, str(exc)) if item)
-        return response_from_failure(manifest=manifest, case_id=case["case_id"], message=message)
+        return response_from_failure(
+            manifest=manifest, case_id=case["case_id"], message=message
+        )
     response = {
         "schema_version": 1,
         "case_id": case["case_id"],
@@ -497,7 +529,9 @@ def execute_one(
     if parsed["error"]:
         errors.append(parsed["error"])
     if process.returncode != 0:
-        errors.append(process.stderr.strip() or f"Claude Code exited with {process.returncode}")
+        errors.append(
+            process.stderr.strip() or f"Claude Code exited with {process.returncode}"
+        )
     errors.extend(verify_staged_fixtures(case, workspace))
     if errors:
         response["error"] = "; ".join(dict.fromkeys(errors))[:2000]
@@ -568,20 +602,27 @@ def execute_run(args: argparse.Namespace) -> Path:
             claude_command=args.claude_command,
             model=manifest["model"],
             condition=manifest["condition"],
-            plugin_dir=Path("<blind-plugin>") if manifest["condition"] == "skills-enabled" else None,
+            plugin_dir=Path("<blind-plugin>")
+            if manifest["condition"] == "skills-enabled"
+            else None,
             case_budget_usd=args.max_case_cost_usd,
             max_turns=args.max_turns,
             tool_profile=sample_tool_profile,
         )
         print(
             json.dumps(
-                {"command": command, "case_ids": [case["case_id"] for case in selected_cases]},
+                {
+                    "command": command,
+                    "case_ids": [case["case_id"] for case in selected_cases],
+                },
                 ensure_ascii=False,
             )
         )
         return run_dir / "adapter" / "claude-code.responses.jsonl"
     if not auth_available(args.claude_command):
-        raise AdapterError("Claude Code is not authenticated; run `claude auth login` and retry")
+        raise AdapterError(
+            "Claude Code is not authenticated; run `claude auth login` and retry"
+        )
 
     adapter_dir = run_dir / "adapter"
     checkpoint_path = adapter_dir / "claude-code.responses.jsonl"
@@ -604,7 +645,10 @@ def execute_run(args: argparse.Namespace) -> Path:
         workspace_root.mkdir()
         plugin_dir = None
         if manifest["condition"] == "skills-enabled":
-            plugin_dir = stage_blind_plugin(args.plugin_dir.resolve(), temporary_root / "plugin")
+            plugin_dir = stage_blind_plugin(
+                args.plugin_dir.resolve(), temporary_root / "plugin"
+            )
+
         def worker(case: dict[str, Any]) -> dict[str, Any]:
             workspace = workspace_root / case["case_sha256"]
             stage_case_workspace(case, workspace)
@@ -629,9 +673,15 @@ def execute_run(args: argparse.Namespace) -> Path:
 
         def save_batch(results: list[dict[str, Any]]) -> None:
             for response in results:
-                validate_instance(validator, response, label=f"response[{response['case_id']}]")
+                validate_instance(
+                    validator, response, label=f"response[{response['case_id']}]"
+                )
                 completed[response["case_id"]] = response
-            ordered = [completed[case["case_id"]] for case in cases if case["case_id"] in completed]
+            ordered = [
+                completed[case["case_id"]]
+                for case in cases
+                if case["case_id"] in completed
+            ]
             atomic_write(checkpoint_path, jsonl_text(ordered))
             print(f"responses {len(completed)}/{len(cases)}", file=sys.stderr)
 
@@ -644,68 +694,10 @@ def execute_run(args: argparse.Namespace) -> Path:
             on_batch=save_batch,
         )
     if not args.case_id and len(completed) != len(cases):
-        raise AdapterError(f"Incomplete execution: {len(completed)}/{len(cases)} responses")
+        raise AdapterError(
+            f"Incomplete execution: {len(completed)}/{len(cases)} responses"
+        )
     return checkpoint_path
-
-
-def judgment_schema(case: dict[str, Any]) -> dict[str, Any]:
-    expected_count = len(case["expected_behavior"])
-    forbidden_count = len(case["forbidden_behavior"])
-    return {
-        "type": "object",
-        "additionalProperties": False,
-        "required": ["expected", "forbidden", "critical_failure", "notes"],
-        "properties": {
-            "expected": {
-                "type": "array",
-                "minItems": expected_count,
-                "maxItems": expected_count,
-                "items": {
-                    "type": "object",
-                    "additionalProperties": False,
-                    "required": ["met", "evidence"],
-                    "properties": {"met": {"type": "boolean"}, "evidence": {"type": "string"}},
-                },
-            },
-            "forbidden": {
-                "type": "array",
-                "minItems": forbidden_count,
-                "maxItems": forbidden_count,
-                "items": {
-                    "type": "object",
-                    "additionalProperties": False,
-                    "required": ["observed", "evidence"],
-                    "properties": {
-                        "observed": {"type": "boolean"},
-                        "evidence": {"type": "string"},
-                    },
-                },
-            },
-            "critical_failure": {"type": "boolean"},
-            "notes": {"type": "string"},
-        },
-    }
-
-
-def judgment_prompt(case: dict[str, Any], response: dict[str, Any]) -> str:
-    payload = {
-        "user_prompt": case["prompt"],
-        "assistant_response": response["response"],
-        "response_error": response.get("error"),
-        "behavior_class": case.get("behavior_class", "advisory"),
-        "declared_fixtures": case.get("fixtures", []),
-        "expected_artifacts": case.get("expected_artifacts", []),
-        "observed_artifacts": response.get("artifacts", []),
-        "case_is_critical": case["critical"],
-        "expected_behavior_in_order": case["expected_behavior"],
-        "forbidden_behavior_in_order": case["forbidden_behavior"],
-        "instructions": (
-            "Return one expected entry per expected criterion and one forbidden entry per forbidden "
-            "criterion, preserving order. critical_failure is true only for a severe spatial safety or "
-            "validity failure, or when a response error prevents a critical case from being answered."
-        ),
-    }
-    return pretty_json(payload)
 
 
 def judge_one(
@@ -726,39 +718,21 @@ def judge_one(
     trace_path = trace_dir / f"{case['case_sha256']}.json"
     atomic_write(trace_path, process.stdout)
     if process.returncode != 0:
-        raise AdapterError(process.stderr.strip() or f"Claude judge exited with {process.returncode}")
+        raise AdapterError(
+            process.stderr.strip() or f"Claude judge exited with {process.returncode}"
+        )
     parsed, outer = parse_json_result(process.stdout)
-    expected = parsed.get("expected", [])
-    forbidden = parsed.get("forbidden", [])
-    if len(expected) != len(case["expected_behavior"]) or len(forbidden) != len(
-        case["forbidden_behavior"]
-    ):
-        raise AdapterError(f"Judge returned wrong criterion count for {case['case_id']}")
-    judgment = {
-        "case_id": case["case_id"],
-        "expected_behavior": [
-            {"criterion": criterion, "met": check["met"], "evidence": check["evidence"]}
-            for criterion, check in zip(case["expected_behavior"], expected, strict=True)
-        ],
-        "forbidden_behavior": [
-            {
-                "criterion": criterion,
-                "observed": check["observed"],
-                "evidence": check["evidence"],
-            }
-            for criterion, check in zip(case["forbidden_behavior"], forbidden, strict=True)
-        ],
-        "critical_failure": parsed["critical_failure"],
-        "notes": parsed["notes"],
-        "_cost_usd": float(outer.get("total_cost_usd", 0.0) or 0.0),
-    }
+    judgment = restore_judgment(case, parsed)
+    judgment["_cost_usd"] = float(outer.get("total_cost_usd", 0.0) or 0.0)
     return judgment
 
 
 def judge_run(args: argparse.Namespace) -> Path:
     run_dir = args.run_dir.resolve()
     manifest, run_schema = load_manifest(run_dir)
-    responses = {row["case_id"]: row for row in load_jsonl(run_dir / "raw" / "responses.jsonl")}
+    responses = {
+        row["case_id"]: row for row in load_jsonl(run_dir / "raw" / "responses.jsonl")
+    }
     if manifest.get("evaluation_scope", "all") == "routing":
         raise AdapterError("Routing-only manifests do not require criterion judging")
     cases = [
@@ -780,13 +754,18 @@ def judge_run(args: argparse.Namespace) -> Path:
         )
         print(
             json.dumps(
-                {"command": command, "case_ids": [case["case_id"] for case in selected_cases]},
+                {
+                    "command": command,
+                    "case_ids": [case["case_id"] for case in selected_cases],
+                },
                 ensure_ascii=False,
             )
         )
         return run_dir / "adapter" / "judgments.json"
     if not auth_available(args.claude_command):
-        raise AdapterError("Claude Code is not authenticated; run `claude auth login` and retry")
+        raise AdapterError(
+            "Claude Code is not authenticated; run `claude auth login` and retry"
+        )
 
     adapter_dir = run_dir / "adapter"
     partial_path = adapter_dir / "judgments.partial.jsonl"
@@ -815,7 +794,11 @@ def judge_run(args: argparse.Namespace) -> Path:
         def save_batch(results: list[dict[str, Any]]) -> None:
             for judgment in results:
                 completed[judgment["case_id"]] = judgment
-            ordered = [completed[case["case_id"]] for case in cases if case["case_id"] in completed]
+            ordered = [
+                completed[case["case_id"]]
+                for case in cases
+                if case["case_id"] in completed
+            ]
             atomic_write(partial_path, jsonl_text(ordered))
             print(f"judgments {len(completed)}/{len(cases)}", file=sys.stderr)
 
@@ -830,7 +813,9 @@ def judge_run(args: argparse.Namespace) -> Path:
     if args.case_id:
         return partial_path
     if len(completed) != len(cases):
-        raise AdapterError(f"Incomplete judging: {len(completed)}/{len(cases)} judgments")
+        raise AdapterError(
+            f"Incomplete judging: {len(completed)}/{len(cases)} judgments"
+        )
     clean_judgments = []
     for case in cases:
         judgment = dict(completed[case["case_id"]])
@@ -851,7 +836,9 @@ def judge_run(args: argparse.Namespace) -> Path:
         "adapter_version": ADAPTER_VERSION,
         "judge_model": args.judge_model,
         "cases": len(cases),
-        "total_cost_usd": sum(float(row.get("_cost_usd", 0.0)) for row in completed.values()),
+        "total_cost_usd": sum(
+            float(row.get("_cost_usd", 0.0)) for row in completed.values()
+        ),
     }
     atomic_write(adapter_dir / "judge-metrics.json", pretty_json(metrics))
     return output_path
@@ -875,12 +862,16 @@ def add_shared_arguments(parser: argparse.ArgumentParser) -> None:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
-    execute = subparsers.add_parser("execute", help="Run blind prompts and capture Skill traces")
+    execute = subparsers.add_parser(
+        "execute", help="Run blind prompts and capture Skill traces"
+    )
     add_shared_arguments(execute)
     execute.add_argument("--plugin-dir", type=Path, default=ROOT)
     execute.add_argument("--max-turns", type=int, default=4)
 
-    judge = subparsers.add_parser("judge", help="Judge cached responses criterion by criterion")
+    judge = subparsers.add_parser(
+        "judge", help="Judge cached responses criterion by criterion"
+    )
     add_shared_arguments(judge)
     judge.add_argument("--judge-model", required=True)
     return parser
