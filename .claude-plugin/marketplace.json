@@ -5,7 +5,7 @@
     {
       "name": "geoai",
       "source": "./",
-      "description": "Turn your agent into a senior geospatial data scientist: 17 skills for the full GeoAI lifecycle with spatial failure modes designed out."
+      "description": "Turn your agent into a senior geospatial data scientist: 18 skills for the full GeoAI lifecycle, including guarded ArcGIS Pro automation, with spatial failure modes designed out."
     }
   ]
 }

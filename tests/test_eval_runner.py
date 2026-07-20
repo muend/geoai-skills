@@ -84,7 +84,8 @@ def test_prepare_is_stable_and_requests_are_blind(tmp_path: Path) -> None:
     )
 
     assert repeated == run_dir
-    assert len(manifest["cases"]) == 120
+    assert len(manifest["cases"]) == len(load_suite()[0])
+    assert len(manifest["cases"]) >= 120
     requests = [
         json.loads(line)
         for line in (run_dir / "requests.jsonl").read_text(encoding="utf-8").splitlines()

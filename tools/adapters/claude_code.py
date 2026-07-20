@@ -100,7 +100,6 @@ def parse_usage(result: dict[str, Any]) -> dict[str, int]:
         output_tokens = usage.get("output_tokens", usage.get("outputTokens", 0))
         if isinstance(input_tokens, int) and isinstance(output_tokens, int):
             return {"input_tokens": input_tokens, "output_tokens": output_tokens}
-
     model_usage = result.get("modelUsage", result.get("model_usage", {}))
     if isinstance(model_usage, dict):
         input_tokens = 0
@@ -112,6 +111,25 @@ def parse_usage(result: dict[str, Any]) -> dict[str, int]:
             output_tokens += int(entry.get("outputTokens", entry.get("output_tokens", 0)))
         return {"input_tokens": input_tokens, "output_tokens": output_tokens}
     return {"input_tokens": 0, "output_tokens": 0}
+
+
+def terminal_error(result: dict[str, Any]) -> str | None:
+    """Return a fail-closed terminal error label for Claude result events."""
+    subtype = result.get("subtype")
+    if not result.get("is_error") and subtype in (None, "success"):
+        return None
+    error = result.get("error")
+    if error:
+        return str(error)
+    terminal_reason = result.get("terminal_reason")
+    api_status = result.get("api_error_status")
+    if terminal_reason == "api_error" and api_status:
+        return f"api_error_http_{api_status}"
+    if terminal_reason:
+        return str(terminal_reason)
+    if subtype not in (None, "success"):
+        return str(subtype)
+    return "Claude Code error"
 
 
 def parse_stream_trace(
@@ -145,9 +163,7 @@ def parse_stream_trace(
     response = result.get("result", "")
     if not isinstance(response, str):
         response = canonical_json(response)
-    error = None
-    if result.get("is_error") or result.get("subtype") not in (None, "success"):
-        error = str(result.get("error") or result.get("subtype") or "Claude Code error")
+    error = terminal_error(result)
     return {
         "response": response,
         "activated_skills": sorted(activated),
@@ -163,8 +179,9 @@ def parse_json_result(output: str) -> tuple[Any, dict[str, Any]]:
         outer = json.loads(output)
     except json.JSONDecodeError as exc:
         raise AdapterError(f"Claude Code returned invalid JSON: {exc}") from exc
-    if outer.get("is_error") or outer.get("subtype") not in (None, "success"):
-        raise AdapterError(str(outer.get("error") or outer.get("subtype") or "Claude Code error"))
+    error = terminal_error(outer)
+    if error:
+        raise AdapterError(error)
     result = outer.get("result")
     if isinstance(result, str):
         try:

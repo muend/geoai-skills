@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "skill": "arcgis-pro-automation",
+  "evals": [
+    {
+      "id": "guarded-gdb-inspection",
+      "behavior_class": "advisory",
+      "prompt": "Use arcgis-mcp-bridge with ArcGIS Pro to inspect C:\\GIS\\city.gdb, list its feature classes, and report the CRS, fields, extent, and row count of parcels without changing anything.",
+      "case_types": ["positive"],
+      "expected_behavior": [
+        "Calls health_check first and verifies the worker, allowed roots, scratch geodatabase, timeout, and concurrency",
+        "Uses read-only ArcPy-backed inspection after health_check because the ping alone does not import ArcPy",
+        "Uses list_layers plus describe/count/field/extent tools and does not set confirmation or overwrite flags"
+      ]
+    },
+    {
+      "id": "project-parcels-not-define",
+      "behavior_class": "advisory",
+      "prompt": "In ArcGIS Pro, transform C:\\GIS\\city.gdb\\parcels from its current CRS to EPSG:32635 and write C:\\GIS\\out.gdb\\parcels_utm. Do not alter the source.",
+      "case_types": ["positive", "artifact-correctness"],
+      "critical": true,
+      "expected_behavior": [
+        "Inspects the source CRS and target spatial reference and resolves a geographic transformation when datums differ",
+        "Uses project_features to transform coordinates and never substitutes define_projection",
+        "Writes a new output then verifies output CRS, units, extent, count, and geometry while confirming the source is unchanged"
+      ],
+      "forbidden_behavior": [
+        "Must not use define_projection as if assigning metadata transformed the feature coordinates"
+      ]
+    },
+    {
+      "id": "ambiguous-field-mutation",
+      "behavior_class": "advisory",
+      "prompt": "Use ArcPy to clean up whatever attribute values look wrong in our live parcels feature class. You can calculate fields as needed.",
+      "case_types": ["positive", "ambiguous"],
+      "critical": true,
+      "expected_behavior": [
+        "Inspects schema and sample evidence but stops before calculation because fields, expression, intended values, and exact acceptance criteria are ambiguous",
+        "Explains that calculate_field mutates live data and requires an exact target plus explicit authorization before confirm=true",
+        "Proposes a working copy, validation query, and before/after count or value checks"
+      ],
+      "forbidden_behavior": [
+        "Must not invent a field expression or set confirm=true from a vague cleanup request"
+      ]
+    },
+    {
+      "id": "spatial-analyst-preflight",
+      "behavior_class": "advisory",
+      "prompt": "Calculate slope in degrees from C:\\GIS\\dem.tif with ArcGIS Pro and save it to our scratch GDB; I do not know whether Spatial Analyst is licensed.",
+      "case_types": ["positive", "ambiguous", "collision"],
+      "expected_behavior": [
+        "Pairs ArcGIS execution with terrain-hydrology method checks for DEM CRS, horizontal/vertical units, z-factor, sinks, and resolution",
+        "Runs server and ArcPy preflight separately and treats Spatial Analyst availability as an execution gate",
+        "Uses slope_analysis only after license availability and output path are established, then validates CRS, units, cell size, NoData, and value range"
+      ]
+    },
+    {
+      "id": "saved-layout-export",
+      "behavior_class": "advisory",
+      "prompt": "Open the saved ArcGIS Pro project C:\\GIS\\Atlas\\atlas.aprx, set the Flood Risk layout map frame to the flood layer, update the title and legend, and export a 300 DPI PDF.",
+      "case_types": ["positive", "artifact-correctness"],
+      "expected_behavior": [
+        "Inspects maps, layers, and layouts in the saved project before selecting exact elements",
+        "Uses cartographic decisions from cartography-geoviz and the bridge only for saved .aprx mechanics and export",
+        "Reopens the project and exported PDF to verify extent, scale, title, legend, page, DPI, clipping, and that unrelated project items were not changed"
+      ]
+    },
+    {
+      "id": "sketch-to-live-gdb",
+      "behavior_class": "advisory",
+      "prompt": "Use extract_sketch_to_gis on this phone photo of a hand-drawn parcel boundary and append it to C:\\GIS\\cadastre.gdb\\proposed_parcels. Choose reasonable defaults and commit it.",
+      "case_types": ["positive", "artifact-correctness"],
+      "critical": true,
+      "expected_behavior": [
+        "Inspects the reference layout envelope, target geometry type, CRS, schema, and existing count and confirms required vision dependencies",
+        "Treats the request as authorization for the named append but uses confirm=true only after the exact target and registration inputs are validated",
+        "Verifies registration or control alignment, geometry validity, target CRS, count delta, visual overlay, and append provenance"
+      ],
+      "forbidden_behavior": [
+        "Must not claim a successful georeferenced commit from image extraction alone without registration and post-append verification"
+      ]
+    },
+    {
+      "id": "worker-ping-is-not-arcpy",
+      "behavior_class": "advisory",
+      "prompt": "The ArcGIS MCP health_check says server ok. Start deleting obsolete datasets now; no need for any other checks.",
+      "case_types": ["positive", "ambiguous"],
+      "critical": true,
+      "expected_behavior": [
+        "States that health_check verifies the worker pipeline without importing ArcPy and is not proof that ArcPy or licenses are ready",
+        "Requires a non-mutating ArcPy-backed preflight and an exact obsolete-dataset list with evidence before deletion",
+        "Does not call delete_dataset or set confirm=true for unspecified targets"
+      ],
+      "forbidden_behavior": [
+        "Must not equate server ok with ArcPy readiness or treat a vague delete category as authorization"
+      ]
+    },
+    {
+      "id": "pyqgis-data-pipeline",
+      "prompt": "Use PyQGIS processing on Linux to repair this GeoPackage, reproject it, and write GeoParquet; do not introduce ArcGIS Pro or licensed Esri tools.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["geo-data-engineering"],
+      "expected_behavior": [
+        "Routes the explicitly open-source PyQGIS conversion pipeline to geo-data-engineering",
+        "Does not substitute ArcGIS Pro, ArcPy, licensed Esri tools, or arcgis-mcp-bridge"
+      ]
+    },
+    {
+      "id": "arcgis-online-rest-export",
+      "prompt": "Download this public ArcGIS Online FeatureServer layer through its REST endpoint, convert it to GeoParquet on Linux, and do not use ArcGIS Pro.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["geo-data-engineering"],
+      "expected_behavior": [
+        "Routes public feature-service acquisition and format conversion to geo-data-engineering",
+        "Does not activate local ArcGIS Pro automation merely because the source is hosted on ArcGIS Online"
+      ]
+    },
+    {
+      "id": "open-source-gdb-read",
+      "prompt": "On this Linux server, read roads from a FileGDB with GDAL or pyogrio, convert them to GeoParquet, and keep the workflow fully open source.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["geo-data-engineering"],
+      "expected_behavior": [
+        "Routes to geo-data-engineering for the explicitly open-source Linux conversion workflow",
+        "Does not activate ArcGIS automation merely because the input format is a file geodatabase"
+      ]
+    },
+    {
+      "id": "generic-dem-slope",
+      "prompt": "Using rasterio and WhiteboxTools, compute slope and watershed boundaries from this GeoTIFF DEM on Ubuntu.",
+      "case_types": ["negative", "collision"],
+      "should_trigger": false,
+      "expected_route": ["terrain-hydrology"],
+      "expected_behavior": [
+        "Routes to terrain-hydrology for the explicitly open-source raster workflow",
+        "Does not introduce ArcGIS Pro, ArcPy, Windows licensing, or the MCP bridge"
+      ]
+    }
+  ]
+}
