@@ -31,5 +31,9 @@ required before the first stable release.
   guardrails, including bounded `--case-id` pilots that resume into full runs.
   Error traces retain their actual cost, usage, and activation evidence, and
   the evaluation guide discloses Claude Code's terminal-turn budget overrun.
+- Independent Google Gemini REST judge adapter with strict structured output,
+  exact provider model-version capture, explicit external-data acknowledgement,
+  bounded request/RPM controls, no automatic retries, ignored local traces, and
+  resumable criterion-preserving checkpoints shared with the Claude judge.
 - Repo tooling: `tools/validate_skills.py` frontmatter/structure linter,
   GitHub Actions CI, plugin marketplace manifest.
