@@ -9,6 +9,7 @@
 [![validate-skills](https://github.com/muend/geoai-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/muend/geoai-skills/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Skills](https://img.shields.io/badge/skills-17-brightgreen.svg)](#whats-inside)
+[![Routing: 100% precision, 92.9% recall](https://img.shields.io/badge/routing-100%25_precision_%7C_92.9%25_recall-2ea44f.svg)](BENCHMARK.md)
 [![Spec](https://img.shields.io/badge/agentskills.io-compliant-orange.svg)](https://agentskills.io)
 
 ---
@@ -119,7 +120,7 @@ Other things that just work:
 3. **Anti-leakage by default.** Spatial autocorrelation makes random splits fraudulent; one canonical [spatial CV protocol](skills/ml-experiment-standards/references/spatial-cv-protocol.md), referenced everywhere, restated nowhere.
 4. **Tool-pragmatic.** Open Python stack first (GeoPandas, rasterio, xarray, PySAL, PDAL, OSMnx, WhiteboxTools), with routes to PostGIS/DuckDB at scale, Earth Engine for planetary archives, and headless arcpy/PyQGIS for proprietary environments.
 5. **Progressive disclosure.** Descriptions are tuned for reliable triggering; bodies stay lean; long material lives in `references/` and `scripts/` at zero token cost until needed.
-6. **Measured, not assumed.** The suite contains 120 typed routing scenarios across all 17 skills: 84 positive, 36 negative, 27 ambiguous, 41 collision, and 35 artifact-correctness candidates (types may overlap). The [provider-neutral evaluation harness](EVALUATION.md) separates routing-only prompts from explicitly answerable behavior cases, stages content-addressed fixtures in isolated workspaces, caches raw outputs, and emits deterministic machine-readable metrics. No runtime or behavior baseline is claimed until its raw evidence and exact configuration are publishable. Illustrative failure modes live in [CASE_STUDIES.md](CASE_STUDIES.md) until reproducible real-world evidence is available.
+6. **Measured, not assumed.** The suite contains 120 typed routing scenarios across all 17 skills: 84 positive, 36 negative, 27 ambiguous, 41 collision, and 35 artifact-correctness candidates (types may overlap). The frozen Claude Code 2.1.214 / Claude Sonnet 5 baseline records [100% precision, 92.86% recall, and 92.5% route accuracy](BENCHMARK.md), with sanitized case-level evidence and a disabled-skills control. Behavior quality remains explicitly unevaluated until an independent-family judge and manual review are complete.
 
 ## Repository structure
 
@@ -133,9 +134,12 @@ geoai-skills/
 ├── tools/validate_skills.py  # spec linter (runs in CI)
 ├── tools/validate_evals.py   # strict, versioned eval schema validation
 ├── tools/eval_runner.py      # deterministic prepare → ingest → score harness
+├── tools/publish_routing_benchmark.py # sanitized, recomputable public evidence
 ├── tools/adapters/           # optional runtime and judge adapters
+├── benchmarks/               # immutable runtime/model evidence packages
 ├── evals/schema.json         # shared JSON Schema for all skill evals
 ├── evals/run-schema.json     # manifests, responses, judgments, and results
+├── BENCHMARK.md              # current result card, definitions, and limitations
 ├── EVALUATION.md             # adapter-neutral benchmark protocol
 ├── .claude-plugin/           # marketplace + plugin manifests
 └── CASE_STUDIES.md           # reproducible or clearly labeled failure cases
