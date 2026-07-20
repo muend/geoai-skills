@@ -14,6 +14,7 @@
     },
     {
       "id": "osm-acquisition",
+      "behavior_class": "advisory",
       "prompt": "Get all schools and hospitals for a metropolitan area from OpenStreetMap.",
       "case_types": ["positive"],
       "expected_behavior": [
@@ -23,6 +24,7 @@
     },
     {
       "id": "scale-strategy",
+      "behavior_class": "advisory",
       "prompt": "I need to spatially join 40 million building footprints to census blocks. GeoPandas crashes.",
       "case_types": ["positive", "ambiguous"],
       "expected_behavior": [
@@ -32,6 +34,7 @@
     },
     {
       "id": "crs-loss-audit",
+      "behavior_class": "advisory",
       "prompt": "Audit this conversion pipeline: it reads a shapefile, writes CSV coordinates, reconstructs geometry, and exports GeoParquet with no CRS metadata.",
       "case_types": ["positive", "artifact-correctness"],
       "critical": true,

@@ -38,6 +38,7 @@ def main() -> int:
     case_count = 0
     category_counts: Counter[str] = Counter()
     critical_skills: set[str] = set()
+    behavior_counts: Counter[str] = Counter()
 
     skill_folders = sorted(path for path in SKILLS.iterdir() if path.is_dir())
     skill_names = {folder.name for folder in skill_folders}
@@ -79,6 +80,8 @@ def main() -> int:
             case_id = case.get("id", "<unknown>")
             case_types = set(case.get("case_types", []))
             category_counts.update(case_types)
+            behavior_class = case.get("behavior_class", "routing-only")
+            behavior_counts[behavior_class] += 1
             if case.get("critical") is True:
                 critical_skills.add(folder.name)
             should_trigger = case.get("should_trigger", True)
@@ -109,6 +112,57 @@ def main() -> int:
                 errors.append(
                     f"{relative(eval_path)}:{case_id}: negative case cannot route to its own skill"
                 )
+            fixture_paths = [
+                fixture.get("workspace_path")
+                for fixture in case.get("fixtures", [])
+                if isinstance(fixture, dict)
+            ]
+            if len(fixture_paths) != len(set(fixture_paths)):
+                errors.append(
+                    f"{relative(eval_path)}:{case_id}: duplicate fixture workspace paths"
+                )
+            for fixture in case.get("fixtures", []):
+                if not isinstance(fixture, dict) or not isinstance(fixture.get("source"), str):
+                    continue
+                source = (eval_path.parent / fixture["source"]).resolve()
+                try:
+                    source.relative_to((eval_path.parent / "fixtures").resolve())
+                except ValueError:
+                    errors.append(
+                        f"{relative(eval_path)}:{case_id}: fixture escapes fixture root"
+                    )
+                    continue
+                if not source.is_file():
+                    errors.append(
+                        f"{relative(eval_path)}:{case_id}: missing fixture {fixture['source']}"
+                    )
+                if fixture.get("workspace_path") not in case.get("prompt", ""):
+                    errors.append(
+                        f"{relative(eval_path)}:{case_id}: prompt must name staged fixture "
+                        f"{fixture.get('workspace_path')}"
+                    )
+            artifact_paths = [
+                artifact.get("path")
+                for artifact in case.get("expected_artifacts", [])
+                if isinstance(artifact, dict)
+            ]
+            if len(artifact_paths) != len(set(artifact_paths)):
+                errors.append(
+                    f"{relative(eval_path)}:{case_id}: duplicate expected artifact paths"
+                )
+            overlap = sorted(set(fixture_paths) & set(artifact_paths))
+            if overlap:
+                errors.append(
+                    f"{relative(eval_path)}:{case_id}: fixture/output path overlap: "
+                    + ", ".join(overlap)
+                )
+            if behavior_class == "artifact-producing":
+                for artifact_path in artifact_paths:
+                    if artifact_path not in case.get("prompt", ""):
+                        errors.append(
+                            f"{relative(eval_path)}:{case_id}: prompt must name output artifact "
+                            f"{artifact_path}"
+                        )
 
     if case_count < MIN_SUITE_CASES:
         errors.append(f"evaluation suite requires at least {MIN_SUITE_CASES} cases, found {case_count}")
@@ -132,6 +186,11 @@ def main() -> int:
         f"{case_count} cases, {len(errors)} errors\n"
         f"Types: "
         + ", ".join(f"{name}={category_counts[name]}" for name in CATEGORY_MINIMUMS)
+        + "\nBehavior: "
+        + ", ".join(
+            f"{name}={behavior_counts[name]}"
+            for name in ("routing-only", "advisory", "fixture-backed", "artifact-producing")
+        )
     )
     return 1 if errors else 0
 

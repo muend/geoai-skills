@@ -4,6 +4,7 @@
   "evals": [
     {
       "id": "ndvi-request",
+      "behavior_class": "advisory",
       "prompt": "Compute NDVI for my study area from Sentinel-2 for last summer.",
       "case_types": ["positive"],
       "expected_behavior": [
@@ -14,6 +15,7 @@
     },
     {
       "id": "mixed-level-trap",
+      "behavior_class": "advisory",
       "prompt": "Compare vegetation between this 2018 L1C scene and this 2025 L2A scene.",
       "case_types": ["positive", "artifact-correctness"],
       "critical": true,
@@ -44,6 +46,7 @@
     },
     {
       "id": "vague-imagery-analysis",
+      "behavior_class": "advisory",
       "prompt": "Use satellite imagery to assess vegetation condition, but the sensor, season, scale, and meaning of condition are not specified.",
       "case_types": ["positive", "ambiguous"],
       "expected_behavior": [

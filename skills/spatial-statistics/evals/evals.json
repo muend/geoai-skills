@@ -4,6 +4,7 @@
   "evals": [
     {
       "id": "hotspot-request",
+      "behavior_class": "advisory",
       "prompt": "Find crime hotspots in these neighborhood polygons.",
       "case_types": ["positive"],
       "expected_behavior": [
@@ -25,6 +26,7 @@
     },
     {
       "id": "maup-awareness",
+      "behavior_class": "advisory",
       "prompt": "Aggregate these points to grid cells and tell me if the pattern is clustered.",
       "case_types": ["positive", "ambiguous"],
       "expected_behavior": [
@@ -34,6 +36,7 @@
     },
     {
       "id": "weights-result-audit",
+      "behavior_class": "advisory",
       "prompt": "Audit this LISA map: row-standardized queen weights were used without reporting islands, p < 0.05 was mapped uncorrected, and raw counts define high-high clusters.",
       "case_types": ["positive", "artifact-correctness"],
       "expected_behavior": [

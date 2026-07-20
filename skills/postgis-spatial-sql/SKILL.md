@@ -1,13 +1,14 @@
 ---
 name: postgis-spatial-sql
 description: >-
-  Spatial SQL at scale with PostGIS (plus DuckDB Spatial and SpatiaLite):
-  spatial schema design, GiST/BRIN indexing, fast spatial joins, KNN,
-  geometry vs geography, and query optimization with EXPLAIN. Use when
-  SQL/database execution is primary: data lives in a spatial database,
-  repeated or concurrent queries are required, or in-memory processing no
-  longer scales. Trigger on PostGIS, ST_* functions, spatial query plans, or
-  database-backed services; use geo-data-engineering for file-based ETL.
+  Invoke whenever spatial SQL or its execution backend is the decision:
+  PostGIS, DuckDB Spatial, SpatiaLite, ST_* functions, recurring spatial
+  joins, concurrent/growing workloads, or large GeoParquet queries. Covers
+  backend selection, schemas, GiST/BRIN indexes, KNN, geometry versus
+  geography, correctness benchmarks, and EXPLAIN optimization. Use PostGIS
+  for managed concurrent services and embedded engines for bounded local
+  analytics when evidence supports that choice. Use geo-data-engineering for
+  acquisition, conversion, and file-based ETL without spatial SQL.
 license: MIT
 metadata:
   version: "0.1.0"

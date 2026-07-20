@@ -1,13 +1,11 @@
 ---
 name: terrain-hydrology
 description: >-
-  Terrain and hydrological analysis from DEMs: slope, aspect, curvature,
-  hillshade, hydrological conditioning (fill/breach), flow direction and
-  accumulation, stream network extraction, watershed/catchment delineation,
-  and viewshed analysis. Use when physical terrain or drainage behavior must
-  be derived from an existing elevation surface. Trigger on watershed,
-  slope, flow accumulation, viewshed, DEM/DTM/DSM, or basin analysis. Use
-  point-cloud-lidar first when the elevation surface must be created from
+  Always invoke for terrain, drainage, viewshed, or visibility analysis from
+  elevation, even before the DEM or correct surface is chosen. Covers
+  DTM-versus-DSM selection, slope, aspect, curvature, hillshade, conditioning,
+  flow direction/accumulation, streams, watersheds, and catchments. Use
+  point-cloud-lidar first only when an elevation surface must be created from
   LiDAR or photogrammetric points.
 license: MIT
 metadata:

@@ -1,13 +1,14 @@
 ---
 name: geoai-orchestrator
 description: >-
-  Route ambiguous or multi-stage geospatial work across specialist skills
-  while enforcing shared CRS, validity, leakage, units, verification, and
-  reproducibility rules. Use when a request spans two or more stages such as
-  acquisition, imagery, modeling, spatial analysis, and map delivery; when the
-  correct specialist is unclear; or when the user asks for an end-to-end
-  spatial pipeline. Do not use as an extra layer for a single, clearly scoped
-  task already handled by one specialist skill.
+  Route genuinely ambiguous or multi-stage geospatial work across specialist
+  skills while enforcing shared CRS, validity, leakage, units, verification,
+  and reproducibility rules. Use for requests spanning multiple stages such as
+  acquisition, imagery, modeling, analysis, and map delivery, or for an
+  explicit end-to-end pipeline. Never invoke for one domain merely because a
+  parameter is unclear. Code implementation/review, backend or platform
+  choice, and production-readiness review are direct specialist tasks. Do not
+  add this skill as a layer around one specialist.
 license: MIT
 metadata:
   version: "0.1.0"
@@ -42,9 +43,10 @@ the module-wide invariants that every stage must obey.
 | Map design, choropleths, web maps, publication figures | `cartography-geoviz` |
 | Spatial SQL, PostGIS, large-scale spatial joins | `postgis-spatial-sql` |
 
-Read the specialist skill's SKILL.md before executing its stage. For
-cross-cutting method standards (leakage, metrics, reproducibility) apply
-`ml-experiment-standards` and `swe-devops-standards`.
+Invoke every selected specialist with the `Skill` tool before executing its
+stage; listing a specialist in a plan is not a completed handoff. For
+cross-cutting method standards (leakage, metrics, reproducibility), invoke
+`ml-experiment-standards` and `swe-devops-standards` when their rules apply.
 
 ## Pipeline design protocol
 

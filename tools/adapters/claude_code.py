@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import mimetypes
 import os
 import shutil
 import subprocess
@@ -30,7 +31,8 @@ from tools.eval_runner import (  # noqa: E402
 )
 
 RUN_SCHEMA_PATH = ROOT / "evals" / "run-schema.json"
-ADAPTER_VERSION = "1"
+ADAPTER_VERSION = "2"
+MAX_ARTIFACT_PREVIEW_CHARS = 20_000
 
 
 class AdapterError(RuntimeError):
@@ -189,6 +191,86 @@ def stage_blind_plugin(source: Path, destination: Path) -> Path:
     return destination
 
 
+def safe_workspace_path(workspace: Path, relative_path: str) -> Path:
+    target = (workspace / relative_path).resolve()
+    try:
+        target.relative_to(workspace.resolve())
+    except ValueError as exc:
+        raise AdapterError(f"Workspace path escapes case root: {relative_path}") from exc
+    return target
+
+
+def stage_case_workspace(
+    case: dict[str, Any],
+    workspace: Path,
+    *,
+    repository_root: Path = ROOT,
+) -> None:
+    workspace.mkdir(parents=True, exist_ok=False)
+    for fixture in case.get("fixtures", []):
+        source = (repository_root / fixture["source_path"]).resolve()
+        try:
+            source.relative_to(repository_root.resolve())
+        except ValueError as exc:
+            raise AdapterError(f"Fixture escapes repository root: {fixture['source_path']}") from exc
+        if not source.is_file():
+            raise AdapterError(f"Missing fixture: {fixture['source_path']}")
+        content = source.read_bytes()
+        if hashlib.sha256(content).hexdigest() != fixture["sha256"]:
+            raise AdapterError(f"Fixture hash mismatch: {fixture['source_path']}")
+        if len(content) != fixture["size_bytes"]:
+            raise AdapterError(f"Fixture size mismatch: {fixture['source_path']}")
+        destination = safe_workspace_path(workspace, fixture["workspace_path"])
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(content)
+
+
+def verify_staged_fixtures(case: dict[str, Any], workspace: Path) -> list[str]:
+    errors = []
+    for fixture in case.get("fixtures", []):
+        path = safe_workspace_path(workspace, fixture["workspace_path"])
+        if not path.is_file():
+            errors.append(f"fixture removed: {fixture['workspace_path']}")
+            continue
+        content = path.read_bytes()
+        if len(content) != fixture["size_bytes"] or hashlib.sha256(content).hexdigest() != fixture["sha256"]:
+            errors.append(f"fixture modified: {fixture['workspace_path']}")
+    return errors
+
+
+def is_text_media_type(media_type: str) -> bool:
+    return media_type.startswith("text/") or media_type in {
+        "application/json",
+        "application/geo+json",
+        "application/yaml",
+        "application/x-yaml",
+        "application/xml",
+    }
+
+
+def capture_artifacts(case: dict[str, Any], workspace: Path) -> list[dict[str, Any]]:
+    artifacts = []
+    for expected in case.get("expected_artifacts", []):
+        path = safe_workspace_path(workspace, expected["path"])
+        if not path.is_file():
+            continue
+        content = path.read_bytes()
+        media_type = expected.get("media_type") or mimetypes.guess_type(path.name)[0]
+        media_type = media_type or "application/octet-stream"
+        artifact = {
+            "path": expected["path"],
+            "media_type": media_type,
+            "size_bytes": len(content),
+            "sha256": hashlib.sha256(content).hexdigest(),
+        }
+        if is_text_media_type(media_type):
+            text = content.decode("utf-8", errors="replace")
+            artifact["text_preview"] = text[:MAX_ARTIFACT_PREVIEW_CHARS]
+            artifact["preview_truncated"] = len(text) > MAX_ARTIFACT_PREVIEW_CHARS
+        artifacts.append(artifact)
+    return artifacts
+
+
 def base_claude_command(
     *,
     claude_command: str,
@@ -219,6 +301,7 @@ def execution_command(
     plugin_dir: Path | None,
     case_budget_usd: float,
     max_turns: int,
+    tool_profile: str,
 ) -> list[str]:
     command = base_claude_command(
         claude_command=claude_command,
@@ -226,25 +309,36 @@ def execution_command(
         case_budget_usd=case_budget_usd,
         max_turns=max_turns,
     )
-    command.extend(["--output-format", "stream-json", "--verbose"])
+    non_skill_tools = {
+        "read-only": ["Read"],
+        "workspace-write": ["Read", "Write", "Edit"],
+    }.get(tool_profile)
+    if non_skill_tools is None:
+        raise AdapterError(f"Unknown tool profile: {tool_profile}")
+    tools = (["Skill"] if condition == "skills-enabled" else []) + non_skill_tools
+    command.extend(
+        [
+            "--output-format",
+            "stream-json",
+            "--verbose",
+            "--setting-sources",
+            "project",
+            "--strict-mcp-config",
+            "--mcp-config",
+            '{"mcpServers":{}}',
+            "--tools",
+            ",".join(tools),
+        ]
+    )
     if condition == "skills-enabled":
         if plugin_dir is None:
             raise AdapterError("skills-enabled execution requires a staged plugin")
         command.extend(
             [
-                "--setting-sources",
-                "project",
-                "--strict-mcp-config",
-                "--mcp-config",
-                '{"mcpServers":{}}',
-                "--tools",
-                "Skill,Read",
                 "--plugin-dir",
                 str(plugin_dir),
             ]
         )
-    else:
-        command.extend(["--safe-mode", "--disable-slash-commands", "--tools", ""])
     return command
 
 
@@ -341,6 +435,7 @@ def response_from_failure(
         "activated_skills": [],
         "usage": {"input_tokens": 0, "output_tokens": 0},
         "cost_usd": 0.0,
+        "artifacts": [],
         "error": message[:2000] or "Unknown adapter error",
     }
 
@@ -379,12 +474,14 @@ def execute_one(
         "usage": parsed["usage"],
         "cost_usd": parsed["cost_usd"],
         "trace_sha256": sha256_text(trace),
+        "artifacts": capture_artifacts(case, workspace),
     }
     errors = []
     if parsed["error"]:
         errors.append(parsed["error"])
     if process.returncode != 0:
         errors.append(process.stderr.strip() or f"Claude Code exited with {process.returncode}")
+    errors.extend(verify_staged_fixtures(case, workspace))
     if errors:
         response["error"] = "; ".join(dict.fromkeys(errors))[:2000]
     return response
@@ -449,6 +546,7 @@ def execute_run(args: argparse.Namespace) -> Path:
         raise AdapterError("requests.jsonl does not exactly match the manifest")
     selected_cases = select_cases(cases, args.case_id)
     if args.dry_run:
+        sample_tool_profile = selected_cases[0].get("tool_profile", "read-only")
         command = execution_command(
             claude_command=args.claude_command,
             model=manifest["model"],
@@ -456,6 +554,7 @@ def execute_run(args: argparse.Namespace) -> Path:
             plugin_dir=Path("<blind-plugin>") if manifest["condition"] == "skills-enabled" else None,
             case_budget_usd=args.max_case_cost_usd,
             max_turns=args.max_turns,
+            tool_profile=sample_tool_profile,
         )
         print(
             json.dumps(
@@ -484,21 +583,23 @@ def execute_run(args: argparse.Namespace) -> Path:
     completed_cost = sum(float(row.get("cost_usd", 0.0)) for row in completed.values())
     with tempfile.TemporaryDirectory(prefix="geoai-claude-adapter-") as temporary:
         temporary_root = Path(temporary)
-        workspace = temporary_root / "workspace"
-        workspace.mkdir()
+        workspace_root = temporary_root / "workspaces"
+        workspace_root.mkdir()
         plugin_dir = None
         if manifest["condition"] == "skills-enabled":
             plugin_dir = stage_blind_plugin(args.plugin_dir.resolve(), temporary_root / "plugin")
-        command = execution_command(
-            claude_command=args.claude_command,
-            model=manifest["model"],
-            condition=manifest["condition"],
-            plugin_dir=plugin_dir,
-            case_budget_usd=args.max_case_cost_usd,
-            max_turns=args.max_turns,
-        )
-
         def worker(case: dict[str, Any]) -> dict[str, Any]:
+            workspace = workspace_root / case["case_sha256"]
+            stage_case_workspace(case, workspace)
+            command = execution_command(
+                claude_command=args.claude_command,
+                model=manifest["model"],
+                condition=manifest["condition"],
+                plugin_dir=plugin_dir,
+                case_budget_usd=args.max_case_cost_usd,
+                max_turns=args.max_turns,
+                tool_profile=case.get("tool_profile", "read-only"),
+            )
             return execute_one(
                 request=request_by_id[case["case_id"]],
                 case=case,
@@ -574,6 +675,10 @@ def judgment_prompt(case: dict[str, Any], response: dict[str, Any]) -> str:
         "user_prompt": case["prompt"],
         "assistant_response": response["response"],
         "response_error": response.get("error"),
+        "behavior_class": case.get("behavior_class", "advisory"),
+        "declared_fixtures": case.get("fixtures", []),
+        "expected_artifacts": case.get("expected_artifacts", []),
+        "observed_artifacts": response.get("artifacts", []),
         "case_is_critical": case["critical"],
         "expected_behavior_in_order": case["expected_behavior"],
         "forbidden_behavior_in_order": case["forbidden_behavior"],
@@ -637,7 +742,15 @@ def judge_run(args: argparse.Namespace) -> Path:
     run_dir = args.run_dir.resolve()
     manifest, run_schema = load_manifest(run_dir)
     responses = {row["case_id"]: row for row in load_jsonl(run_dir / "raw" / "responses.jsonl")}
-    cases = manifest["cases"]
+    if manifest.get("evaluation_scope", "all") == "routing":
+        raise AdapterError("Routing-only manifests do not require criterion judging")
+    cases = [
+        case
+        for case in manifest["cases"]
+        if case.get("behavior_class", "advisory") != "routing-only"
+    ]
+    if not cases:
+        raise AdapterError("Manifest has no behavior-evaluable cases")
     if set(responses) != {case["case_id"] for case in cases}:
         raise AdapterError("Ingested raw responses do not exactly match the manifest")
     selected_cases = select_cases(cases, args.case_id)

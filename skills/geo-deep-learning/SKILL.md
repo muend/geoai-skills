@@ -1,15 +1,13 @@
 ---
 name: geo-deep-learning
 description: >-
-  Deep learning on geospatial data: semantic segmentation (U-Net, DeepLab,
-  SegFormer), object detection on aerial/satellite imagery, building/road
-  extraction, land cover mapping, SAR/multispectral inputs, and EO
-  foundation-model fine-tuning. Covers chipping, augmentation, imbalanced
-  losses, spatially-safe validation, and sliding-window inference. Use when
-  training, fine-tuning, or running a neural prediction model is the primary
-  task. Use remote-sensing-analysis for non-neural spectral/classical methods
-  and change-detection when temporal change quantification is the primary
-  deliverable.
+  Invoke before recommending, training, or auditing a neural method for
+  geospatial imagery, including vision transformers, U-Net/DeepLab/SegFormer,
+  object detection, pixel classification, building/road extraction, and EO
+  foundation-model fine-tuning. Also invoke for neural chip-split validity,
+  IoU/accuracy claims, augmentation, imbalanced losses, spatial validation,
+  or sliding-window inference. Use remote-sensing-analysis for non-neural
+  methods and change-detection when temporal change is the deliverable.
 license: MIT
 metadata:
   version: "0.1.0"

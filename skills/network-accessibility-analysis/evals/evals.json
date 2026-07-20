@@ -4,6 +4,7 @@
   "evals": [
     {
       "id": "hospital-access",
+      "behavior_class": "advisory",
       "prompt": "How accessible are hospitals for the residents of this city by public transport?",
       "case_types": ["positive"],
       "expected_behavior": [
@@ -24,6 +25,7 @@
     },
     {
       "id": "od-matrix-scale",
+      "behavior_class": "advisory",
       "prompt": "Compute travel times between 5,000 origins and 3,000 destinations on the street network.",
       "case_types": ["positive", "ambiguous"],
       "expected_behavior": [
@@ -43,6 +45,7 @@
     },
     {
       "id": "unspecified-access-mode",
+      "behavior_class": "advisory",
       "prompt": "Measure access to jobs across the region, but the travel mode, departure time, population groups, and decision threshold are not specified.",
       "case_types": ["positive", "ambiguous"],
       "expected_behavior": [

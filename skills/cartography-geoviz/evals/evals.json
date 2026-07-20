@@ -15,6 +15,7 @@
     },
     {
       "id": "map-series",
+      "behavior_class": "advisory",
       "prompt": "Make maps of the same indicator for 2010, 2015, 2020, 2025 side by side.",
       "case_types": ["positive", "artifact-correctness"],
       "expected_behavior": [
@@ -33,6 +34,7 @@
     },
     {
       "id": "misleading-projection-audit",
+      "behavior_class": "advisory",
       "prompt": "Review this global Web Mercator map that compares forest area by the apparent size of each country.",
       "case_types": ["positive", "artifact-correctness"],
       "expected_behavior": [
@@ -43,6 +45,7 @@
     },
     {
       "id": "underspecified-publication-map",
+      "behavior_class": "advisory",
       "prompt": "Make this spatial dataset into a professional map for stakeholders, but I have not chosen the medium or audience yet.",
       "case_types": ["positive", "ambiguous"],
       "expected_behavior": [

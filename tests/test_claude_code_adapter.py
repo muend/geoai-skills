@@ -8,13 +8,17 @@ import pytest
 
 from tools.adapters.claude_code import (
     AdapterError,
+    capture_artifacts,
     execute_one,
     execution_command,
     judgment_schema,
+    load_manifest,
     parse_json_result,
     parse_stream_trace,
     select_cases,
+    stage_case_workspace,
     stage_blind_plugin,
+    verify_staged_fixtures,
 )
 
 
@@ -122,6 +126,7 @@ def test_execution_commands_isolate_enabled_and_disabled_conditions(tmp_path: Pa
         plugin_dir=tmp_path / "plugin",
         case_budget_usd=0.1,
         max_turns=4,
+        tool_profile="read-only",
     )
     disabled = execution_command(
         claude_command="claude",
@@ -130,15 +135,112 @@ def test_execution_commands_isolate_enabled_and_disabled_conditions(tmp_path: Pa
         plugin_dir=None,
         case_budget_usd=0.1,
         max_turns=4,
+        tool_profile="read-only",
     )
 
     assert "--plugin-dir" in enabled
     assert "Skill,Read" in enabled
     assert "--setting-sources" in enabled
     assert "--safe-mode" not in enabled
-    assert "--safe-mode" in disabled
-    assert "--disable-slash-commands" in disabled
+    assert "Read" in disabled
+    assert "Skill,Read" not in disabled
+    assert "--setting-sources" in disabled
+    assert "--safe-mode" not in disabled
+    assert "--disable-slash-commands" not in disabled
     assert "--plugin-dir" not in disabled
+
+
+def test_workspace_write_profile_preserves_non_skill_tool_parity(tmp_path: Path) -> None:
+    enabled = execution_command(
+        claude_command="claude",
+        model="model-id",
+        condition="skills-enabled",
+        plugin_dir=tmp_path / "plugin",
+        case_budget_usd=0.1,
+        max_turns=4,
+        tool_profile="workspace-write",
+    )
+    disabled = execution_command(
+        claude_command="claude",
+        model="model-id",
+        condition="skills-disabled",
+        plugin_dir=None,
+        case_budget_usd=0.1,
+        max_turns=4,
+        tool_profile="workspace-write",
+    )
+
+    assert "Skill,Read,Write,Edit" in enabled
+    assert "Read,Write,Edit" in disabled
+
+
+def test_stage_workspace_verifies_fixture_and_captures_text_artifact(tmp_path: Path) -> None:
+    fixture = tmp_path / "repo" / "skills" / "sample" / "evals" / "fixtures" / "input.txt"
+    fixture.parent.mkdir(parents=True)
+    fixture.write_text("fixture data", encoding="utf-8")
+    import hashlib
+
+    content = fixture.read_bytes()
+    case = {
+        "fixtures": [
+            {
+                "source_path": "skills/sample/evals/fixtures/input.txt",
+                "workspace_path": "inputs/input.txt",
+                "sha256": hashlib.sha256(content).hexdigest(),
+                "size_bytes": len(content),
+            }
+        ],
+        "expected_artifacts": [
+            {"path": "outputs/result.json", "media_type": "application/json", "required": True}
+        ],
+    }
+    workspace = tmp_path / "workspace"
+    stage_case_workspace(case, workspace, repository_root=tmp_path / "repo")
+    assert (workspace / "inputs" / "input.txt").read_text(encoding="utf-8") == "fixture data"
+
+    output = workspace / "outputs" / "result.json"
+    output.parent.mkdir(parents=True)
+    output.write_text('{"ok":true}', encoding="utf-8")
+    artifacts = capture_artifacts(case, workspace)
+
+    assert artifacts[0]["path"] == "outputs/result.json"
+    assert artifacts[0]["text_preview"] == '{"ok":true}'
+    assert artifacts[0]["preview_truncated"] is False
+    assert verify_staged_fixtures(case, workspace) == []
+
+    (workspace / "inputs" / "input.txt").write_text("changed", encoding="utf-8")
+    assert verify_staged_fixtures(case, workspace) == ["fixture modified: inputs/input.txt"]
+
+
+def test_stage_workspace_rejects_hash_mismatch_and_path_escape(tmp_path: Path) -> None:
+    fixture = tmp_path / "repo" / "fixture.txt"
+    fixture.parent.mkdir()
+    fixture.write_text("data", encoding="utf-8")
+    bad_hash = {
+        "fixtures": [
+            {
+                "source_path": "fixture.txt",
+                "workspace_path": "input.txt",
+                "sha256": "0" * 64,
+                "size_bytes": 4,
+            }
+        ]
+    }
+    with pytest.raises(AdapterError, match="hash mismatch"):
+        stage_case_workspace(bad_hash, tmp_path / "bad-hash", repository_root=tmp_path / "repo")
+
+    escaping = {
+        "fixtures": [
+            {
+                "source_path": "fixture.txt",
+                "workspace_path": "../escape.txt",
+                "sha256": __import__("hashlib").sha256(b"data").hexdigest(),
+                "size_bytes": 4,
+            }
+        ]
+    }
+    with pytest.raises(AdapterError, match="escapes case root"):
+        stage_case_workspace(escaping, tmp_path / "escape", repository_root=tmp_path / "repo")
 
 
 def test_blind_plugin_excludes_eval_labels(tmp_path: Path) -> None:
@@ -201,3 +303,24 @@ def test_select_cases_preserves_manifest_order_and_rejects_unknown() -> None:
 
     with pytest.raises(AdapterError, match="Unknown requested case ids"):
         select_cases(cases, ["skill/missing"])
+
+
+def test_old_manifest_without_behavior_fields_remains_valid(tmp_path: Path) -> None:
+    from tools.eval_runner import prepare_run
+
+    run_dir = prepare_run(
+        runtime="test-runtime",
+        model="test-model",
+        condition="skills-enabled",
+        runs_dir=tmp_path / "runs",
+    )
+    manifest_path = run_dir / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    for case in manifest["cases"]:
+        for field in ("behavior_class", "tool_profile", "fixtures", "expected_artifacts"):
+            case.pop(field)
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    loaded, _ = load_manifest(run_dir)
+
+    assert "behavior_class" not in loaded["cases"][0]

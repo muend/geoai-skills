@@ -1,15 +1,13 @@
 ---
 name: google-earth-engine
 description: >-
-  Google Earth Engine workflows via the Python API: searching/filtering
-  image collections, cloud masking, compositing, reducers and zonal
-  statistics, time series, classification, and exports — at planetary
-  scale without downloading. Use when analysis spans large areas or long
-  archives (Landsat/Sentinel/MODIS/climate collections), or when the user
-  explicitly requests Earth Engine, GEE, ee., geemap, server-side processing,
-  or analysis without downloading. Treat this as an execution-platform skill;
-  combine it with remote-sensing-analysis or change-detection when those
-  skills own the scientific method.
+  Invoke when Earth Engine, GEE, ee., or geemap is named; when work needs its
+  server-side catalog; or when choosing Earth Engine versus local xarray or
+  desktop processing for a large area or long archive. Covers image
+  collections, masking, compositing, reducers, zonal statistics, time series,
+  classification, quota-aware batching, and exports. This is an execution
+  platform skill; combine it with remote-sensing-analysis or change-detection
+  when those skills own the scientific method.
 license: MIT
 metadata:
   version: "0.1.0"

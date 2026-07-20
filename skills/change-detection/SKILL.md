@@ -1,14 +1,14 @@
 ---
 name: change-detection
 description: >-
-  Detect and quantify change from multi-temporal geospatial data:
-  bi-temporal differencing, post-classification comparison, time-series
-  trend/break analysis (BFAST/LandTrendr/CCDC-style), urban growth,
-  deforestation, disaster damage, and vector parcel-change audits. Use for
-  "what changed between then and now" tasks where change magnitude, class
-  transitions, trend, break, or adjusted area is the deliverable. Use
-  remote-sensing-analysis for single-date imagery preparation and combine with
-  google-earth-engine only when GEE is the execution platform.
+  Invoke whenever the primary question is what, where, or how much changed
+  between times, including two-scene comparisons, deforestation, urban growth,
+  disaster damage, and parcel-change audits. Covers bi-temporal differencing,
+  post-classification comparison, adjusted area, and time-series trend/break
+  analysis (BFAST/LandTrendr/CCDC-style). Invoke even when seasons, sensors,
+  or processing levels are not comparable; diagnosing an invalid comparison
+  is part of change analysis. Use remote-sensing-analysis for single-date
+  preparation and add google-earth-engine only when GEE executes the work.
 license: MIT
 metadata:
   version: "0.1.0"

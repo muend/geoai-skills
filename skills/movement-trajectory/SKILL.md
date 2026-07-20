@@ -1,15 +1,14 @@
 ---
 name: movement-trajectory
 description: >-
-  Movement and trajectory analytics from GPS/GNSS tracks: cleaning and
-  filtering fixes, stop and trip detection, map matching to road networks,
-  speed/direction metrics, trajectory aggregation (flows, desire lines),
-  and origin-destination construction. Use for vehicle fleets, human
-  mobility, animal tracking, AIS ship data, or sports tracks. Trigger on
-  GPS points, GPX files, trajectories, "track data", "stop detection",
-  "map matching", or timestamped point sequences per moving object. Use
-  network-accessibility-analysis instead for hypothetical routes,
-  isochrones, or static origin-destination costs without observed tracks.
+  Movement and trajectory analytics from GPS/GNSS tracks: cleaning, stop/trip
+  detection, road-network map matching, speed/direction, flow aggregation,
+  and origin-destination construction. Use for fleets, human mobility, animal
+  tracking, AIS, or sports tracks. Trigger on GPS points, GPX, trajectories,
+  stop detection, map matching, or timestamped positions per moving object.
+  Also invoke for privacy, aggregation, de-identification, or release of
+  individual trajectories. Use network-accessibility-analysis for
+  hypothetical routes, isochrones, or static OD costs without observed tracks.
 license: MIT
 metadata:
   version: "0.1.0"

@@ -60,6 +60,39 @@
           "items": {"type": "string", "minLength": 10}
         },
         "critical": {"type": "boolean"},
+        "behavior_class": {
+          "enum": ["routing-only", "advisory", "fixture-backed", "artifact-producing"]
+        },
+        "tool_profile": {"enum": ["read-only", "workspace-write"]},
+        "fixtures": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["source_path", "workspace_path", "sha256", "size_bytes"],
+            "properties": {
+              "source_path": {"type": "string", "minLength": 1},
+              "workspace_path": {"type": "string", "minLength": 1},
+              "sha256": {"$ref": "#/$defs/sha256"},
+              "size_bytes": {"type": "integer", "minimum": 0}
+            }
+          }
+        },
+        "expected_artifacts": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "media_type", "required"],
+            "properties": {
+              "path": {"type": "string", "minLength": 1},
+              "media_type": {"type": "string", "minLength": 3},
+              "required": {"type": "boolean"}
+            }
+          }
+        },
         "case_sha256": {"$ref": "#/$defs/sha256"},
         "skill_sha256": {"$ref": "#/$defs/sha256"}
       }
@@ -84,6 +117,7 @@
         "runtime": {"type": "string", "minLength": 1, "maxLength": 100},
         "model": {"type": "string", "minLength": 1, "maxLength": 200},
         "condition": {"enum": ["skills-enabled", "skills-disabled"]},
+        "evaluation_scope": {"enum": ["routing", "behavior", "all"]},
         "available_skills": {
           "type": "array",
           "uniqueItems": true,
@@ -143,7 +177,25 @@
         "usage": {"$ref": "#/$defs/usage"},
         "cost_usd": {"type": "number", "minimum": 0},
         "trace_sha256": {"$ref": "#/$defs/sha256"},
+        "artifacts": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/artifact"}
+        },
         "error": {"type": "string", "minLength": 1}
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "media_type", "size_bytes", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "media_type": {"type": "string", "minLength": 3},
+        "size_bytes": {"type": "integer", "minimum": 0},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "text_preview": {"type": "string"},
+        "preview_truncated": {"type": "boolean"}
       }
     },
     "expectedCheck": {
@@ -209,7 +261,7 @@
         },
         "judgments": {
           "type": "array",
-          "minItems": 1,
+          "minItems": 0,
           "items": {"$ref": "#/$defs/judgment"}
         }
       }
@@ -223,6 +275,7 @@
         "routing_outcome",
         "route_match",
         "behavior_pass",
+        "behavior_evaluated",
         "expected_met",
         "expected_total",
         "forbidden_violations",
@@ -234,9 +287,10 @@
         "skill": {"$ref": "#/$defs/skillName"},
         "routing_outcome": {"enum": ["tp", "tn", "fp", "fn"]},
         "route_match": {"type": "boolean"},
-        "behavior_pass": {"type": "boolean"},
+        "behavior_pass": {"type": ["boolean", "null"]},
+        "behavior_evaluated": {"type": "boolean"},
         "expected_met": {"type": "integer", "minimum": 0},
-        "expected_total": {"type": "integer", "minimum": 1},
+        "expected_total": {"type": "integer", "minimum": 0},
         "forbidden_violations": {"type": "integer", "minimum": 0},
         "critical_failure": {"type": "boolean"},
         "response_error": {"type": "boolean"}
