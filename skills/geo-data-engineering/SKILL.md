@@ -1,14 +1,12 @@
 ---
 name: geo-data-engineering
 description: >-
-  Acquire, convert, clean, and pipeline geospatial data at any scale:
-  reading/writing spatial formats (GeoJSON, Shapefile, GeoPackage,
-  GeoParquet, FlatGeobuf, COG, Zarr), downloading open geodata (OSM,
-  Overture, STAC, cadastre APIs), CRS transforms, geocoding, and repeatable
-  spatial ETL. Use when acquisition, format conversion, CRS repair, data
-  quality, scale, or pipeline construction is the primary task. Do not
-  trigger solely because a downstream specialist reads an already
-  analysis-ready spatial file.
+  Always invoke when geospatial data must be acquired, prepared, repaired,
+  scaled, or moved through a repeatable pipeline. Covers open-data/OSM/STAC
+  acquisition, spatial formats, CRS transforms, quality checks, and batch ETL
+  architecture for growing or recurring joins. Invoke alongside PostGIS for
+  database execution and alongside SWE standards when code is delivered. Do
+  not trigger merely because another specialist reads analysis-ready data.
 license: MIT
 metadata:
   version: "0.1.0"

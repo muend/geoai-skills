@@ -5,8 +5,10 @@ description: >-
   uncertainty: variogram modeling, ordinary/universal/regression kriging,
   IDW, and spatially honest cross-validation. Use when unobserved values must
   be estimated from sparse samples such as stations, wells, or soundings.
-  Trigger on "interpolate", "kriging", "variogram", or "IDW". Do not use
-  for point-density heatmaps, zonal aggregation, or raster resampling.
+  Trigger on "interpolate", "kriging", "variogram", or "IDW"; a named
+  interpolation method is sufficient even when the requested surface is
+  described informally as a heatmap. Do not use for point-density heatmaps,
+  zonal aggregation, or raster resampling without value interpolation.
 license: MIT
 metadata:
   version: "0.1.0"

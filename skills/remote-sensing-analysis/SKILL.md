@@ -1,14 +1,13 @@
 ---
 name: remote-sensing-analysis
 description: >-
-  Search, load, correct, and analyze satellite and aerial imagery:
-  Sentinel-1/2, Landsat, MODIS, drone orthomosaics, spectral indices (NDVI,
-  NDWI, NDBI...), cloud masking, compositing, land cover classification, SAR,
-  and time-series extraction. Use for imagery acquisition, preprocessing, and
-  classical remote-sensing analysis. Route change as the primary deliverable
-  to change-detection, neural model training or inference to
-  geo-deep-learning, and planetary or multi-decade server-side execution to
-  google-earth-engine.
+  Always invoke for classical analysis, classification, validation, or
+  comparability of satellite, aerial, or drone imagery. This skill owns
+  sensor/product/processing-level harmonization, including multi-date inputs;
+  add change-detection only after comparable observations exist. Covers
+  spectral indices, masking, compositing, SAR, land cover, and accuracy
+  assessment. Route neural methods to geo-deep-learning and planetary
+  server-side execution to google-earth-engine.
 license: MIT
 metadata:
   version: "0.1.0"

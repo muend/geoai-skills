@@ -1,13 +1,13 @@
 ---
 name: swe-devops-standards
 description: >-
-  Engineering standards for implementing, reviewing, testing, and shipping
-  code produced during geospatial and GeoAI work: Python quality, dependency
-  control, cross-platform paths, CI/CD, automation, and reproducibility. Use
-  when a spatial workflow includes scripts, packages, tests, deployment, or
-  repository changes, especially when the user requests production readiness.
-  Do not trigger for unrelated general software work or for analysis requests
-  that require no code or repository artifact.
+  Always invoke when the requested geospatial or GeoAI deliverable includes
+  code, a script, function, notebook, package, CI/CD, or repository change.
+  Invoke alongside the domain skill for ETL implementations and other
+  production code. Covers review, security, tests, errors, CRS/data
+  invariants, dependencies, cross-platform reproducibility, automation, and
+  shipping. Do not trigger for unrelated software or analysis requiring no
+  code or repository artifact.
 license: MIT
 metadata:
   version: "0.1.0"

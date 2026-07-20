@@ -1,13 +1,12 @@
 ---
 name: spatial-statistics
 description: >-
-  Rigorous spatial statistics: autocorrelation (Moran's I), LISA, hotspots
-  (Getis-Ord Gi*), point patterns (Ripley's K, KDE), spatial regression
-  (lag/error models, GWR/MGWR), and weights design. Use for "is this
-  clustered?", "where are the hotspots?", spatial dependence, or explanatory
-  regression over geographic units. Use ml-experiment-standards for
-  predictive model evaluation and geostatistics-interpolation when estimating
-  a continuous surface from sparse measurements.
+  Always invoke before testing a geographic pattern for clustering, hotspots,
+  dependence, or explanatory regression, even when aggregation or ordinary
+  OLS is proposed as routine. Covers Moran's I, LISA, Getis-Ord Gi*, weights,
+  MAUP and scale sensitivity for areas/grids, residual dependence, and
+  spatial lag/error/GWR/MGWR models. Use ML standards for predictive
+  evaluation and geostatistics for continuous surfaces from sparse samples.
 license: MIT
 metadata:
   version: "0.1.0"

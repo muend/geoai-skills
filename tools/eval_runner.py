@@ -36,6 +36,35 @@ def sha256_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
 
+def repository_relative(path: Path, *, repository_root: Path = ROOT) -> str:
+    try:
+        return path.resolve().relative_to(repository_root.resolve()).as_posix()
+    except ValueError as exc:
+        raise EvalRunnerError(f"Path escapes repository root: {path}") from exc
+
+
+def normalize_fixture(
+    eval_dir: Path,
+    raw_fixture: dict[str, Any],
+    *,
+    repository_root: Path = ROOT,
+) -> dict[str, Any]:
+    source = (eval_dir / raw_fixture["source"]).resolve()
+    try:
+        source.relative_to((eval_dir / "fixtures").resolve())
+    except ValueError as exc:
+        raise EvalRunnerError(f"Fixture escapes fixture root: {raw_fixture['source']}") from exc
+    if not source.is_file():
+        raise EvalRunnerError(f"Missing fixture file: {source}")
+    content = source.read_bytes()
+    return {
+        "source_path": repository_relative(source, repository_root=repository_root),
+        "workspace_path": raw_fixture["workspace_path"],
+        "sha256": sha256_bytes(content),
+        "size_bytes": len(content),
+    }
+
+
 def load_json(path: Path) -> Any:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -178,6 +207,38 @@ def load_suite(
         skill_names.append(skill_dir.name)
         skill_sha256 = sha256_bytes(skill_path.read_bytes())
         for raw_case in data["evals"]:
+            fixtures = [
+                normalize_fixture(
+                    eval_path.parent,
+                    fixture,
+                    repository_root=skills_dir.parent,
+                )
+                for fixture in raw_case.get("fixtures", [])
+            ]
+            workspace_paths = [fixture["workspace_path"] for fixture in fixtures]
+            if len(workspace_paths) != len(set(workspace_paths)):
+                raise EvalRunnerError(
+                    f"{eval_path}:{raw_case['id']}: duplicate fixture workspace paths"
+                )
+            expected_artifacts = [
+                {
+                    "path": artifact["path"],
+                    "media_type": artifact["media_type"],
+                    "required": artifact.get("required", True),
+                }
+                for artifact in raw_case.get("expected_artifacts", [])
+            ]
+            artifact_paths = [artifact["path"] for artifact in expected_artifacts]
+            if len(artifact_paths) != len(set(artifact_paths)):
+                raise EvalRunnerError(
+                    f"{eval_path}:{raw_case['id']}: duplicate expected artifact paths"
+                )
+            overlap = sorted(set(workspace_paths) & set(artifact_paths))
+            if overlap:
+                raise EvalRunnerError(
+                    f"{eval_path}:{raw_case['id']}: fixture/output path overlap: "
+                    + ", ".join(overlap)
+                )
             normalized = {
                 "case_id": f"{skill_dir.name}/{raw_case['id']}",
                 "skill": skill_dir.name,
@@ -189,6 +250,10 @@ def load_suite(
                 "expected_behavior": raw_case["expected_behavior"],
                 "forbidden_behavior": raw_case.get("forbidden_behavior", []),
                 "critical": raw_case.get("critical", False),
+                "behavior_class": raw_case.get("behavior_class", "routing-only"),
+                "tool_profile": raw_case.get("tool_profile", "read-only"),
+                "fixtures": fixtures,
+                "expected_artifacts": expected_artifacts,
                 "skill_sha256": skill_sha256,
             }
             normalized["case_sha256"] = sha256_json(normalized)
@@ -213,6 +278,7 @@ def prepare_run(
     runtime: str,
     model: str,
     condition: str,
+    evaluation_scope: str = "all",
     runs_dir: Path = DEFAULT_RUNS_DIR,
     run_id: str | None = None,
     skills_dir: Path = SKILLS,
@@ -221,10 +287,17 @@ def prepare_run(
 ) -> Path:
     if condition not in {"skills-enabled", "skills-disabled"}:
         raise EvalRunnerError("condition must be skills-enabled or skills-disabled")
-    cases, suite_sha256, skill_names = load_suite(
+    if evaluation_scope not in {"routing", "behavior", "all"}:
+        raise EvalRunnerError("evaluation_scope must be routing, behavior, or all")
+    cases, _, skill_names = load_suite(
         skills_dir=skills_dir,
         eval_schema_path=eval_schema_path,
     )
+    if evaluation_scope == "behavior":
+        cases = [case for case in cases if case["behavior_class"] != "routing-only"]
+        if not cases:
+            raise EvalRunnerError("behavior scope has no explicitly behavior-evaluable cases")
+    suite_sha256 = sha256_json(cases)
     run_schema = load_json(run_schema_path)
     Draft202012Validator.check_schema(run_schema)
     manifest = {
@@ -234,13 +307,14 @@ def prepare_run(
         "runtime": runtime,
         "model": model,
         "condition": condition,
+        "evaluation_scope": evaluation_scope,
         "available_skills": skill_names if condition == "skills-enabled" else [],
         "cases": cases,
     }
     validate_instance(contract_validator(run_schema, "manifest"), manifest, label="manifest")
 
     selected_id = run_id or (
-        f"{slug(runtime)}--{slug(model)}--{condition}--{suite_sha256[:12]}"
+        f"{slug(runtime)}--{slug(model)}--{condition}--{evaluation_scope}--{suite_sha256[:12]}"
     )
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,199}", selected_id):
         raise EvalRunnerError("run-id must be 1-200 safe filename characters")
@@ -349,8 +423,18 @@ def score_run(
     )
     if judgment_set["suite_sha256"] != manifest["suite_sha256"]:
         raise EvalRunnerError("Judgment suite_sha256 does not match the manifest")
+    behavior_cases = (
+        []
+        if manifest.get("evaluation_scope", "all") == "routing"
+        else [
+            case
+            for case in cases
+            if case.get("behavior_class", "advisory") != "routing-only"
+        ]
+    )
+    behavior_ids = [case["case_id"] for case in behavior_cases]
     judgments = validate_unique_exact_ids(
-        judgment_set["judgments"], expected_ids, label="judgments"
+        judgment_set["judgments"], behavior_ids, label="judgments"
     )
 
     case_results = []
@@ -370,13 +454,15 @@ def score_run(
     for case in cases:
         case_id = case["case_id"]
         response = responses[case_id]
-        judgment = judgments[case_id]
-        expected_criteria = [check["criterion"] for check in judgment["expected_behavior"]]
-        forbidden_criteria = [check["criterion"] for check in judgment["forbidden_behavior"]]
-        if expected_criteria != case["expected_behavior"]:
-            raise EvalRunnerError(f"{case_id}: expected_behavior criteria drift from manifest")
-        if forbidden_criteria != case["forbidden_behavior"]:
-            raise EvalRunnerError(f"{case_id}: forbidden_behavior criteria drift from manifest")
+        behavior_evaluated = case_id in judgments
+        judgment = judgments.get(case_id)
+        if judgment is not None:
+            expected_criteria = [check["criterion"] for check in judgment["expected_behavior"]]
+            forbidden_criteria = [check["criterion"] for check in judgment["forbidden_behavior"]]
+            if expected_criteria != case["expected_behavior"]:
+                raise EvalRunnerError(f"{case_id}: expected_behavior criteria drift from manifest")
+            if forbidden_criteria != case["forbidden_behavior"]:
+                raise EvalRunnerError(f"{case_id}: forbidden_behavior criteria drift from manifest")
 
         activated = set(response["activated_skills"])
         target_active = case["skill"] in activated
@@ -391,20 +477,30 @@ def score_run(
         counts[outcome] += 1
         route_matches += int(route_match)
 
-        met = sum(int(check["met"]) for check in judgment["expected_behavior"])
-        violations = sum(int(check["observed"]) for check in judgment["forbidden_behavior"])
+        met = (
+            sum(int(check["met"]) for check in judgment["expected_behavior"])
+            if judgment is not None
+            else 0
+        )
+        expected_total = len(judgment["expected_behavior"]) if judgment is not None else 0
+        violations = (
+            sum(int(check["observed"]) for check in judgment["forbidden_behavior"])
+            if judgment is not None
+            else 0
+        )
         response_error = bool(response.get("error"))
         behavior_pass = (
-            met == len(judgment["expected_behavior"])
+            met == expected_total
             and violations == 0
             and not judgment["critical_failure"]
             and not response_error
-        )
-        behavior_passes += int(behavior_pass)
-        criteria_met += met
-        criteria_total += len(judgment["expected_behavior"])
-        forbidden_violations += violations
-        if case["critical"]:
+        ) if judgment is not None else None
+        behavior_passes += int(bool(behavior_pass))
+        if behavior_evaluated:
+            criteria_met += met
+            criteria_total += expected_total
+            forbidden_violations += violations
+        if case["critical"] and behavior_evaluated:
             critical_evaluated += 1
             critical_failures += int(judgment["critical_failure"] or response_error)
 
@@ -419,10 +515,11 @@ def score_run(
             "routing_outcome": outcome,
             "route_match": route_match,
             "behavior_pass": behavior_pass,
+            "behavior_evaluated": behavior_evaluated,
             "expected_met": met,
-            "expected_total": len(judgment["expected_behavior"]),
+            "expected_total": expected_total,
             "forbidden_violations": violations,
-            "critical_failure": judgment["critical_failure"],
+            "critical_failure": judgment["critical_failure"] if judgment is not None else False,
             "response_error": response_error,
         }
         validate_instance(
@@ -448,8 +545,8 @@ def score_run(
         },
         "behavior": {
             "passed_cases": behavior_passes,
-            "judged_cases": total,
-            "pass_rate": ratio(behavior_passes, total),
+            "judged_cases": len(behavior_cases),
+            "pass_rate": ratio(behavior_passes, len(behavior_cases)),
             "criteria_met": criteria_met,
             "criteria_total": criteria_total,
             "forbidden_violations": forbidden_violations,
@@ -490,6 +587,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     prepare.add_argument("--runs-dir", type=Path, default=DEFAULT_RUNS_DIR)
     prepare.add_argument("--run-id", help="Optional stable run directory name")
+    prepare.add_argument(
+        "--scope",
+        dest="evaluation_scope",
+        choices=("routing", "behavior", "all"),
+        default="all",
+        help="Select all routing cases, only behavior-evaluable cases, or the combined suite",
+    )
 
     ingest = subparsers.add_parser("ingest", help="Validate and cache raw runtime responses")
     ingest.add_argument("--run-dir", type=Path, required=True)
@@ -511,6 +615,7 @@ def main(argv: list[str] | None = None) -> int:
                 runtime=args.runtime,
                 model=args.model,
                 condition=args.condition,
+                evaluation_scope=args.evaluation_scope,
                 runs_dir=args.runs_dir,
                 run_id=args.run_id,
             )

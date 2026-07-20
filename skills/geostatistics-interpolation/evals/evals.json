@@ -4,6 +4,7 @@
   "evals": [
     {
       "id": "rainfall-surface",
+      "behavior_class": "advisory",
       "prompt": "Interpolate annual rainfall from 60 stations into a raster.",
       "case_types": ["positive"],
       "expected_behavior": [
@@ -23,6 +24,7 @@
     },
     {
       "id": "extrapolation-honesty",
+      "behavior_class": "advisory",
       "prompt": "Extend the interpolated surface to the whole province even where we have no stations.",
       "case_types": ["positive", "artifact-correctness"],
       "critical": true,
@@ -43,6 +45,7 @@
     },
     {
       "id": "sparse-data-method-choice",
+      "behavior_class": "advisory",
       "prompt": "I have twelve unevenly distributed soil samples and need a continuous surface; I do not know whether kriging is defensible.",
       "case_types": ["positive", "ambiguous"],
       "expected_behavior": [

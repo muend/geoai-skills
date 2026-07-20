@@ -1,14 +1,12 @@
 ---
 name: ml-experiment-standards
 description: >-
-  Methodological standards for designing, training, and evaluating machine
-  learning experiments: leakage audits, split strategy selection, metric
-  justification, reproducibility, and honest reporting. Use when a task
-  actually trains, validates, tunes, benchmarks, or compares predictive
-  models, including spatial ML and deep learning. Trigger on requests such as
-  "fit a model", "cross-validate", "compare classifiers", or "evaluate this
-  benchmark". Do not trigger for descriptive EDA, classical statistical
-  inference, or spatial statistics that do not include predictive modeling.
+  Always invoke for training, validating, tuning, benchmarking, or claiming
+  readiness of a predictive model. Covers leakage audits, spatial and grouped
+  splits, metrics, reproducibility, and honest reporting. Invoke especially
+  when spatial dependence, split design, or deployment geography is unknown;
+  uncertainty is a reason to use this skill. Do not trigger for descriptive
+  EDA or non-predictive statistical inference.
 license: MIT
 metadata:
   version: "0.1.0"

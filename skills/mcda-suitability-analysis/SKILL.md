@@ -1,13 +1,12 @@
 ---
 name: mcda-suitability-analysis
 description: >-
-  Multi-criteria decision analysis for spatial site selection and
-  suitability mapping: AHP with consistency checking, weighted overlay,
-  criteria standardization, constraint masking, and sensitivity analysis.
-  Use when multiple spatial criteria must become a ranked suitability
-  surface or site shortlist. Trigger on "suitability", "AHP", "weighted
-  overlay", or "criteria weights". Route travel-time service placement and
-  location-allocation to network-accessibility-analysis.
+  Always invoke for spatial suitability, site selection, AHP, criteria
+  weights, or weighted-overlay work, including audits of inconsistent
+  pairwise judgments and requests for only a final map. Covers consistency,
+  standardization, constraints, ranked surfaces, shortlists, and sensitivity.
+  Route travel-time placement and location-allocation to
+  network-accessibility-analysis.
 license: MIT
 metadata:
   version: "0.1.0"

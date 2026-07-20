@@ -4,6 +4,7 @@
   "evals": [
     {
       "id": "geospatial-etl-script",
+      "behavior_class": "advisory",
       "prompt": "Write a production-ready geospatial ETL script that normalizes CRS and exports validated GeoParquet.",
       "case_types": ["positive"],
       "expected_behavior": [
@@ -33,6 +34,7 @@
     },
     {
       "id": "packaging-audit",
+      "behavior_class": "advisory",
       "prompt": "Audit this geospatial Python package: dependencies are unpinned, GDAL errors are swallowed, tests compare only filenames, and CI runs on one operating system.",
       "case_types": ["positive", "artifact-correctness"],
       "expected_behavior": [
@@ -43,6 +45,7 @@
     },
     {
       "id": "prototype-production-boundary",
+      "behavior_class": "advisory",
       "prompt": "Turn this research geoprocessing notebook into a repeatable team workflow, but deployment target, data volume, and service-level expectations are unknown.",
       "case_types": ["positive", "ambiguous"],
       "expected_behavior": [

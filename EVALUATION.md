@@ -21,6 +21,15 @@ The canonical case definitions live beside each skill in `skills/<name>/evals/ev
 
 Every case declares one or more `case_types`: `positive`, `negative`, `ambiguous`, `collision`, or `artifact-correctness`. Exactly one polarity (`positive` or `negative`) is required. CI enforces at least 120 total cases, at least seven per skill, balanced suite-level category floors, valid cross-skill routes, and at least one critical case per skill.
 
+Behavior eligibility is separate from routing polarity. A case may declare:
+
+- `routing-only` — contributes routing metrics but is not judged for behavior;
+- `advisory` — the prompt is self-contained and response text is sufficient evidence;
+- `fixture-backed` — immutable files are declared under `fixtures` and staged by content hash;
+- `artifact-producing` — the runtime receives the `workspace-write` tool profile and must create declared `expected_artifacts`.
+
+Omitted `behavior_class` defaults to `routing-only`. This fail-closed default prevents an underspecified routing prompt from silently lowering or inflating behavior metrics. Fixture sources must live below the skill's `evals/fixtures/` directory, prompts must name their staged workspace paths, and fixture bytes participate in both case and suite hashes. Artifact-producing prompts must name exact output paths; captured artifacts include media type, size, SHA-256, and a bounded text preview when applicable.
+
 Generated local runs live under `evals/runs/` and are ignored by Git. Deliberately reviewed benchmark artifacts can later be copied into a versioned benchmark-results location.
 
 ## 1. Prepare blind requests
@@ -29,7 +38,8 @@ Generated local runs live under `evals/runs/` and are ignored by Git. Deliberate
 python tools/eval_runner.py prepare \
   --runtime codex \
   --model <exact-model-id> \
-  --condition skills-enabled
+  --condition skills-enabled \
+  --scope routing
 ```
 
 The command prints a deterministic run directory. Its name is derived from the runtime, model, condition, and suite hash. Running it again with identical inputs reuses identical files; conflicting content is never silently overwritten.
@@ -41,7 +51,19 @@ It creates:
 
 `requests.jsonl` intentionally excludes expected behavior, forbidden behavior, trigger labels, and expected routes. Give only this blind file to the runtime adapter.
 
-Prepare a second run with `--condition skills-disabled` for a baseline. In that condition the manifest declares no available skills.
+Prepare a second run with `--condition skills-disabled --scope routing` for the routing baseline. In that condition the manifest declares no available skills.
+
+Prepare behavior runs separately after cases have explicit behavior classes:
+
+```bash
+python tools/eval_runner.py prepare \
+  --runtime codex \
+  --model <exact-model-id> \
+  --condition skills-enabled \
+  --scope behavior
+```
+
+`--scope routing` keeps all suite cases and requires no criterion judgments. `--scope behavior` includes only explicitly behavior-evaluable cases and produces its own suite hash. `--scope all` retains the combined, backward-compatible workflow. Never pool routing and behavior metrics across different suite hashes.
 
 ## 2. Execute with any runtime adapter
 
@@ -51,7 +73,7 @@ An adapter reads each request, executes it once under the manifest's declared co
 {"schema_version":1,"case_id":"terrain-hydrology/delineate-watershed","runtime":"codex","model":"<exact-model-id>","condition":"skills-enabled","response":"...","activated_skills":["terrain-hydrology"],"latency_ms":1234,"usage":{"input_tokens":800,"output_tokens":420}}
 ```
 
-The required fields are defined by `#/$defs/response` in `evals/run-schema.json`. `latency_ms`, `usage`, and `error` are optional. `activated_skills` must come from the evaluated suite and must reflect observed activation, not the expected route.
+The required fields are defined by `#/$defs/response` in `evals/run-schema.json`. `latency_ms`, `usage`, `artifacts`, and `error` are optional. `activated_skills` must come from the evaluated suite and must reflect observed activation, not the expected route.
 
 Ingest and cache the complete adapter output:
 
@@ -81,7 +103,8 @@ claude --version
 python tools/eval_runner.py prepare \
   --runtime claude-code-<exact-version> \
   --model <exact-model-id> \
-  --condition skills-enabled
+  --condition skills-enabled \
+  --scope <routing-or-behavior>
 ```
 
 Inspect the command without a model call:
@@ -119,13 +142,15 @@ python tools/eval_runner.py ingest \
   --input evals/runs/<run-id>/adapter/claude-code.responses.jsonl
 ```
 
-For `skills-enabled`, the adapter creates a temporary plugin containing skill runtime assets but no `evals/` folders. It runs from an empty workspace, disables user-level settings and MCP servers, and permits only the `Skill` and `Read` tools. For `skills-disabled`, it enables Claude Code safe mode, disables slash commands, and exposes no tools. Prompts are passed over stdin rather than command-line arguments.
+For `skills-enabled`, the adapter creates a temporary plugin containing skill runtime assets but no `evals/` folders. Every case receives a separate temporary workspace. Declared fixtures are verified by size and SHA-256 before execution, and any mutation or removal is recorded as an execution error. User-level settings and MCP servers are excluded.
+
+Enabled and disabled conditions receive identical non-skill tools; the only declared tool difference is `Skill`. The `read-only` profile exposes `Read`, while `workspace-write` exposes `Read`, `Write`, and `Edit`. The enabled condition adds `Skill` and the blind plugin. Exact expected output paths are captured after execution; arbitrary workspace files are not swept into evidence. Prompts are passed over stdin rather than command-line arguments.
 
 Raw execution traces and partial checkpoints stay under the ignored run directory. Interrupted runs resume from validated completed cases. Claude Code evaluates `--max-budget-usd` at runtime checkpoints, so a terminal in-flight turn can exceed the declared per-case value. The adapter records the actual terminal cost even when Claude exits at the budget guardrail. With multiple workers, the total can additionally exceed the batch limit by the other in-flight cases. Treat both values as guardrails, disclose observed overruns, and obtain approval with an explicit margin rather than describing either value as a hard cap.
 
 ## 3. Judge explicit criteria
 
-Judging may be human, model-assisted, or deterministic rules, but it must produce one criterion-preserving judgment for every case. A judgment set follows `#/$defs/judgmentSet`:
+Judging may be human, model-assisted, or deterministic rules, but it must produce one criterion-preserving judgment for every behavior-eligible case. Routing-only cases require no judgment and carry `behavior_evaluated: false` in case results. A judgment set follows `#/$defs/judgmentSet`:
 
 ```json
 {
@@ -159,7 +184,7 @@ python tools/adapters/claude_code.py judge \
   --max-total-cost-usd <approved-judge-cap>
 ```
 
-The judge receives rubric text only after execution. Its structured output contains decisions and evidence by array position; the adapter restores exact manifest criterion text, so the model cannot rewrite the scoring standard. Model judgments remain reviewable evidence, not ground truth. Manually review all critical failures and a stratified sample before publishing metrics.
+The judge receives rubric text only after execution. Its structured output contains decisions and evidence by array position; the adapter restores exact manifest criterion text, so the model cannot rewrite the scoring standard. Model judgments remain reviewable evidence, not ground truth. Prefer a judge from a different model family than the executor. Label same-family results preliminary, never use them as headline evidence, and disclose judge provider, model, family, prompt/schema version, retries, and missing/error cases. Manually review every critical case, every execution error, and a stratified sample of at least 20% of the remainder before publishing metrics.
 
 ## 4. Score deterministically
 
@@ -180,9 +205,13 @@ Scoring contains no model call, timestamps, random sampling, or hidden heuristic
 
 - [ ] Record the exact runtime and model identifiers.
 - [ ] Keep skills-enabled and skills-disabled runs separate.
+- [ ] Keep non-skill tools identical across enabled and disabled conditions.
 - [ ] Run the blind `requests.jsonl`, never `manifest.json`, through the evaluated model.
+- [ ] Use per-case isolated workspaces and verify every fixture hash before and after execution.
 - [ ] Preserve observed skill activations and raw response text.
+- [ ] Judge only explicitly answerable behavior classes; do not score routing-only prompts as failed behavior.
 - [ ] Use exact manifest criteria when judging.
-- [ ] Review all `critical_failure` decisions manually before publication.
+- [ ] Prefer an independent model family and label any same-family judgment preliminary.
+- [ ] Review every critical/error case and at least 20% of the remaining judgments manually.
 - [ ] Publish suite hash, judge identity, sample size, and missing/error counts with every metric.
 - [ ] Never compare runs whose suite hashes differ without disclosing the suite change.

@@ -1,13 +1,13 @@
 ---
 name: network-accessibility-analysis
 description: >-
-  Street-network and accessibility analysis: routing, isochrones/service
-  areas, OD cost matrices, closest-facility, centrality, and
-  access-to-opportunity metrics (2SFCA and friends). Use for travel time or
-  distance over transport networks — "nearest hospital", "15-minute city",
-  delivery coverage, walkability, or transit equity. Trigger on "route",
-  "isochrone", "service area", or "drive time". Use movement-trajectory
-  for observed GPS tracks and MCDA for suitability without network costs.
+  Always invoke for access to facilities or opportunities by walking,
+  driving, cycling, or public transport, even for a conceptual question with
+  no routing terms or data yet. Covers hospital and service access,
+  transit/GTFS, routes, isochrones, OD matrices, closest facility, 2SFCA,
+  walkability, coverage, and equity. Invoke when Euclidean buffers proxy for
+  network access. Use movement-trajectory for observed tracks and MCDA for
+  suitability without network costs.
 license: MIT
 metadata:
   version: "0.1.0"

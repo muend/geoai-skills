@@ -14,6 +14,7 @@
     },
     {
       "id": "spatial-split-routing",
+      "behavior_class": "advisory",
       "prompt": "Cross-validate my land-price model where each row is a parcel with coordinates.",
       "case_types": ["positive", "collision"],
       "expected_behavior": [
@@ -23,6 +24,7 @@
     },
     {
       "id": "difference-honesty",
+      "behavior_class": "advisory",
       "prompt": "Model B beat model A by 0.4 points of F1. Write up that B is better.",
       "case_types": ["positive", "artifact-correctness"],
       "expected_behavior": [
@@ -32,6 +34,7 @@
     },
     {
       "id": "leakage-pipeline-audit",
+      "behavior_class": "advisory",
       "prompt": "Audit this parcel-risk notebook: imputation and scaling run before the split, nearby parcels appear in train and test, and the best test fold was reported.",
       "case_types": ["positive", "artifact-correctness"],
       "critical": true,

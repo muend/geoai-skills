@@ -1,14 +1,13 @@
 ---
 name: cartography-geoviz
 description: >-
-  Design publication-quality maps and interactive geovisualizations:
-  choropleths, proportional symbols, bivariate maps, flow maps, raster
-  rendering, small multiples, web maps (Folium/MapLibre/Kepler.gl), and
-  static figures. Use when cartographic design or delivery is requested,
-  including classification, color, legends, display projections,
-  interaction, and accessibility. Trigger on "make a map", "choropleth",
-  "web map", or map-review requests. Do not trigger merely because another
-  analysis creates a temporary diagnostic plot.
+  Always invoke before answering any request to create, compare, design, or
+  review a user-facing map, even if the request is terse or underspecified.
+  Covers publication maps, choropleths, map series and small multiples,
+  comparable multi-date panels, proportional/bivariate/flow maps, raster
+  rendering, and interactive web maps. Includes classification, color,
+  legends, projections, accessibility, and large-data aggregation. Do not
+  trigger for a temporary diagnostic plot inside another analysis.
 license: MIT
 metadata:
   version: "0.1.0"

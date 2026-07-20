@@ -83,8 +83,85 @@
           "critical": {
             "type": "boolean",
             "default": false
+          },
+          "behavior_class": {
+            "enum": [
+              "routing-only",
+              "advisory",
+              "fixture-backed",
+              "artifact-producing"
+            ]
+          },
+          "tool_profile": {
+            "enum": ["read-only", "workspace-write"]
+          },
+          "fixtures": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["source", "workspace_path"],
+              "properties": {
+                "source": {
+                  "type": "string",
+                  "pattern": "^fixtures/(?:[A-Za-z0-9._-]+/)*[A-Za-z0-9._-]+$",
+                  "not": {"pattern": "(^|/)\\.\\.(/|$)"}
+                },
+                "workspace_path": {
+                  "type": "string",
+                  "pattern": "^(?:[A-Za-z0-9._-]+/)*[A-Za-z0-9._-]+$",
+                  "not": {"pattern": "(^|/)\\.\\.(/|$)"}
+                }
+              }
+            }
+          },
+          "expected_artifacts": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["path", "media_type"],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "pattern": "^(?:[A-Za-z0-9._-]+/)*[A-Za-z0-9._-]+$",
+                  "not": {"pattern": "(^|/)\\.\\.(/|$)"}
+                },
+                "media_type": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9.+-]+/[a-z0-9.+-]+$"
+                },
+                "required": {
+                  "type": "boolean",
+                  "default": true
+                }
+              }
+            }
           }
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "required": ["behavior_class"],
+              "properties": {"behavior_class": {"const": "fixture-backed"}}
+            },
+            "then": {"required": ["fixtures"]}
+          },
+          {
+            "if": {
+              "required": ["behavior_class"],
+              "properties": {"behavior_class": {"const": "artifact-producing"}}
+            },
+            "then": {
+              "required": ["expected_artifacts", "tool_profile"],
+              "properties": {"tool_profile": {"const": "workspace-write"}}
+            }
+          }
+        ]
       }
     }
   }
