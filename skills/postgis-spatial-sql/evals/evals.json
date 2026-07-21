@@ -10,7 +10,11 @@
       "expected_behavior": [
         "Runs EXPLAIN (ANALYZE, BUFFERS) to check index usage",
         "Applies ST_Subdivide for the big polygons; ensures GiST + same SRID on both sides",
-        "Verifies ST_DWithin usage instead of ST_Distance < x where relevant"
+        "Verifies ST_DWithin usage instead of ST_Distance < x where relevant",
+        "Presents each runnable SQL block as a self-contained statement with consistent CTE and table aliases"
+      ],
+      "forbidden_behavior": [
+        "Must not mix abandoned joins, incomplete aliases, ellipses, or mutually inconsistent fragments into SQL presented as executable"
       ]
     },
     {

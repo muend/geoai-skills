@@ -140,6 +140,10 @@ its own joins — benchmark, don't assume.
    touched — one query kills two classic bug families.
 3. Sample 5 output features rendered over a basemap (QGIS connects
    directly) — numbers can pass while geometries are garbage.
+4. Treat every `sql` fence presented as runnable as a syntax and alias
+   boundary: it must execute top-to-bottom after stated schema assumptions.
+   Put alternatives or pseudocode in separately labeled blocks; never mix an
+   abandoned join, incomplete alias, or ellipsis into executable SQL.
 
 ## Pitfalls checklist
 
@@ -157,5 +161,5 @@ its own joins — benchmark, don't assume.
 - **Decision rules:** use PostGIS for concurrent, repeated, or transactional spatial workloads; use file pipelines or DuckDB Spatial for bounded one-off transformations when a server adds no value.
 - **Verification protocol:** assert SRID and geometry invariants, account for rows at each join, compare indexed plans and timings, sample geometries on a map, and test boundary semantics.
 - **Failure modes:** block release for mixed SRIDs, accidental many-to-many explosion, invalid geometries, non-indexable predicates, geography/geometry unit confusion, or unexplained plan regressions.
-- **Deliverables:** parameterized SQL or migration, indexes and rationale, query plan evidence, row accounting, sample validation, expected schema, performance notes, and rollback guidance.
+- **Deliverables:** self-contained parameterized SQL or migration with consistent CTE/table aliases, indexes and rationale, query plan evidence, row accounting, sample validation, expected schema, performance notes, and rollback guidance.
 - **Source freshness:** consult [the authoritative source registry](references/authoritative-sources.md) for the deployed database and extension versions before selecting functions or plans.
