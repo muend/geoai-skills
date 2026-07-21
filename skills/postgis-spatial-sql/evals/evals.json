@@ -25,7 +25,11 @@
       "critical": true,
       "expected_behavior": [
         "Explains square degrees; proposes projected geometry or geography type",
-        "Recommends typed geometry columns with explicit SRID"
+        "Recommends typed geometry columns with explicit SRID",
+        "Rejects EPSG:3857 or Web Mercator for measurement and keeps materially different SQL alternatives in separately labeled blocks"
+      ],
+      "forbidden_behavior": [
+        "Must not present Web Mercator as an area or length measurement solution, even alongside a later distortion warning"
       ]
     },
     {
@@ -56,6 +60,9 @@
         "Clarifies data volume, concurrency, mutation, latency, and operational requirements",
         "Chooses DuckDB for bounded local analytics or PostGIS for managed concurrent workloads based on evidence",
         "Defines benchmark queries and correctness checks before migration"
+      ],
+      "forbidden_behavior": [
+        "Must not make an unconditional backend recommendation while material workload requirements are unknown or omit the benchmark and correctness gate"
       ]
     },
     {

@@ -30,7 +30,18 @@ API on top, or transactional integrity needs. For single-shot analytical
 scans over GeoParquet, **DuckDB Spatial** is often the fastest
 zero-install path — same SQL mindset, no server.
 
+When requirements are incomplete, do not turn this heuristic into a final
+recommendation. First obtain current and forecast data volume, concurrency,
+delivery and mutation pattern, latency/SLA, serving needs, and operational
+ownership (including backup and recovery). Define representative ingestion,
+join, and read queries for both viable backends; compare runtime and resource
+use only after row counts, join cardinality, SRID, geometry validity, and sample
+outputs agree.
+
 ## Schema fundamentals
+
+This runnable example assumes the data is contained in UTM zone 33N. Replace
+EPSG:32633 with a projected CRS verified for the actual area of interest.
 
 ```sql
 CREATE TABLE parcels (
@@ -38,7 +49,7 @@ CREATE TABLE parcels (
   parcel_no   text NOT NULL,
   landuse     text,
   area_m2     double precision,          -- unit in the name, always
-  geom        geometry(MultiPolygon, 3857) NOT NULL
+  geom        geometry(MultiPolygon, 32633) NOT NULL
 );
 CREATE INDEX parcels_geom_gix ON parcels USING gist (geom);
 ANALYZE parcels;
@@ -53,6 +64,10 @@ ANALYZE parcels;
   extent is global/cross-zone and you want meters without picking a
   projection (slower, smaller function set). Never store in 4326 geometry
   and call `ST_Area` expecting m² — that's square degrees.
+- Never use EPSG:3857/Web Mercator for area or length measurement. When the
+  analysis CRS is not yet known, either use 4326 geography for a geodesic
+  result or stop and select a verified local/equal-area CRS; do not present a
+  known-distorting CRS as a runnable measurement alternative.
 - GiST index on every geometry column, `ANALYZE` after bulk loads; BRIN
   only for huge, spatially-ordered, append-only tables.
 - Load paths: `ogr2ogr -f PostgreSQL`, `shp2pgsql`, or GeoPandas
@@ -111,7 +126,7 @@ FROM zones z JOIN blocks b ON ST_Intersects(z.geom, b.geom)
 GROUP BY z.zone_id;
 
 -- Dissolve with attribute
-SELECT landuse, ST_Multi(ST_Union(geom))::geometry(MultiPolygon, 3857) AS geom
+SELECT landuse, ST_Multi(ST_Union(geom))::geometry(MultiPolygon, 32633) AS geom
 FROM parcels GROUP BY landuse;
 ```
 
@@ -148,6 +163,7 @@ its own joins — benchmark, don't assume.
 ## Pitfalls checklist
 
 - `ST_Area`/`ST_Length` on 4326 geometry (square degrees).
+- EPSG:3857/Web Mercator for area or length measurement (systematic distortion).
 - `ST_Distance < x` instead of `ST_DWithin` (no index).
 - `ST_Transform` in join predicates.
 - Untyped geometry columns with mixed SRIDs.
