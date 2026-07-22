@@ -26,6 +26,9 @@ required before the first stable release.
 - Provider-neutral deterministic evaluation harness with blind request
   manifests, immutable raw-response caching, explicit criterion judgments,
   and machine-readable routing, behavior, critical-failure, and usage metrics.
+- Explicit `clarify`, `deliver`, and `clarify_then_provisional` interaction
+  contracts for behavior cases, mode-stratified results, and a zero-observed-
+  failure critical gate with an exact one-sided 95% upper confidence bound.
 - Resumable Claude Code execution and model-judge adapter with blind plugin
   staging, trace-based skill activation, raw-trace hashes, and mandatory cost
   guardrails, including bounded `--case-id` pilots that resume into full runs.

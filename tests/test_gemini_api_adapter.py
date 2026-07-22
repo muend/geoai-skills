@@ -24,6 +24,7 @@ def sample_case() -> dict[str, Any]:
         "case_sha256": "a" * 64,
         "prompt": "Compute area from EPSG:4326 parcels.",
         "behavior_class": "advisory",
+        "interaction_mode": "deliver",
         "critical": True,
         "expected_behavior": [
             "Rejects direct area computation in angular coordinates",
@@ -93,13 +94,35 @@ def test_request_body_uses_strict_positional_json_schema() -> None:
     assert config["temperature"] == 0
     assert config["responseJsonSchema"]["properties"]["expected"]["minItems"] == 2
     assert config["responseJsonSchema"]["properties"]["forbidden"]["maxItems"] == 1
+    assert '"interaction_mode": "deliver"' in body["contents"][0]["parts"][0]["text"]
     assert "api" not in json.dumps(body).lower()
 
 
 def test_judge_namespace_separates_model_and_prompt_versions() -> None:
     assert judge_namespace("gemini-3.1-flash-lite") == (
-        "gemini-api--gemini-3-1-flash-lite--geoai-behavior-judge-v2"
+        "gemini-api--gemini-3-1-flash-lite--geoai-behavior-judge-v3"
     )
+
+
+@pytest.mark.parametrize(
+    ("mode", "policy_fragment"),
+    [
+        ("clarify", "may stop after asking the necessary questions"),
+        ("deliver", "provide the requested analysis, plan, code, or decision now"),
+        ("clarify_then_provisional", "provide a useful bounded provisional plan"),
+    ],
+)
+def test_judge_request_encodes_frozen_interaction_policy(
+    mode: str, policy_fragment: str
+) -> None:
+    case = sample_case()
+    case["interaction_mode"] = mode
+
+    body = build_request_body(case, sample_response(), max_output_tokens=512)
+    judge_payload = body["contents"][0]["parts"][0]["text"]
+
+    assert f'"interaction_mode": "{mode}"' in judge_payload
+    assert policy_fragment in judge_payload
 
 
 def test_parse_generate_response_preserves_usage_and_model_version() -> None:

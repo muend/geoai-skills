@@ -5,6 +5,7 @@
     {
       "id": "wind-farm-siting",
       "behavior_class": "advisory",
+      "interaction_mode": "deliver",
       "prompt": "Find the best areas for a wind farm using wind speed, slope, grid distance, and protected areas.",
       "case_types": ["positive"],
       "expected_behavior": [
@@ -26,6 +27,7 @@
     {
       "id": "single-map-pushback",
       "behavior_class": "advisory",
+      "interaction_mode": "deliver",
       "prompt": "Just give me one final suitability map, no extras.",
       "case_types": ["positive", "ambiguous"],
       "expected_behavior": [
@@ -36,6 +38,7 @@
     {
       "id": "factor-direction-audit",
       "behavior_class": "advisory",
+      "interaction_mode": "deliver",
       "prompt": "Audit this suitability model: slope and distance-to-roads were both min-max normalized as benefits, protected areas received a small weight, and no sensitivity analysis was run.",
       "case_types": ["positive", "artifact-correctness"],
       "expected_behavior": [

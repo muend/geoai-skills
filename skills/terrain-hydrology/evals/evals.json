@@ -5,6 +5,7 @@
     {
       "id": "watershed-delineation",
       "behavior_class": "advisory",
+      "interaction_mode": "deliver",
       "prompt": "Delineate the watershed upstream of this gauge station from a 30 m DEM.",
       "case_types": ["positive"],
       "expected_behavior": [
@@ -27,6 +28,7 @@
     {
       "id": "viewshed-surface-choice",
       "behavior_class": "advisory",
+      "interaction_mode": "deliver",
       "prompt": "What can be seen from this proposed observation tower site?",
       "case_types": ["positive", "ambiguous"],
       "expected_behavior": [
@@ -48,6 +50,7 @@
     {
       "id": "surface-choice-unclear",
       "behavior_class": "advisory",
+      "interaction_mode": "clarify_then_provisional",
       "prompt": "Derive terrain metrics for urban heat analysis, but I have both a DTM and DSM and the relevant surface is not specified.",
       "case_types": ["positive", "ambiguous"],
       "expected_behavior": [

@@ -5,6 +5,7 @@
     {
       "id": "building-extraction",
       "behavior_class": "advisory",
+      "interaction_mode": "deliver",
       "prompt": "Train a model to extract building footprints from aerial imagery tiles.",
       "case_types": ["positive"],
       "expected_behavior": [
@@ -16,6 +17,7 @@
     {
       "id": "random-split-catch",
       "behavior_class": "advisory",
+      "interaction_mode": "deliver",
       "prompt": "I randomly split my image chips 80/20 and get 0.95 IoU. Ready to publish?",
       "case_types": ["positive", "artifact-correctness"],
       "critical": true,
@@ -46,6 +48,7 @@
     {
       "id": "few-labels-model-choice",
       "behavior_class": "advisory",
+      "interaction_mode": "clarify_then_provisional",
       "prompt": "I have 40 labeled polygons and thousands of unlabeled aerial images. Should I fine-tune a large segmentation model or use a simpler approach?",
       "case_types": ["positive", "ambiguous"],
       "expected_behavior": [

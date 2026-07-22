@@ -5,6 +5,7 @@
     {
       "id": "multi-stage-pipeline",
       "behavior_class": "advisory",
+      "interaction_mode": "deliver",
       "prompt": "I have parcel shapefiles and Sentinel-2 imagery for a coastal region. Build a land suitability model for solar farms.",
       "case_types": ["positive"],
       "expected_behavior": [
@@ -46,6 +47,7 @@
     {
       "id": "ambiguous-project-scope",
       "behavior_class": "advisory",
+      "interaction_mode": "clarify_then_provisional",
       "prompt": "Help us assess flood exposure for new clinics using a DEM, roads, population, and candidate sites; the final decision product is not yet defined.",
       "case_types": ["positive", "ambiguous"],
       "expected_behavior": [
@@ -57,6 +59,7 @@
     {
       "id": "pipeline-plan-audit",
       "behavior_class": "advisory",
+      "interaction_mode": "deliver",
       "prompt": "Audit this GeoAI project plan: it buffers WGS84 points, randomly splits nearby image chips, reports raw changed pixels, and publishes a Web Mercator area map.",
       "case_types": ["positive", "artifact-correctness"],
       "critical": true,

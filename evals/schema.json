@@ -92,6 +92,9 @@
               "artifact-producing"
             ]
           },
+          "interaction_mode": {
+            "enum": ["clarify", "deliver", "clarify_then_provisional"]
+          },
           "tool_profile": {
             "enum": ["read-only", "workspace-write"]
           },
@@ -144,6 +147,24 @@
           }
         },
         "allOf": [
+          {
+            "if": {
+              "required": ["behavior_class"],
+              "properties": {
+                "behavior_class": {"not": {"const": "routing-only"}}
+              }
+            },
+            "then": {"required": ["interaction_mode"]}
+          },
+          {
+            "if": {"required": ["interaction_mode"]},
+            "then": {
+              "required": ["behavior_class"],
+              "properties": {
+                "behavior_class": {"not": {"const": "routing-only"}}
+              }
+            }
+          },
           {
             "if": {
               "required": ["behavior_class"],

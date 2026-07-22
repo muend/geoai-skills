@@ -5,6 +5,7 @@
     {
       "id": "urban-growth",
       "behavior_class": "advisory",
+      "interaction_mode": "deliver",
       "prompt": "Quantify urban expansion between 2015 and 2025 from Landsat.",
       "case_types": ["positive"],
       "expected_behavior": [
@@ -25,6 +26,7 @@
     {
       "id": "season-trap",
       "behavior_class": "advisory",
+      "interaction_mode": "deliver",
       "prompt": "Compare this May scene to this September scene to find deforestation.",
       "case_types": ["positive", "ambiguous"],
       "critical": true,
@@ -46,6 +48,7 @@
     {
       "id": "unclear-temporal-signal",
       "behavior_class": "advisory",
+      "interaction_mode": "clarify_then_provisional",
       "prompt": "I have an irregular eight-year vegetation-index series and need to know when the landscape changed, but seasonal behavior is strong.",
       "case_types": ["positive", "ambiguous"],
       "expected_behavior": [

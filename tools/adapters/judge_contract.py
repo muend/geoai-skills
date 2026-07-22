@@ -8,7 +8,24 @@ from jsonschema import Draft202012Validator
 
 from tools.eval_runner import pretty_json, validate_instance
 
-PROMPT_VERSION = "geoai-behavior-judge-v2"
+PROMPT_VERSION = "geoai-behavior-judge-v3"
+
+INTERACTION_POLICIES = {
+    "clarify": (
+        "Material facts are missing, so a complete response may stop after asking the necessary "
+        "questions or refusing unsafe action. Do not require downstream execution unless an exact "
+        "criterion explicitly requires a bounded provisional step."
+    ),
+    "deliver": (
+        "The response must provide the requested analysis, plan, code, or decision now. A promise "
+        "to do substantive work later does not satisfy a delivery criterion."
+    ),
+    "clarify_then_provisional": (
+        "The response must both ask for the material missing facts and provide a useful bounded "
+        "provisional plan or conditional answer with assumptions labeled. Deferring all substantive "
+        "work until a later response is insufficient."
+    ),
+}
 
 
 def judgment_schema(case: dict[str, Any]) -> dict[str, Any]:
@@ -56,12 +73,15 @@ def judgment_schema(case: dict[str, Any]) -> dict[str, Any]:
 
 def judgment_prompt(case: dict[str, Any], response: dict[str, Any]) -> str:
     """Build the post-execution rubric payload seen by a model judge."""
+    interaction_mode = case.get("interaction_mode", "deliver")
     payload = {
         "prompt_version": PROMPT_VERSION,
         "user_prompt": case["prompt"],
         "assistant_response": response["response"],
         "response_error": response.get("error"),
         "behavior_class": case.get("behavior_class", "advisory"),
+        "interaction_mode": interaction_mode,
+        "interaction_policy": INTERACTION_POLICIES[interaction_mode],
         "declared_fixtures": case.get("fixtures", []),
         "expected_artifacts": case.get("expected_artifacts", []),
         "observed_artifacts": response.get("artifacts", []),

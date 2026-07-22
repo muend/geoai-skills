@@ -5,6 +5,7 @@
     {
       "id": "slow-join",
       "behavior_class": "advisory",
+      "interaction_mode": "deliver",
       "prompt": "My spatial join between 10M points and country polygons takes 6 hours in PostGIS.",
       "case_types": ["positive", "artifact-correctness"],
       "expected_behavior": [
@@ -20,6 +21,7 @@
     {
       "id": "area-4326-catch",
       "behavior_class": "advisory",
+      "interaction_mode": "deliver",
       "prompt": "SELECT ST_Area(geom) FROM parcels; -- geom is 4326. Why are the areas tiny?",
       "case_types": ["positive", "artifact-correctness"],
       "critical": true,
@@ -55,6 +57,7 @@
     {
       "id": "backend-choice-unclear",
       "behavior_class": "advisory",
+      "interaction_mode": "clarify_then_provisional",
       "prompt": "Run recurring spatial joins on growing GeoParquet deliveries, but concurrency, update frequency, and operational ownership are unknown.",
       "case_types": ["positive", "ambiguous"],
       "expected_behavior": [

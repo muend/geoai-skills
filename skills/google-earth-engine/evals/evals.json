@@ -5,6 +5,7 @@
     {
       "id": "country-composite",
       "behavior_class": "advisory",
+      "interaction_mode": "deliver",
       "prompt": "Make a cloud-free Sentinel-2 composite of an entire country for 2025 and compute mean NDVI per province.",
       "case_types": ["positive"],
       "expected_behavior": [
@@ -16,6 +17,7 @@
     {
       "id": "getinfo-loop-catch",
       "behavior_class": "advisory",
+      "interaction_mode": "deliver",
       "prompt": "Loop over my 500 points and call getInfo to get the NDVI value at each.",
       "case_types": ["positive", "artifact-correctness"],
       "critical": true,
@@ -47,6 +49,7 @@
     {
       "id": "unclear-platform-choice",
       "behavior_class": "advisory",
+      "interaction_mode": "clarify_then_provisional",
       "prompt": "Process a multi-year satellite archive for a large region, but I have not decided between local xarray workflows and Earth Engine.",
       "case_types": ["positive", "ambiguous"],
       "expected_behavior": [
