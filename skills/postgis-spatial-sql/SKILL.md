@@ -36,7 +36,8 @@ delivery and mutation pattern, latency/SLA, serving needs, and operational
 ownership (including backup and recovery). Define representative ingestion,
 join, and read queries for both viable backends; compare runtime and resource
 use only after row counts, join cardinality, SRID, geometry validity, and sample
-outputs agree.
+outputs agree. Include this benchmark and correctness plan in the current
+response; do not merely offer to draft it later.
 
 ## Schema fundamentals
 
@@ -109,6 +110,22 @@ with `ST_DWithin` to bound the search when tables are huge.
 3. Big-polygon problem: country/basin-sized geometries make index bboxes
    useless → `ST_Subdivide` into a work table (typical 10-100× speedup on
    joins against them).
+
+The following example assumes `countries(country_id, geom)`.
+
+```sql
+CREATE TABLE country_parts AS
+SELECT c.country_id, part.geom
+FROM countries AS c
+CROSS JOIN LATERAL ST_Subdivide(c.geom, 256) AS part(geom);
+
+CREATE INDEX country_parts_geom_gix ON country_parts USING gist (geom);
+ANALYZE country_parts;
+```
+
+`ST_Subdivide` is a set-returning function; do not access its result as
+`(ST_Subdivide(...)).geom`.
+
 4. Validity in-database: `ST_IsValid` audit, `ST_MakeValid` repair, add a
    `CHECK (ST_IsValid(geom))` if writers are untrusted.
 5. Simplify for serving, not for analysis: keep full-resolution geometry;
@@ -157,8 +174,9 @@ its own joins — benchmark, don't assume.
    directly) — numbers can pass while geometries are garbage.
 4. Treat every `sql` fence presented as runnable as a syntax and alias
    boundary: it must execute top-to-bottom after stated schema assumptions.
-   Put alternatives or pseudocode in separately labeled blocks; never mix an
-   abandoned join, incomplete alias, or ellipsis into executable SQL.
+   Never put angle-bracket placeholders, ellipses, pseudocode, abandoned joins,
+   or incomplete aliases inside it. If a schema value such as an SRID is
+   unknown, ask for it or keep the template in a labeled `text` block.
 
 ## Pitfalls checklist
 

@@ -24,6 +24,12 @@ def test_slow_join_guards_executable_sql_quality() -> None:
         "incomplete aliases" in criterion
         for criterion in slow_join["forbidden_behavior"]
     )
+    assert "CROSS JOIN LATERAL ST_Subdivide" in skill_text
+    assert "(ST_Subdivide(...)).geom" in skill_text
+    assert any(
+        "invalid set-returning-function field access" in criterion
+        for criterion in slow_join["forbidden_behavior"]
+    )
 
 
 def test_measurement_guidance_rejects_web_mercator() -> None:
@@ -37,6 +43,10 @@ def test_measurement_guidance_rejects_web_mercator() -> None:
     assert "geometry(MultiPolygon, 3857)" not in skill_text
     assert any(
         "Must not present Web Mercator" in criterion
+        for criterion in area_case["forbidden_behavior"]
+    )
+    assert any(
+        "unknown CRS placeholder" in criterion
         for criterion in area_case["forbidden_behavior"]
     )
 
@@ -60,3 +70,15 @@ def test_backend_choice_requires_evidence_and_correctness_benchmark() -> None:
         "unconditional backend recommendation" in criterion
         for criterion in backend_case["forbidden_behavior"]
     )
+    assert "do not merely offer to draft it later" in normalized_skill_text
+    assert any(
+        "defer the benchmark and correctness gate" in criterion
+        for criterion in backend_case["forbidden_behavior"]
+    )
+
+
+def test_runnable_sql_contract_rejects_template_tokens() -> None:
+    skill_text = SKILL.read_text(encoding="utf-8")
+
+    assert "Never put angle-bracket placeholders" in skill_text
+    assert "keep the template in a labeled `text` block" in skill_text

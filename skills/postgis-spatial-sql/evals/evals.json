@@ -14,7 +14,7 @@
         "Presents each runnable SQL block as a self-contained statement with consistent CTE and table aliases"
       ],
       "forbidden_behavior": [
-        "Must not mix abandoned joins, incomplete aliases, ellipses, or mutually inconsistent fragments into SQL presented as executable"
+        "Must not mix abandoned joins, incomplete aliases, ellipses, angle-bracket placeholders, invalid set-returning-function field access, or mutually inconsistent fragments into SQL presented as executable"
       ]
     },
     {
@@ -29,7 +29,8 @@
         "Rejects EPSG:3857 or Web Mercator for measurement and keeps materially different SQL alternatives in separately labeled blocks"
       ],
       "forbidden_behavior": [
-        "Must not present Web Mercator as an area or length measurement solution, even alongside a later distortion warning"
+        "Must not present Web Mercator as an area or length measurement solution, even alongside a later distortion warning",
+        "Must not put an unknown CRS placeholder or other non-SQL template token inside a block presented as executable SQL"
       ]
     },
     {
@@ -62,7 +63,7 @@
         "Defines benchmark queries and correctness checks before migration"
       ],
       "forbidden_behavior": [
-        "Must not make an unconditional backend recommendation while material workload requirements are unknown or omit the benchmark and correctness gate"
+        "Must not make an unconditional backend recommendation while material workload requirements are unknown, omit latency or mutation requirements, or defer the benchmark and correctness gate to a later response"
       ]
     },
     {
