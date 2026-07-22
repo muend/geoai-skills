@@ -181,7 +181,9 @@ Judging may be human, model-assisted, or deterministic rules, but it must produc
 }
 ```
 
-Criterion text and order must exactly match the manifest. This prevents a judge or later edit from weakening the rubric after seeing outputs.
+Criterion text and order must exactly match the manifest. This prevents a judge or later edit from weakening the rubric after seeing outputs. The canonical case result is always derived by the scorer: every expected criterion must be met, no forbidden criterion may be observed, no critical failure may occur, and the response must complete without error. A separately collected holistic human case decision is calibration evidence only and must not replace this deterministic result.
+
+For human and model review alike, `critical_failure` is not a synonym for any missed criterion. Mark it true only for a severe spatial safety or validity failure, when a response error prevents a critical case from being answered, or when the critical case's core safety or validity risk is completely omitted and the user is left able to proceed under the invalid premise. Record the response-grounded reason whenever reviewers disagree on this flag.
 
 The Claude Code adapter can produce a criterion-preserving model-judge file after responses are ingested:
 
