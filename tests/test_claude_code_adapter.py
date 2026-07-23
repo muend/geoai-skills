@@ -200,11 +200,15 @@ def test_execution_commands_isolate_enabled_and_disabled_conditions(
     )
 
     assert "--plugin-dir" in enabled
+    assert enabled[enabled.index("--permission-mode") + 1] == "acceptEdits"
     assert "Skill,Read" in enabled
+    assert enabled[enabled.index("--allowedTools") + 1] == "Skill,Read"
     assert "--setting-sources" in enabled
     assert "--safe-mode" not in enabled
     assert "Read" in disabled
+    assert disabled[disabled.index("--permission-mode") + 1] == "acceptEdits"
     assert "Skill,Read" not in disabled
+    assert disabled[disabled.index("--allowedTools") + 1] == "Read"
     assert "--setting-sources" in disabled
     assert "--safe-mode" not in disabled
     assert "--disable-slash-commands" not in disabled
@@ -235,6 +239,8 @@ def test_workspace_write_profile_preserves_non_skill_tool_parity(
 
     assert "Skill,Read,Write,Edit" in enabled
     assert "Read,Write,Edit" in disabled
+    assert enabled[enabled.index("--allowedTools") + 1] == "Skill,Read,Write,Edit"
+    assert disabled[disabled.index("--allowedTools") + 1] == "Read,Write,Edit"
 
 
 def test_stage_workspace_verifies_fixture_and_captures_text_artifact(
