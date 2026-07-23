@@ -8,6 +8,7 @@ import hashlib
 import json
 import mimetypes
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -31,18 +32,25 @@ from tools.eval_runner import (  # noqa: E402
     validate_instance,
 )
 from tools.adapters.judge_contract import (  # noqa: E402
+    PROMPT_VERSION,
     judgment_prompt,
     judgment_schema,
     restore_judgment,
 )
 
 RUN_SCHEMA_PATH = ROOT / "evals" / "run-schema.json"
-ADAPTER_VERSION = "2"
+ADAPTER_VERSION = "3"
 MAX_ARTIFACT_PREVIEW_CHARS = 20_000
 
 
 class AdapterError(RuntimeError):
     """Raised when the runtime adapter cannot produce auditable output."""
+
+
+def judge_namespace(model: str) -> str:
+    """Keep resumable judge state isolated by provider, model, and prompt contract."""
+    model_slug = re.sub(r"[^a-z0-9]+", "-", model.lower()).strip("-")
+    return f"claude-code--{model_slug}--{PROMPT_VERSION}"
 
 
 def sha256_text(value: str) -> str:
@@ -761,13 +769,15 @@ def judge_run(args: argparse.Namespace) -> Path:
                 ensure_ascii=False,
             )
         )
-        return run_dir / "adapter" / "judgments.json"
+        return (
+            run_dir / "adapter" / judge_namespace(args.judge_model) / "judgments.json"
+        )
     if not auth_available(args.claude_command):
         raise AdapterError(
             "Claude Code is not authenticated; run `claude auth login` and retry"
         )
 
-    adapter_dir = run_dir / "adapter"
+    adapter_dir = run_dir / "adapter" / judge_namespace(args.judge_model)
     partial_path = adapter_dir / "judgments.partial.jsonl"
     completed = read_partial_rows(partial_path)
     pending = [case for case in selected_cases if case["case_id"] not in completed]
@@ -835,6 +845,7 @@ def judge_run(args: argparse.Namespace) -> Path:
     metrics = {
         "adapter_version": ADAPTER_VERSION,
         "judge_model": args.judge_model,
+        "prompt_version": PROMPT_VERSION,
         "cases": len(cases),
         "total_cost_usd": sum(
             float(row.get("_cost_usd", 0.0)) for row in completed.values()

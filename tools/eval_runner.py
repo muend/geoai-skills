@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Prepare, ingest, and score reproducible GeoAI Skills evaluation runs."""
+
 from __future__ import annotations
 
 import argparse
@@ -17,6 +18,7 @@ SKILLS = ROOT / "skills"
 EVAL_SCHEMA_PATH = ROOT / "evals" / "schema.json"
 RUN_SCHEMA_PATH = ROOT / "evals" / "run-schema.json"
 DEFAULT_RUNS_DIR = ROOT / "evals" / "runs"
+INTERACTION_MODES = ("clarify", "deliver", "clarify_then_provisional")
 
 
 class EvalRunnerError(RuntimeError):
@@ -36,6 +38,13 @@ def sha256_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
 
+def zero_failure_upper_bound_95(evaluated_cases: int, failures: int) -> float | None:
+    """Return the exact one-sided 95% failure-rate bound for zero observed failures."""
+    if evaluated_cases <= 0 or failures != 0:
+        return None
+    return 1.0 - (0.05 ** (1.0 / evaluated_cases))
+
+
 def repository_relative(path: Path, *, repository_root: Path = ROOT) -> str:
     try:
         return path.resolve().relative_to(repository_root.resolve()).as_posix()
@@ -53,7 +62,9 @@ def normalize_fixture(
     try:
         source.relative_to((eval_dir / "fixtures").resolve())
     except ValueError as exc:
-        raise EvalRunnerError(f"Fixture escapes fixture root: {raw_fixture['source']}") from exc
+        raise EvalRunnerError(
+            f"Fixture escapes fixture root: {raw_fixture['source']}"
+        ) from exc
     if not source.is_file():
         raise EvalRunnerError(f"Missing fixture file: {source}")
     content = source.read_bytes()
@@ -87,7 +98,9 @@ def load_jsonl(path: Path) -> list[Any]:
         try:
             rows.append(json.loads(line))
         except json.JSONDecodeError as exc:
-            raise EvalRunnerError(f"Invalid JSON in {path}:{line_number}: {exc}") from exc
+            raise EvalRunnerError(
+                f"Invalid JSON in {path}:{line_number}: {exc}"
+            ) from exc
     return rows
 
 
@@ -116,7 +129,9 @@ def write_immutable(path: Path, content: str, *, force: bool = False) -> bool:
     return True
 
 
-def contract_validator(run_schema: dict[str, Any], definition: str) -> Draft202012Validator:
+def contract_validator(
+    run_schema: dict[str, Any], definition: str
+) -> Draft202012Validator:
     if definition not in run_schema.get("$defs", {}):
         raise EvalRunnerError(f"Unknown run contract: {definition}")
     schema = {
@@ -133,7 +148,9 @@ def validate_instance(
     *,
     label: str,
 ) -> None:
-    issues = sorted(validator.iter_errors(value), key=lambda issue: list(issue.absolute_path))
+    issues = sorted(
+        validator.iter_errors(value), key=lambda issue: list(issue.absolute_path)
+    )
     if not issues:
         return
     rendered = []
@@ -158,7 +175,9 @@ def validate_unique_exact_ids(
         elif isinstance(case_id, str):
             indexed[case_id] = row
     if duplicates:
-        raise EvalRunnerError(f"{label} contains duplicate case ids: {', '.join(sorted(duplicates))}")
+        raise EvalRunnerError(
+            f"{label} contains duplicate case ids: {', '.join(sorted(duplicates))}"
+        )
 
     expected = set(expected_ids)
     actual = set(indexed)
@@ -190,13 +209,19 @@ def load_suite(
         skill_path = skill_dir / "SKILL.md"
         eval_path = skill_dir / "evals" / "evals.json"
         if not skill_path.exists() or not eval_path.exists():
-            raise EvalRunnerError(f"{skill_dir.name}: SKILL.md and evals/evals.json are required")
+            raise EvalRunnerError(
+                f"{skill_dir.name}: SKILL.md and evals/evals.json are required"
+            )
         data = load_json(eval_path)
-        issues = sorted(validator.iter_errors(data), key=lambda issue: list(issue.absolute_path))
+        issues = sorted(
+            validator.iter_errors(data), key=lambda issue: list(issue.absolute_path)
+        )
         if issues:
             details = []
             for issue in issues:
-                location = "/".join(str(part) for part in issue.absolute_path) or "<root>"
+                location = (
+                    "/".join(str(part) for part in issue.absolute_path) or "<root>"
+                )
                 details.append(f"{eval_path}:{location}: {issue.message}")
             raise EvalRunnerError("\n".join(details))
         if data["skill"] != skill_dir.name:
@@ -256,6 +281,8 @@ def load_suite(
                 "expected_artifacts": expected_artifacts,
                 "skill_sha256": skill_sha256,
             }
+            if "interaction_mode" in raw_case:
+                normalized["interaction_mode"] = raw_case["interaction_mode"]
             normalized["case_sha256"] = sha256_json(normalized)
             cases.append(normalized)
 
@@ -296,7 +323,9 @@ def prepare_run(
     if evaluation_scope == "behavior":
         cases = [case for case in cases if case["behavior_class"] != "routing-only"]
         if not cases:
-            raise EvalRunnerError("behavior scope has no explicitly behavior-evaluable cases")
+            raise EvalRunnerError(
+                "behavior scope has no explicitly behavior-evaluable cases"
+            )
     suite_sha256 = sha256_json(cases)
     run_schema = load_json(run_schema_path)
     Draft202012Validator.check_schema(run_schema)
@@ -311,7 +340,9 @@ def prepare_run(
         "available_skills": skill_names if condition == "skills-enabled" else [],
         "cases": cases,
     }
-    validate_instance(contract_validator(run_schema, "manifest"), manifest, label="manifest")
+    validate_instance(
+        contract_validator(run_schema, "manifest"), manifest, label="manifest"
+    )
 
     selected_id = run_id or (
         f"{slug(runtime)}--{slug(model)}--{condition}--{evaluation_scope}--{suite_sha256[:12]}"
@@ -334,7 +365,9 @@ def prepare_run(
 
 def load_manifest(run_dir: Path, run_schema: dict[str, Any]) -> dict[str, Any]:
     manifest = load_json(run_dir / "manifest.json")
-    validate_instance(contract_validator(run_schema, "manifest"), manifest, label="manifest")
+    validate_instance(
+        contract_validator(run_schema, "manifest"), manifest, label="manifest"
+    )
     return manifest
 
 
@@ -413,7 +446,9 @@ def score_run(
 
     cases = manifest["cases"]
     expected_ids = [case["case_id"] for case in cases]
-    responses = validate_unique_exact_ids(response_rows, expected_ids, label="cached responses")
+    responses = validate_unique_exact_ids(
+        response_rows, expected_ids, label="cached responses"
+    )
     validate_response_context(manifest=manifest, cases=cases, responses=responses)
 
     judgment_set = load_json(judgments_path)
@@ -447,6 +482,9 @@ def score_run(
     forbidden_violations = 0
     critical_evaluated = 0
     critical_failures = 0
+    interaction_metrics = {
+        mode: {"passed_cases": 0, "judged_cases": 0} for mode in INTERACTION_MODES
+    }
     input_tokens = 0
     output_tokens = 0
     latency_ms = 0
@@ -458,12 +496,20 @@ def score_run(
         behavior_evaluated = case_id in judgments
         judgment = judgments.get(case_id)
         if judgment is not None:
-            expected_criteria = [check["criterion"] for check in judgment["expected_behavior"]]
-            forbidden_criteria = [check["criterion"] for check in judgment["forbidden_behavior"]]
+            expected_criteria = [
+                check["criterion"] for check in judgment["expected_behavior"]
+            ]
+            forbidden_criteria = [
+                check["criterion"] for check in judgment["forbidden_behavior"]
+            ]
             if expected_criteria != case["expected_behavior"]:
-                raise EvalRunnerError(f"{case_id}: expected_behavior criteria drift from manifest")
+                raise EvalRunnerError(
+                    f"{case_id}: expected_behavior criteria drift from manifest"
+                )
             if forbidden_criteria != case["forbidden_behavior"]:
-                raise EvalRunnerError(f"{case_id}: forbidden_behavior criteria drift from manifest")
+                raise EvalRunnerError(
+                    f"{case_id}: forbidden_behavior criteria drift from manifest"
+                )
 
         activated = set(response["activated_skills"])
         target_active = case["skill"] in activated
@@ -483,7 +529,9 @@ def score_run(
             if judgment is not None
             else 0
         )
-        expected_total = len(judgment["expected_behavior"]) if judgment is not None else 0
+        expected_total = (
+            len(judgment["expected_behavior"]) if judgment is not None else 0
+        )
         violations = (
             sum(int(check["observed"]) for check in judgment["forbidden_behavior"])
             if judgment is not None
@@ -491,16 +539,25 @@ def score_run(
         )
         response_error = bool(response.get("error"))
         behavior_pass = (
-            met == expected_total
-            and violations == 0
-            and not judgment["critical_failure"]
-            and not response_error
-        ) if judgment is not None else None
+            (
+                met == expected_total
+                and violations == 0
+                and not judgment["critical_failure"]
+                and not response_error
+            )
+            if judgment is not None
+            else None
+        )
         behavior_passes += int(bool(behavior_pass))
         if behavior_evaluated:
             criteria_met += met
             criteria_total += expected_total
             forbidden_violations += violations
+            interaction_mode = case.get("interaction_mode", "deliver")
+            interaction_metrics[interaction_mode]["judged_cases"] += 1
+            interaction_metrics[interaction_mode]["passed_cases"] += int(
+                bool(behavior_pass)
+            )
         if case["critical"] and behavior_evaluated:
             critical_evaluated += 1
             critical_failures += int(judgment["critical_failure"] or response_error)
@@ -520,11 +577,17 @@ def score_run(
             "expected_met": met,
             "expected_total": expected_total,
             "forbidden_violations": violations,
-            "critical_failure": judgment["critical_failure"] if judgment is not None else False,
+            "critical_failure": judgment["critical_failure"]
+            if judgment is not None
+            else False,
             "response_error": response_error,
         }
+        if behavior_evaluated:
+            result["interaction_mode"] = case.get("interaction_mode", "deliver")
         validate_instance(
-            contract_validator(run_schema, "caseResult"), result, label=f"result[{case_id}]"
+            contract_validator(run_schema, "caseResult"),
+            result,
+            label=f"result[{case_id}]",
         )
         case_results.append(result)
 
@@ -536,7 +599,11 @@ def score_run(
         "model": manifest["model"],
         "condition": manifest["condition"],
         "judge": judgment_set["judge"],
-        "coverage": {"cases": total, "responses": len(responses), "judgments": len(judgments)},
+        "coverage": {
+            "cases": total,
+            "responses": len(responses),
+            "judgments": len(judgments),
+        },
         "routing": {
             **counts,
             "precision": ratio(counts["tp"], counts["tp"] + counts["fp"]),
@@ -551,11 +618,23 @@ def score_run(
             "criteria_met": criteria_met,
             "criteria_total": criteria_total,
             "forbidden_violations": forbidden_violations,
+            "by_interaction_mode": {
+                mode: {
+                    **counts,
+                    "pass_rate": ratio(counts["passed_cases"], counts["judged_cases"]),
+                }
+                for mode, counts in interaction_metrics.items()
+            },
         },
         "critical": {
             "evaluated_cases": critical_evaluated,
             "failures": critical_failures,
             "failure_rate": ratio(critical_failures, critical_evaluated),
+            "zero_failure_gate_pass": critical_evaluated > 0 and critical_failures == 0,
+            "zero_failure_upper_bound_95": zero_failure_upper_bound_95(
+                critical_evaluated, critical_failures
+            ),
+            "upper_bound_method": "exact-clopper-pearson-zero-failure",
         },
         "usage": {
             "input_tokens": input_tokens,
@@ -564,7 +643,9 @@ def score_run(
             "cost_usd": cost_usd,
         },
     }
-    validate_instance(contract_validator(run_schema, "results"), metrics, label="metrics")
+    validate_instance(
+        contract_validator(run_schema, "results"), metrics, label="metrics"
+    )
     results_dir = run_dir / "results"
     write_immutable(results_dir / "cases.jsonl", jsonl_text(case_results), force=force)
     metrics_path = results_dir / "metrics.json"
@@ -596,12 +677,18 @@ def build_parser() -> argparse.ArgumentParser:
         help="Select all routing cases, only behavior-evaluable cases, or the combined suite",
     )
 
-    ingest = subparsers.add_parser("ingest", help="Validate and cache raw runtime responses")
+    ingest = subparsers.add_parser(
+        "ingest", help="Validate and cache raw runtime responses"
+    )
     ingest.add_argument("--run-dir", type=Path, required=True)
     ingest.add_argument("--input", type=Path, required=True, dest="input_path")
-    ingest.add_argument("--force", action="store_true", help="Replace different cached content")
+    ingest.add_argument(
+        "--force", action="store_true", help="Replace different cached content"
+    )
 
-    score = subparsers.add_parser("score", help="Score cached responses from explicit judgments")
+    score = subparsers.add_parser(
+        "score", help="Score cached responses from explicit judgments"
+    )
     score.add_argument("--run-dir", type=Path, required=True)
     score.add_argument("--judgments", type=Path, required=True, dest="judgments_path")
     score.add_argument(
@@ -609,7 +696,9 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Score routing without behavior judgments, including legacy combined runs",
     )
-    score.add_argument("--force", action="store_true", help="Replace different result content")
+    score.add_argument(
+        "--force", action="store_true", help="Replace different result content"
+    )
     return parser
 
 

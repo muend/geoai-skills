@@ -30,6 +30,16 @@ Behavior eligibility is separate from routing polarity. A case may declare:
 
 Omitted `behavior_class` defaults to `routing-only`. This fail-closed default prevents an underspecified routing prompt from silently lowering or inflating behavior metrics. Fixture sources must live below the skill's `evals/fixtures/` directory, prompts must name their staged workspace paths, and fixture bytes participate in both case and suite hashes. Artifact-producing prompts must name exact output paths; captured artifacts include media type, size, SHA-256, and a bounded text preview when applicable.
 
+A case must remain `routing-only` when its rubric requires a tool or licensed runtime that the declared adapter does not expose. Such behavior belongs in a separately identified integration run with exact environment evidence; a textual promise or simulated tool call is not a substitute. The current generic Claude Code profile therefore does not behavior-score ArcGIS Pro bridge operations.
+
+Every behavior-evaluable case must also declare one interaction contract:
+
+- `clarify` — material facts or authorization are missing, so the response should ask only the necessary questions or stop unsafe action;
+- `deliver` — enough information exists to provide the requested analysis, plan, code, or decision in the current response;
+- `clarify_then_provisional` — the response must ask for missing facts and still provide a bounded conditional plan or answer with assumptions labeled.
+
+The interaction contract participates in the case and suite hashes but remains absent from blind runtime requests. It is revealed to the judge only after execution. This prevents a delivery rubric from silently penalizing a clarification-only case, while still treating a promise to do later work as insufficient for `deliver` and `clarify_then_provisional` cases. Do not infer or rewrite interaction modes after reading model outputs.
+
 Generated local runs live under `evals/runs/` and are ignored by Git. Deliberately reviewed benchmark artifacts can later be copied into a versioned benchmark-results location.
 
 ## 1. Prepare blind requests
@@ -49,7 +59,7 @@ It creates:
 - `manifest.json` — the complete hashed scoring rubric and run metadata;
 - `requests.jsonl` — only `schema_version`, `case_id`, and `prompt`.
 
-`requests.jsonl` intentionally excludes expected behavior, forbidden behavior, trigger labels, and expected routes. Give only this blind file to the runtime adapter.
+`requests.jsonl` intentionally excludes expected behavior, forbidden behavior, interaction mode, trigger labels, and expected routes. Give only this blind file to the runtime adapter.
 
 Prepare a second run with `--condition skills-disabled --scope routing` for the routing baseline. In that condition the manifest declares no available skills.
 
@@ -171,7 +181,9 @@ Judging may be human, model-assisted, or deterministic rules, but it must produc
 }
 ```
 
-Criterion text and order must exactly match the manifest. This prevents a judge or later edit from weakening the rubric after seeing outputs.
+Criterion text and order must exactly match the manifest. This prevents a judge or later edit from weakening the rubric after seeing outputs. The canonical case result is always derived by the scorer: every expected criterion must be met, no forbidden criterion may be observed, no critical failure may occur, and the response must complete without error. A separately collected holistic human case decision is calibration evidence only and must not replace this deterministic result.
+
+For human and model review alike, `critical_failure` is not a synonym for any missed criterion. Mark it true only for a severe spatial safety or validity failure, when a response error prevents a critical case from being answered, or when the critical case's core safety or validity risk is completely omitted and the user is left able to proceed under the invalid premise. Record the response-grounded reason whenever reviewers disagree on this flag.
 
 The Claude Code adapter can produce a criterion-preserving model-judge file after responses are ingested:
 
@@ -184,7 +196,7 @@ python tools/adapters/claude_code.py judge \
   --max-total-cost-usd <approved-judge-cap>
 ```
 
-The judge receives rubric text only after execution. Its structured output contains decisions and evidence by array position; the adapter restores exact manifest criterion text, so the model cannot rewrite the scoring standard. Model judgments remain reviewable evidence, not ground truth. Prefer a judge from a different model family than the executor. Label same-family results preliminary, never use them as headline evidence, and disclose judge provider, model, family, prompt/schema version, retries, and missing/error cases. Manually review every critical case, every execution error, and a stratified sample of at least 20% of the remainder before publishing metrics.
+The judge receives rubric text and the immutable interaction contract only after execution. Its structured output contains decisions and evidence by array position; the adapter restores exact manifest criterion text, so the model cannot rewrite the scoring standard. Claude and Gemini resumable judge state is namespaced by provider, exact judge model, and prompt version, preventing a changed judge contract from silently resuming old partial decisions. Model judgments remain reviewable evidence, not ground truth. Prefer a judge from a different model family than the executor. Label same-family results preliminary, never use them as headline evidence, and disclose judge provider, model, family, prompt/schema version, retries, and missing/error cases. Manually review every critical case, every execution error, and a stratified sample of at least 20% of the remainder before publishing metrics.
 
 For an independent-family judgment through the Google Gemini REST API, set the
 key in `GEMINI_API_KEY` and run a bounded pilot first:
@@ -250,6 +262,8 @@ The command writes:
 
 Scoring contains no model call, timestamps, random sampling, or hidden heuristic. Given the same manifest, raw responses, and judgments, it emits byte-identical results. Different existing content is refused unless `--force` is explicitly supplied.
 
+Behavior metrics are also partitioned by interaction mode; do not hide a weak mode inside a pooled pass rate. The critical gate passes only when at least one critical case was evaluated and zero critical failures were observed. When the observed count is zero, `zero_failure_upper_bound_95` reports the exact one-sided 95% Clopper-Pearson upper bound, `1 - 0.05^(1/n)`. This bound must be disclosed with `n`; zero observed failures is not evidence that the true failure rate is zero. No `<2%` critical-failure claim is permitted unless this upper bound is below 0.02, which requires at least 149 independent critical cases with zero observed failures.
+
 To publish an enabled run and its disabled-skills control without exposing raw
 responses or traces:
 
@@ -274,8 +288,10 @@ routing and behavior claims cannot be accidentally conflated.
 - [ ] Use per-case isolated workspaces and verify every fixture hash before and after execution.
 - [ ] Preserve observed skill activations and raw response text.
 - [ ] Judge only explicitly answerable behavior classes; do not score routing-only prompts as failed behavior.
+- [ ] Freeze interaction modes before execution and report behavior results by mode.
 - [ ] Use exact manifest criteria when judging.
 - [ ] Prefer an independent model family and label any same-family judgment preliminary.
 - [ ] Review every critical/error case and at least 20% of the remaining judgments manually.
 - [ ] Publish suite hash, judge identity, sample size, and missing/error counts with every metric.
+- [ ] Require zero observed critical failures and disclose the exact one-sided 95% upper bound with its evaluated case count.
 - [ ] Never compare runs whose suite hashes differ without disclosing the suite change.

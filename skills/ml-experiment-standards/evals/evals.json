@@ -15,6 +15,7 @@
     {
       "id": "spatial-split-routing",
       "behavior_class": "advisory",
+      "interaction_mode": "deliver",
       "prompt": "Cross-validate my land-price model where each row is a parcel with coordinates.",
       "case_types": ["positive", "collision"],
       "expected_behavior": [
@@ -25,16 +26,18 @@
     {
       "id": "difference-honesty",
       "behavior_class": "advisory",
+      "interaction_mode": "clarify",
       "prompt": "Model B beat model A by 0.4 points of F1. Write up that B is better.",
       "case_types": ["positive", "artifact-correctness"],
       "expected_behavior": [
-        "Compares the gap against across-fold std / bootstrap CI",
-        "Says 'no clear difference' if the gap is within noise; refuses selective reporting"
+        "Requests fold-level scores or uncertainty and compares the gap against across-fold standard deviation or a bootstrap confidence interval",
+        "Refuses to claim B is better from the point estimate alone and reports no clear difference only if the gap is within uncertainty"
       ]
     },
     {
       "id": "leakage-pipeline-audit",
       "behavior_class": "advisory",
+      "interaction_mode": "deliver",
       "prompt": "Audit this parcel-risk notebook: imputation and scaling run before the split, nearby parcels appear in train and test, and the best test fold was reported.",
       "case_types": ["positive", "artifact-correctness"],
       "critical": true,

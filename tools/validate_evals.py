@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Validate all skill eval files against the versioned repository schema."""
+
 from __future__ import annotations
 
 import json
-import sys
 from collections import Counter
 from pathlib import Path
 
@@ -39,6 +39,7 @@ def main() -> int:
     category_counts: Counter[str] = Counter()
     critical_skills: set[str] = set()
     behavior_counts: Counter[str] = Counter()
+    interaction_counts: Counter[str] = Counter()
 
     skill_folders = sorted(path for path in SKILLS.iterdir() if path.is_dir())
     skill_names = {folder.name for folder in skill_folders}
@@ -53,7 +54,9 @@ def main() -> int:
             errors.append(f"{relative(eval_path)}: invalid JSON: {exc}")
             continue
 
-        for issue in sorted(validator.iter_errors(data), key=lambda item: list(item.path)):
+        for issue in sorted(
+            validator.iter_errors(data), key=lambda item: list(item.path)
+        ):
             location = "/".join(str(part) for part in issue.absolute_path) or "<root>"
             errors.append(f"{relative(eval_path)}:{location}: {issue.message}")
 
@@ -69,10 +72,16 @@ def main() -> int:
                 f"{relative(eval_path)}: requires at least {MIN_CASES_PER_SKILL} cases, "
                 f"found {len(cases)}"
             )
-        ids = [case.get("id") for case in cases if isinstance(case, dict)] if isinstance(cases, list) else []
+        ids = (
+            [case.get("id") for case in cases if isinstance(case, dict)]
+            if isinstance(cases, list)
+            else []
+        )
         duplicates = sorted({case_id for case_id in ids if ids.count(case_id) > 1})
         if duplicates:
-            errors.append(f"{relative(eval_path)}: duplicate case ids: {', '.join(duplicates)}")
+            errors.append(
+                f"{relative(eval_path)}: duplicate case ids: {', '.join(duplicates)}"
+            )
 
         for case in cases if isinstance(cases, list) else []:
             if not isinstance(case, dict):
@@ -82,6 +91,19 @@ def main() -> int:
             category_counts.update(case_types)
             behavior_class = case.get("behavior_class", "routing-only")
             behavior_counts[behavior_class] += 1
+            interaction_mode = case.get("interaction_mode")
+            if behavior_class == "routing-only" and interaction_mode is not None:
+                errors.append(
+                    f"{relative(eval_path)}:{case_id}: routing-only cases cannot declare "
+                    "interaction_mode"
+                )
+            if behavior_class != "routing-only" and interaction_mode is None:
+                errors.append(
+                    f"{relative(eval_path)}:{case_id}: behavior-evaluable cases require "
+                    "interaction_mode"
+                )
+            if interaction_mode is not None:
+                interaction_counts[interaction_mode] += 1
             if case.get("critical") is True:
                 critical_skills.add(folder.name)
             should_trigger = case.get("should_trigger", True)
@@ -122,7 +144,9 @@ def main() -> int:
                     f"{relative(eval_path)}:{case_id}: duplicate fixture workspace paths"
                 )
             for fixture in case.get("fixtures", []):
-                if not isinstance(fixture, dict) or not isinstance(fixture.get("source"), str):
+                if not isinstance(fixture, dict) or not isinstance(
+                    fixture.get("source"), str
+                ):
                     continue
                 source = (eval_path.parent / fixture["source"]).resolve()
                 try:
@@ -165,7 +189,9 @@ def main() -> int:
                         )
 
     if case_count < MIN_SUITE_CASES:
-        errors.append(f"evaluation suite requires at least {MIN_SUITE_CASES} cases, found {case_count}")
+        errors.append(
+            f"evaluation suite requires at least {MIN_SUITE_CASES} cases, found {case_count}"
+        )
     for category, minimum in CATEGORY_MINIMUMS.items():
         if category_counts[category] < minimum:
             errors.append(
@@ -189,7 +215,17 @@ def main() -> int:
         + "\nBehavior: "
         + ", ".join(
             f"{name}={behavior_counts[name]}"
-            for name in ("routing-only", "advisory", "fixture-backed", "artifact-producing")
+            for name in (
+                "routing-only",
+                "advisory",
+                "fixture-backed",
+                "artifact-producing",
+            )
+        )
+        + "\nInteraction: "
+        + ", ".join(
+            f"{name}={interaction_counts[name]}"
+            for name in ("clarify", "deliver", "clarify_then_provisional")
         )
     )
     return 1 if errors else 0

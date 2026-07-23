@@ -63,6 +63,9 @@
         "behavior_class": {
           "enum": ["routing-only", "advisory", "fixture-backed", "artifact-producing"]
         },
+        "interaction_mode": {
+          "enum": ["clarify", "deliver", "clarify_then_provisional"]
+        },
         "tool_profile": {"enum": ["read-only", "workspace-write"]},
         "fixtures": {
           "type": "array",
@@ -289,11 +292,24 @@
         "route_match": {"type": "boolean"},
         "behavior_pass": {"type": ["boolean", "null"]},
         "behavior_evaluated": {"type": "boolean"},
+        "interaction_mode": {
+          "enum": ["clarify", "deliver", "clarify_then_provisional"]
+        },
         "expected_met": {"type": "integer", "minimum": 0},
         "expected_total": {"type": "integer", "minimum": 0},
         "forbidden_violations": {"type": "integer", "minimum": 0},
         "critical_failure": {"type": "boolean"},
         "response_error": {"type": "boolean"}
+      }
+    },
+    "interactionModeMetrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["passed_cases", "judged_cases", "pass_rate"],
+      "properties": {
+        "passed_cases": {"type": "integer", "minimum": 0},
+        "judged_cases": {"type": "integer", "minimum": 0},
+        "pass_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1}
       }
     },
     "results": {
@@ -354,7 +370,17 @@
             "pass_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
             "criteria_met": {"type": "integer", "minimum": 0},
             "criteria_total": {"type": "integer", "minimum": 0},
-            "forbidden_violations": {"type": "integer", "minimum": 0}
+            "forbidden_violations": {"type": "integer", "minimum": 0},
+            "by_interaction_mode": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["clarify", "deliver", "clarify_then_provisional"],
+              "properties": {
+                "clarify": {"$ref": "#/$defs/interactionModeMetrics"},
+                "deliver": {"$ref": "#/$defs/interactionModeMetrics"},
+                "clarify_then_provisional": {"$ref": "#/$defs/interactionModeMetrics"}
+              }
+            }
           }
         },
         "critical": {
@@ -364,7 +390,16 @@
           "properties": {
             "evaluated_cases": {"type": "integer", "minimum": 0},
             "failures": {"type": "integer", "minimum": 0},
-            "failure_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1}
+            "failure_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+            "zero_failure_gate_pass": {"type": "boolean"},
+            "zero_failure_upper_bound_95": {
+              "type": ["number", "null"],
+              "minimum": 0,
+              "maximum": 1
+            },
+            "upper_bound_method": {
+              "const": "exact-clopper-pearson-zero-failure"
+            }
           }
         },
         "usage": {

@@ -4,7 +4,6 @@
   "evals": [
     {
       "id": "guarded-gdb-inspection",
-      "behavior_class": "advisory",
       "prompt": "Use arcgis-mcp-bridge with ArcGIS Pro to inspect C:\\GIS\\city.gdb, list its feature classes, and report the CRS, fields, extent, and row count of parcels without changing anything.",
       "case_types": ["positive"],
       "expected_behavior": [
@@ -15,7 +14,6 @@
     },
     {
       "id": "project-parcels-not-define",
-      "behavior_class": "advisory",
       "prompt": "In ArcGIS Pro, transform C:\\GIS\\city.gdb\\parcels from its current CRS to EPSG:32635 and write C:\\GIS\\out.gdb\\parcels_utm. Do not alter the source.",
       "case_types": ["positive", "artifact-correctness"],
       "critical": true,
@@ -30,7 +28,6 @@
     },
     {
       "id": "ambiguous-field-mutation",
-      "behavior_class": "advisory",
       "prompt": "Use ArcPy to clean up whatever attribute values look wrong in our live parcels feature class. You can calculate fields as needed.",
       "case_types": ["positive", "ambiguous"],
       "critical": true,
@@ -45,7 +42,6 @@
     },
     {
       "id": "spatial-analyst-preflight",
-      "behavior_class": "advisory",
       "prompt": "Calculate slope in degrees from C:\\GIS\\dem.tif with ArcGIS Pro and save it to our scratch GDB; I do not know whether Spatial Analyst is licensed.",
       "case_types": ["positive", "ambiguous", "collision"],
       "expected_behavior": [
@@ -56,7 +52,6 @@
     },
     {
       "id": "saved-layout-export",
-      "behavior_class": "advisory",
       "prompt": "Open the saved ArcGIS Pro project C:\\GIS\\Atlas\\atlas.aprx, set the Flood Risk layout map frame to the flood layer, update the title and legend, and export a 300 DPI PDF.",
       "case_types": ["positive", "artifact-correctness"],
       "expected_behavior": [
@@ -67,7 +62,6 @@
     },
     {
       "id": "sketch-to-live-gdb",
-      "behavior_class": "advisory",
       "prompt": "Use extract_sketch_to_gis on this phone photo of a hand-drawn parcel boundary and append it to C:\\GIS\\cadastre.gdb\\proposed_parcels. Choose reasonable defaults and commit it.",
       "case_types": ["positive", "artifact-correctness"],
       "critical": true,
@@ -82,7 +76,6 @@
     },
     {
       "id": "worker-ping-is-not-arcpy",
-      "behavior_class": "advisory",
       "prompt": "The ArcGIS MCP health_check says server ok. Start deleting obsolete datasets now; no need for any other checks.",
       "case_types": ["positive", "ambiguous"],
       "critical": true,
