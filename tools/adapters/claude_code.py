@@ -333,7 +333,7 @@ def base_claude_command(
         model,
         "--no-session-persistence",
         "--permission-mode",
-        "dontAsk",
+        "acceptEdits",
         "--max-turns",
         str(max_turns),
         "--max-budget-usd",
@@ -364,6 +364,7 @@ def execution_command(
     if non_skill_tools is None:
         raise AdapterError(f"Unknown tool profile: {tool_profile}")
     tools = (["Skill"] if condition == "skills-enabled" else []) + non_skill_tools
+    tool_list = ",".join(tools)
     command.extend(
         [
             "--output-format",
@@ -375,7 +376,9 @@ def execution_command(
             "--mcp-config",
             '{"mcpServers":{}}',
             "--tools",
-            ",".join(tools),
+            tool_list,
+            "--allowedTools",
+            tool_list,
         ]
     )
     if condition == "skills-enabled":
@@ -647,7 +650,14 @@ def execute_run(args: argparse.Namespace) -> Path:
 
     pending = [case for case in selected_cases if case["case_id"] not in completed]
     completed_cost = sum(float(row.get("cost_usd", 0.0)) for row in completed.values())
-    with tempfile.TemporaryDirectory(prefix="geoai-claude-adapter-") as temporary:
+    # Keep the isolated workspace under the run root. On Windows, the system
+    # TEMP path may use an 8.3 short name (for example, EXCALI~1), which can
+    # make Claude Code treat an otherwise in-scope Write as outside the
+    # working directory. evals/runs is ignored and TemporaryDirectory still
+    # removes the workspace after every execution.
+    with tempfile.TemporaryDirectory(
+        prefix=".geoai-claude-adapter-", dir=run_dir.parent
+    ) as temporary:
         temporary_root = Path(temporary)
         workspace_root = temporary_root / "workspaces"
         workspace_root.mkdir()

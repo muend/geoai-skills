@@ -44,3 +44,9 @@ required before the first stable release.
   resumable criterion-preserving checkpoints shared with the Claude judge.
 - Repo tooling: `tools/validate_skills.py` frontmatter/structure linter,
   GitHub Actions CI, plugin marketplace manifest.
+
+### Fixed
+- Claude Code fixture execution now pre-approves only the declared tool profile
+  and stages temporary workspaces below ignored `evals/runs/`, avoiding Windows
+  short-`TEMP` path permission mismatches while preserving enabled/disabled
+  non-skill tool parity.
