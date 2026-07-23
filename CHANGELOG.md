@@ -50,3 +50,5 @@ required before the first stable release.
   and stages temporary workspaces below ignored `evals/runs/`, avoiding Windows
   short-`TEMP` path permission mismatches while preserving enabled/disabled
   non-skill tool parity.
+- The SWE/DevOps skill now front-loads geospatial code-review and repair intent
+  while retaining explicit no-code analysis boundaries and regression coverage.
