@@ -1,13 +1,13 @@
 ---
 name: swe-devops-standards
 description: >-
-  Always invoke when the requested geospatial or GeoAI deliverable includes
-  code, a script, function, notebook, package, CI/CD, or repository change.
-  Invoke alongside the domain skill for ETL implementations and other
-  production code. Covers review, security, tests, errors, CRS/data
-  invariants, dependencies, cross-platform reproducibility, automation, and
-  shipping. Do not trigger for unrelated software or analysis requiring no
-  code or repository artifact.
+  Always invoke to review, repair, or deliver geospatial or GeoAI code,
+  including contract compliance, security, error handling, transactions,
+  tests, scripts, functions, notebooks, packages, CI/CD, and repository
+  changes, even when deployment is not requested. Pair with the domain skill
+  for ETL and other production code. Covers CRS/data invariants, dependencies,
+  cross-platform reproducibility, automation, and shipping. Do not trigger for
+  unrelated software or analysis requesting no code or repository artifact.
 license: MIT
 metadata:
   version: "0.1.0"
