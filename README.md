@@ -9,7 +9,8 @@
 [![validate-skills](https://github.com/muend/geoai-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/muend/geoai-skills/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Skills](https://img.shields.io/badge/skills-18-brightgreen.svg)](#whats-inside)
-[![Routing: 100% precision, 92.9% recall](https://img.shields.io/badge/routing-100%25_precision_%7C_92.9%25_recall-2ea44f.svg)](BENCHMARK.md)
+[![Browse on skills.sh](https://img.shields.io/badge/skills.sh-browse-111111.svg)](https://www.skills.sh/muend/geoai-skills)
+[![Routing benchmark: 100% precision, 92.9% recall (17-skill suite)](https://img.shields.io/badge/routing_(17--skill_suite)-100%25_precision_%7C_92.9%25_recall-2ea44f.svg)](BENCHMARK.md)
 [![Spec](https://img.shields.io/badge/agentskills.io-compliant-orange.svg)](https://agentskills.io)
 
 ---
@@ -74,7 +75,29 @@ These skills encode the discipline that separates a practitioner from an API cal
 
 ## Installation
 
-**Claude Code / Cowork (as a plugin):**
+### Skills CLI / skills.sh
+
+Browse the complete collection on [skills.sh](https://www.skills.sh/muend/geoai-skills), or inspect the repository from the CLI without installing:
+
+```bash
+npx skills add muend/geoai-skills --list
+```
+
+Install all 18 skills for Claude Code:
+
+```bash
+npx skills add muend/geoai-skills --skill '*' -a claude-code
+```
+
+Install one specialist skill:
+
+```bash
+npx skills add muend/geoai-skills --skill remote-sensing-analysis -a claude-code
+```
+
+Run `npx skills add muend/geoai-skills` without additional flags for the interactive agent and skill picker.
+
+### Claude Code / Cowork plugin
 
 ```
 /plugin marketplace add muend/geoai-skills
