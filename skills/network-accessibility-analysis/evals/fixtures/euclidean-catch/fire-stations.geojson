@@ -1,0 +1,20 @@
+{
+  "type": "FeatureCollection",
+  "name": "synthetic_fire_stations",
+  "crs": {
+    "type": "name",
+    "properties": {"name": "urn:ogc:def:crs:EPSG::32633"}
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {"station_id": "FS-01", "name": "Central"},
+      "geometry": {"type": "Point", "coordinates": [500000, 5040000]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"station_id": "FS-02", "name": "East"},
+      "geometry": {"type": "Point", "coordinates": [508000, 5041000]}
+    }
+  ]
+}

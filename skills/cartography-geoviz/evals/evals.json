@@ -4,13 +4,40 @@
   "evals": [
     {
       "id": "choropleth-request",
-      "prompt": "Map COVID cases by county.",
+      "behavior_class": "artifact-producing",
+      "interaction_mode": "deliver",
+      "tool_profile": "workspace-write",
+      "prompt": "Using the complete synthetic fixtures inputs/counties.geojson and inputs/covid.csv, create a self-contained county COVID choropleth at outputs/covid-choropleth.html and machine-readable design metadata at outputs/covid-choropleth-metadata.json. Join on county_id, make the HTML directly viewable without external services, and do not ask for additional data.",
       "case_types": ["positive", "artifact-correctness"],
       "critical": true,
+      "fixtures": [
+        {
+          "source": "fixtures/choropleth-request/counties.geojson",
+          "workspace_path": "inputs/counties.geojson"
+        },
+        {
+          "source": "fixtures/choropleth-request/covid.csv",
+          "workspace_path": "inputs/covid.csv"
+        }
+      ],
+      "expected_artifacts": [
+        {
+          "path": "outputs/covid-choropleth.html",
+          "media_type": "text/html"
+        },
+        {
+          "path": "outputs/covid-choropleth-metadata.json",
+          "media_type": "application/json"
+        }
+      ],
       "expected_behavior": [
-        "Normalizes to rates per population before coloring (raw counts = population map)",
-        "States classification scheme with rationale; colorblind-safe ramp; NoData in neutral gray",
-        "Includes required furniture: units in legend, source, projection"
+        "Joins by county_id and colors the rate cases/population*100000 rather than raw counts",
+        "Uses and records a justified fixed classification, a colorblind-safe ramp, and neutral gray for the county with missing population",
+        "The HTML and metadata include legend units (cases per 100,000), synthetic source, CRS/projection, class edges, and accessible labels"
+      ],
+      "forbidden_behavior": [
+        "Colors raw case counts or silently treats missing population as zero",
+        "Uses a red-green ramp or omits the rate units from the legend"
       ]
     },
     {

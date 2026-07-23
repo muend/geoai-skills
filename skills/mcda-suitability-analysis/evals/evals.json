@@ -16,12 +16,32 @@
     },
     {
       "id": "inconsistent-ahp",
-      "prompt": "Here is my pairwise comparison matrix. Compute the weights.",
+      "behavior_class": "artifact-producing",
+      "interaction_mode": "deliver",
+      "tool_profile": "workspace-write",
+      "prompt": "Audit the complete reciprocal AHP matrix at inputs/pairwise-matrix.csv and write outputs/ahp-audit.json. The JSON must report the criterion order, reciprocity validation, diagnostic weights, lambda_max, CI, RI, CR, the acceptance threshold, decision status, and the inconsistent judgment cycle to revisit. Do not approve decision weights when the consistency gate fails.",
       "case_types": ["positive", "artifact-correctness"],
       "critical": true,
+      "fixtures": [
+        {
+          "source": "fixtures/inconsistent-ahp/pairwise-matrix.csv",
+          "workspace_path": "inputs/pairwise-matrix.csv"
+        }
+      ],
+      "expected_artifacts": [
+        {
+          "path": "outputs/ahp-audit.json",
+          "media_type": "application/json"
+        }
+      ],
       "expected_behavior": [
-        "Validates reciprocity and computes CR",
-        "If CR >= 0.10, sends the matrix back for revision instead of using the weights"
+        "Validates positivity and reciprocity and computes diagnostic weights, lambda_max, CI, RI=0.58, and CR for the three-criterion matrix",
+        "Because CR is at least 0.10, marks the decision revision_required and does not present the diagnostic vector as approved decision weights",
+        "Identifies the wind > slope > grid_distance > wind inconsistency cycle for stakeholder revision"
+      ],
+      "forbidden_behavior": [
+        "Marks the matrix accepted or uses its weights in a suitability decision despite CR >= 0.10",
+        "Silently changes matrix judgments to improve consistency"
       ]
     },
     {

@@ -1,0 +1,15 @@
+{
+  "purpose": "operational fire-response coverage",
+  "proposed_method": "five-kilometre Euclidean buffers",
+  "travel_mode": "emergency driving",
+  "response_threshold_minutes": 8,
+  "network_source": "municipal routable road graph",
+  "network_requirements": [
+    "one-way restrictions",
+    "turn restrictions",
+    "bridge and river barriers",
+    "edge travel times"
+  ],
+  "validation_requirement": "compare at least three routed trips with dispatch travel-time records",
+  "known_geographic_issue": "a river has only two vehicle crossings"
+}

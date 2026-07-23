@@ -16,12 +16,44 @@
     },
     {
       "id": "review-mode",
-      "prompt": "Review this PostGIS ingestion function that builds SQL from user input, swallows errors, and writes mixed-SRID geometries.",
+      "behavior_class": "artifact-producing",
+      "interaction_mode": "deliver",
+      "tool_profile": "workspace-write",
+      "prompt": "Review inputs/ingest.py against inputs/contract.json. Write a severity-ordered review to outputs/review.md, a corrected implementation to outputs/ingest_fixed.py, and focused pytest coverage to outputs/test_ingest_fixed.py. Treat the fixtures as complete and preserve the declared database contract.",
       "case_types": ["positive", "artifact-correctness"],
       "critical": true,
+      "fixtures": [
+        {
+          "source": "fixtures/review-mode/ingest_source.txt",
+          "workspace_path": "inputs/ingest.py"
+        },
+        {
+          "source": "fixtures/review-mode/contract.json",
+          "workspace_path": "inputs/contract.json"
+        }
+      ],
+      "expected_artifacts": [
+        {
+          "path": "outputs/review.md",
+          "media_type": "text/markdown"
+        },
+        {
+          "path": "outputs/ingest_fixed.py",
+          "media_type": "text/x-python"
+        },
+        {
+          "path": "outputs/test_ingest_fixed.py",
+          "media_type": "text/x-python"
+        }
+      ],
       "expected_behavior": [
-        "Orders findings by correctness, security, performance, then readability; flags SQL injection, bare except, and mixed SRIDs",
-        "Ships the fix as code using parameterized queries, specific exceptions, typed geometry, and validation"
+        "Orders findings by correctness, security, performance, then readability and identifies mixed SRIDs, SQL injection through identifiers and values, silent bare-except failure, and missing rollback",
+        "Uses psycopg SQL composition for the allowlisted table identifier, value parameters for WKT/SRID, explicit MULTIPOLYGON/3857 validation or transformation, and specific exceptions with rollback",
+        "Ships focused tests for malicious identifiers, parameterized WKT, unsupported SRID, and rollback plus propagated database context"
+      ],
+      "forbidden_behavior": [
+        "Interpolates the table identifier, WKT, or SRID directly into executable SQL",
+        "Keeps a bare exception handler or silently accepts mixed-SRID geometry"
       ]
     },
     {
