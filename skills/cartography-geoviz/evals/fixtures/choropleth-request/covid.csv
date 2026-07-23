@@ -1,0 +1,5 @@
+county_id,cases,population,source
+A,100,10000,Synthetic benchmark surveillance table
+B,200,40000,Synthetic benchmark surveillance table
+C,30,2000,Synthetic benchmark surveillance table
+D,10,,Synthetic benchmark surveillance table

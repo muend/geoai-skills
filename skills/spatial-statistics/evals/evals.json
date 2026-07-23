@@ -16,13 +16,26 @@
     },
     {
       "id": "ols-on-spatial",
-      "prompt": "Run a regression of house prices on square footage and distance to center for these listings.",
+      "behavior_class": "fixture-backed",
+      "interaction_mode": "deliver",
+      "tool_profile": "read-only",
+      "prompt": "Audit the complete spatial-regression diagnostic record at inputs/diagnostics.json. Select the defensible final model and report how square footage should be interpreted. Use the supplied permutation diagnostics and impacts; do not ask for raw listings or invent unavailable estimates.",
       "case_types": ["positive", "artifact-correctness"],
       "critical": true,
+      "fixtures": [
+        {
+          "source": "fixtures/ols-on-spatial/diagnostics.json",
+          "workspace_path": "inputs/diagnostics.json"
+        }
+      ],
       "expected_behavior": [
-        "Runs OLS with spatial diagnostics first, then follows the LM-test decision path to SAR/SEM if indicated",
-        "Reports residual Moran's I for the final model",
-        "In SAR, reports direct/indirect effects instead of reading raw coefficients"
+        "Rejects OLS residual independence and follows the robust LM results to the SAR candidate rather than SEM",
+        "Accepts the SAR residual diagnostic only after reporting Moran's I=0.02 and permutation p=0.28, while noting the SEM residual remains significant",
+        "Reports square-footage direct=0.44, indirect=0.19, and total=0.63 impacts instead of interpreting raw beta=0.37 as the marginal effect"
+      ],
+      "forbidden_behavior": [
+        "Accepts OLS despite significant residual Moran's I",
+        "Interprets the SAR raw coefficient as the complete square-footage effect"
       ]
     },
     {

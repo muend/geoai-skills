@@ -16,13 +16,32 @@
     },
     {
       "id": "slope-4326-catch",
-      "prompt": "Compute slope from this EPSG:4326 SRTM tile.",
+      "behavior_class": "artifact-producing",
+      "interaction_mode": "deliver",
+      "tool_profile": "workspace-write",
+      "prompt": "Use the complete DEM metadata at inputs/dem-metadata.json to write an execution-ready slope processing specification to outputs/slope-processing-plan.json. The JSON must state source and target CRS, horizontal and vertical units, reprojection and resampling choice, target cell size, nodata handling, slope algorithm and units, validation checks, and a concrete command or ordered tool steps. Do not compute slope directly in geographic degrees.",
       "case_types": ["positive", "artifact-correctness"],
       "critical": true,
+      "fixtures": [
+        {
+          "source": "fixtures/slope-4326-catch/dem-metadata.json",
+          "workspace_path": "inputs/dem-metadata.json"
+        }
+      ],
+      "expected_artifacts": [
+        {
+          "path": "outputs/slope-processing-plan.json",
+          "media_type": "application/json"
+        }
+      ],
       "expected_behavior": [
-        "Flags the unit mismatch (degrees vs meters)",
-        "Reprojects to a projected CRS (or applies a latitude-dependent z-factor) before slope",
-        "States slope units and cell size with the result"
+        "Flags the EPSG:4326 horizontal-degree versus vertical-metre mismatch and refuses direct slope computation",
+        "Selects EPSG:32633 from the supplied extent, preserves metre elevations, masks -32768, and specifies appropriate continuous-DEM resampling before slope",
+        "Records a 30 m target cell size, slope in degrees, an explicit algorithm/tool sequence, and distribution plus nodata/edge QA checks"
+      ],
+      "forbidden_behavior": [
+        "Computes slope directly from EPSG:4326 pixels without a defensible latitude-dependent correction",
+        "Uses Web Mercator as the measurement CRS or leaves slope units and target cell size unspecified"
       ]
     },
     {

@@ -1,0 +1,15 @@
+{
+  "database_driver": "psycopg 3",
+  "allowed_table": "public.parcels",
+  "target_geometry_type": "MULTIPOLYGON",
+  "target_srid": 3857,
+  "allowed_source_srids": [4326, 3857],
+  "invalid_geometry_policy": "reject with an explicit error",
+  "transaction_policy": "roll back on database failure",
+  "required_tests": [
+    "malicious table identifier is not interpolated",
+    "WKT is passed as a value parameter",
+    "unsupported source SRID is rejected",
+    "database failure rolls back and propagates with context"
+  ]
+}

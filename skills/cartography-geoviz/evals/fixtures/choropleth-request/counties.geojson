@@ -1,0 +1,30 @@
+{
+  "type": "FeatureCollection",
+  "name": "synthetic_counties",
+  "crs": {
+    "type": "name",
+    "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {"county_id": "A", "name": "Northwest"},
+      "geometry": {"type": "Polygon", "coordinates": [[[0, 1], [1, 1], [1, 2], [0, 2], [0, 1]]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"county_id": "B", "name": "Northeast"},
+      "geometry": {"type": "Polygon", "coordinates": [[[1, 1], [2, 1], [2, 2], [1, 2], [1, 1]]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"county_id": "C", "name": "Southwest"},
+      "geometry": {"type": "Polygon", "coordinates": [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"county_id": "D", "name": "Southeast"},
+      "geometry": {"type": "Polygon", "coordinates": [[[1, 0], [2, 0], [2, 1], [1, 1], [1, 0]]]}
+    }
+  ]
+}

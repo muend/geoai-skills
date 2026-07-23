@@ -1,0 +1,4 @@
+criterion,wind,slope,grid_distance
+wind,1,9,0.1111111111
+slope,0.1111111111,1,9
+grid_distance,9,0.1111111111,1

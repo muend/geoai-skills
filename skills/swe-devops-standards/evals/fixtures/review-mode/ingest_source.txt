@@ -1,0 +1,10 @@
+def ingest_geometry(conn, table_name, source_srid, geometry_wkt):
+    try:
+        sql = (
+            f"INSERT INTO {table_name} (geom) "
+            f"VALUES (ST_GeomFromText('{geometry_wkt}', {source_srid}))"
+        )
+        conn.execute(sql)
+        conn.commit()
+    except:
+        pass

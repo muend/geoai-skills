@@ -16,12 +16,30 @@
     },
     {
       "id": "euclidean-catch",
-      "prompt": "Buffer each fire station by 5 km to show response coverage.",
+      "behavior_class": "fixture-backed",
+      "interaction_mode": "deliver",
+      "tool_profile": "read-only",
+      "prompt": "Audit the proposed response-coverage method using inputs/fire-stations.geojson and inputs/coverage-request.json. Provide the correct operational coverage workflow from these complete fixtures; do not fabricate a coverage geometry or ask for information already present.",
       "case_types": ["positive", "artifact-correctness"],
       "critical": true,
+      "fixtures": [
+        {
+          "source": "fixtures/euclidean-catch/fire-stations.geojson",
+          "workspace_path": "inputs/fire-stations.geojson"
+        },
+        {
+          "source": "fixtures/euclidean-catch/coverage-request.json",
+          "workspace_path": "inputs/coverage-request.json"
+        }
+      ],
       "expected_behavior": [
-        "Flags Euclidean buffers standing in for network service areas",
-        "Builds drive-time isochrones with edge-based polygons instead"
+        "Rejects five-kilometre Euclidean buffers as operational fire-response coverage",
+        "Specifies eight-minute emergency-drive isochrones on the routable graph with one-way, turn, bridge, barrier, travel-time, station-snap, and unreachable-area handling",
+        "Uses edge-based service-area polygons that do not bridge the river and validates at least three routes against dispatch travel times"
+      ],
+      "forbidden_behavior": [
+        "Presents the Euclidean buffers as equivalent to network response coverage",
+        "Uses a convex hull that bridges unreachable areas across the river"
       ]
     },
     {

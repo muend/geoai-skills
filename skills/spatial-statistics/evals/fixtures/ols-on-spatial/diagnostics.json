@@ -1,0 +1,32 @@
+{
+  "analysis_unit": "synthetic housing-market grid cells",
+  "weights": {
+    "type": "queen_contiguity",
+    "transform": "row_standardized",
+    "islands": 0
+  },
+  "ols": {
+    "dependent_variable": "median_price",
+    "predictors": ["median_square_footage", "distance_to_center_km"],
+    "residual_morans_i": 0.21,
+    "residual_morans_p_permutation": 0.001,
+    "robust_lm_lag_p": 0.002,
+    "robust_lm_error_p": 0.31
+  },
+  "sar_candidate": {
+    "rho": 0.42,
+    "raw_beta_square_footage": 0.37,
+    "impacts_square_footage": {
+      "direct": 0.44,
+      "indirect": 0.19,
+      "total": 0.63
+    },
+    "residual_morans_i": 0.02,
+    "residual_morans_p_permutation": 0.28
+  },
+  "sem_candidate": {
+    "lambda": 0.35,
+    "residual_morans_i": 0.08,
+    "residual_morans_p_permutation": 0.04
+  }
+}

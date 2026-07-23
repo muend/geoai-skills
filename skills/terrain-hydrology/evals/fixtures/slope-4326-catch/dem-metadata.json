@@ -1,0 +1,12 @@
+{
+  "dataset": "synthetic SRTM-like DEM fixture",
+  "horizontal_crs": "EPSG:4326",
+  "horizontal_units": "degrees",
+  "vertical_units": "metres",
+  "pixel_size": [0.0002777778, -0.0002777778],
+  "bounds": [12.0, 45.0, 13.0, 46.0],
+  "nodata": -32768,
+  "intended_output": "slope in degrees",
+  "production_resolution_target_metres": 30,
+  "location_note": "The full extent lies within UTM zone 33N."
+}
