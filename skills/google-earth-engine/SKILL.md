@@ -22,6 +22,35 @@ Python `if` on server objects), **unbounded computation** (timeouts from
 unscaled reductions), and **silent default scales** (statistics computed
 at the wrong resolution).
 
+## Should this run here at all? — Earth Engine versus local
+
+Answer this before writing any `ee.` code. The decision turns on six things, and
+you cannot make it without them, so establish them first — asking alongside a
+provisional recommendation, never instead of one:
+
+1. **Archive extent and duration** — area, and how many years at what revisit.
+   This is what makes server-side worth its constraints; a single scene does not.
+2. **Algorithm expressibility** — can the work be written as masks, reducers and
+   band math? Anything needing arbitrary per-pixel iteration, a custom solver, or
+   a Python library GEE does not host belongs local.
+3. **Data locality and sensitivity** — restricted or offline data cannot be
+   uploaded, and that ends the discussion regardless of scale.
+4. **Interactive limits versus batch** — see [Quotas and etiquette](#quotas-and-etiquette).
+   Anything beyond a ~5 minute interactive request has to be designed as a batch
+   export from the start, not retrofitted when `getInfo` times out.
+5. **Export volume** — what actually comes back: a few reduced statistics, or
+   full-resolution per-pixel stacks you will store and reprocess locally.
+6. **Reproducibility cost** — the real price of moving server-side. The catalog
+   version can shift under you and the computation leaves no local trace, so
+   choosing GEE obliges you to ship the [provenance record](#provenance-record).
+   State this cost when you recommend GEE; a recommendation that omits it is
+   incomplete.
+
+Recommend Earth Engine only when 1 and 2 favour it and 3 permits it. When the
+answer is genuinely balanced, say so and name the deciding question rather than
+defaulting to the platform this skill is about. `xee` and STAC + `stackstac` /
+`odc-stac` are the middle paths worth naming: catalog access with local compute.
+
 ## Mental model — everything is deferred
 
 `ee.Image`, `ee.ImageCollection`, `ee.FeatureCollection` are **server-side
