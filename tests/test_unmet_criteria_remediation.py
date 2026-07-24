@@ -87,11 +87,78 @@ def test_crs_and_time_base_are_declared_before_any_threshold() -> None:
     )
 
 
-def test_unknown_crs_or_timezone_is_a_question_not_a_default() -> None:
+def test_declaring_an_unknown_crs_must_not_withhold_the_method() -> None:
+    """Tranche 1 regression: the gate turned two deliver cases into file requests.
+
+    Both `fleet-stops` and `timestamp-order-audit` collapsed into bare requests
+    for the file — the latter despite a prompt that states every defect. The
+    gate must require the assumption to be declared, never accepted as grounds
+    to stop.
+    """
     skill = _skill("movement-trajectory")
 
-    assert "that is a question to ask, not a default to assume" in skill
-    assert "never silently treat naive timestamps as UTC" in skill
+    assert "**Declaring is not withholding.**" in skill
+    assert (
+        "An unknown CRS or timezone is never grounds to stop and ask instead of "
+        "answering" in skill
+    )
+    assert "Ask alongside the answer, never instead of it" in skill
+    assert "has failed this skill even if the question is a good one" in skill
+
+
+def test_naive_timestamp_rule_survives_the_regression_fix() -> None:
+    """Loosening the stop-and-ask reading must not license silent UTC coercion."""
+    skill = _skill("movement-trajectory")
+
+    assert "Never silently treat naive timestamps as UTC" in skill
+    assert (
+        "an assumption you have labelled and surfaced is exactly what is wanted"
+        in skill
+    )
+
+
+def test_earth_engine_documents_the_platform_decision_it_claims_to_cover() -> None:
+    """The description promised the local-versus-GEE decision; the body omitted it."""
+    text = (ROOT / "skills" / "google-earth-engine" / "SKILL.md").read_text(
+        encoding="utf-8"
+    )
+    skill = _skill("google-earth-engine")
+
+    assert "## Should this run here at all? — Earth Engine versus local" in text
+    assert text.index("Should this run here at all?") < text.index("## Mental model"), (
+        "the platform decision must precede the implementation guidance"
+    )
+
+    for factor in (
+        "**Archive extent and duration**",
+        "**Algorithm expressibility**",
+        "**Data locality and sensitivity**",
+        "**Interactive limits versus batch**",
+        "**Export volume**",
+        "**Reproducibility cost**",
+    ):
+        assert factor in skill
+
+
+def test_platform_decision_links_provenance_and_quota_sections() -> None:
+    """Provenance did not reach behaviour because nothing pointed at it."""
+    skill = _skill("google-earth-engine")
+
+    assert "[provenance record](#provenance-record)" in skill
+    assert "[Quotas and etiquette](#quotas-and-etiquette)" in skill
+    assert "a recommendation that omits it is incomplete" in skill
+
+
+def test_platform_decision_does_not_default_to_earth_engine() -> None:
+    skill = _skill("google-earth-engine")
+
+    assert (
+        "name the deciding question rather than defaulting to the platform this "
+        "skill is about" in skill
+    )
+    assert (
+        "asking alongside a provisional recommendation, never instead of one" in skill
+    )
 
 
 # --------------------------------------------------------------------------

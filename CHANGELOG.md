@@ -101,6 +101,22 @@ required before the first stable release.
   they were computed against, and are no longer presented as describing the
   skills shipped today.
 
+- `movement-trajectory` no longer treats an unknown CRS or timezone as grounds to
+  withhold the method. The earlier rule — "an unknown input CRS or timezone is a
+  question to ask, not a default to assume" — read as licence to stop: a measured
+  run showed two delivery cases collapse into bare requests for the file, one of
+  them despite a prompt that stated every defect explicitly. The assumption must
+  now be declared and named alongside the delivered cleaning steps, parameters,
+  and sensitivity check. Asking in place of answering is now an explicit failure;
+  silent UTC coercion remains prohibited.
+- `google-earth-engine` now documents the local-versus-Earth-Engine decision its
+  own description already claimed to cover but the body omitted entirely. The new
+  section precedes the implementation guidance and turns on archive extent,
+  algorithm expressibility, data locality, interactive-versus-batch limits, export
+  volume, and reproducibility cost — the last of which now links the provenance
+  record, so choosing Earth Engine surfaces the obligation rather than leaving it
+  in an unreferenced later section.
+
 ### Changed
 - Three evaluation criteria that bundled several independent requirements into
   one pass/fail row were decomposed so partial delivery is distinguishable from

@@ -54,8 +54,20 @@ used**:
    boundary gains or loses an hour, and stop durations silently corrupt.
 
 State both before proposing a radius or duration, not afterwards as a caveat.
-If the CRS or timezone of the input is unknown, that is a question to ask, not
-a default to assume — never silently treat naive timestamps as UTC.
+
+**Declaring is not withholding.** An unknown CRS or timezone is never grounds to
+stop and ask instead of answering. State it as an explicit, named assumption and
+deliver the method anyway:
+
+> Assuming a local UTM zone for distance and that timestamps are naive local time
+> needing UTC normalisation — confirm both, since they change dwell durations.
+
+Then give the cleaning steps, the parameters, and the sensitivity check. A
+response that asks for the CRS, the timezone, or the file *in place of* the
+method has failed this skill even if the question is a good one. Ask alongside
+the answer, never instead of it. Never silently treat naive timestamps as UTC —
+but "silently" is the operative word: an assumption you have labelled and
+surfaced is exactly what is wanted.
 
 ## Cleaning pipeline (in order)
 
