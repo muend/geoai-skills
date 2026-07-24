@@ -52,3 +52,19 @@ required before the first stable release.
   non-skill tool parity.
 - The SWE/DevOps skill now front-loads geospatial code-review and repair intent
   while retaining explicit no-code analysis boundaries and regression coverage.
+- `geoai-orchestrator` now routes by invoking rather than by naming. A new
+  routing gate precedes and explicitly overrides the pipeline template, which
+  previously told the model to publish a plan and wait for confirmation; that
+  document-order contradiction let the skill identify the correct specialists
+  and then offer to hand off later instead of doing so. The gate requires every
+  finding to be routed, forbids making routing conditional on permission,
+  states that clarification never substitutes for routing, and treats audit
+  requests as delivery requests. The single-specialist negative boundary is
+  unchanged and regression-locked.
+- `point-cloud-lidar` now treats recording the vertical datum as an obligation
+  distinct from reporting it. The verification protocol previously asked only
+  that the datum be reported in the answer, so a resolved datum, its geoid
+  model, its transformation, and any per-tile offsets were never persisted into
+  the delivered product. A new resolve/transform/record section enumerates the
+  required machine-readable metadata fields, and an unresolvable datum must ship
+  as a labelled provisional product rather than silently.

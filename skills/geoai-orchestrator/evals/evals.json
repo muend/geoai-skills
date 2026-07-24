@@ -12,6 +12,9 @@
         "Produces a numbered pipeline plan BEFORE writing code, with one verification criterion per stage",
         "Routes stages to geo-data-engineering, remote-sensing-analysis, terrain-hydrology, mcda-suitability-analysis, cartography-geoviz",
         "Reports the CRS of every input on first contact and reprojects before area/distance computation"
+      ],
+      "forbidden_behavior": [
+        "Must not present the pipeline plan as a proposal awaiting approval instead of invoking the specialists it names"
       ]
     },
     {
@@ -54,6 +57,9 @@
         "Clarifies the decision, hazard scenario, accessibility metric, population unit, and deliverable before implementation",
         "Creates a staged plan spanning data engineering, terrain hydrology, network accessibility, and cartographic delivery",
         "Assigns an explicit verification gate and handoff artifact to every stage"
+      ],
+      "forbidden_behavior": [
+        "Must not withhold the staged plan and its routed specialists pending an answer to the scope question"
       ]
     },
     {
@@ -67,6 +73,10 @@
         "Finds the CRS, spatial leakage, change-area accuracy, and projection failures across the pipeline",
         "Routes each correction to the appropriate specialist instead of treating failures independently",
         "Produces a revised ordered plan with a measurable verification gate per stage"
+      ],
+      "forbidden_behavior": [
+        "Must not offer to route corrections conditionally, defer routed handoffs to a later turn, or name a specialist without invoking it",
+        "Must not route only a subset of the findings while handling the remainder inline"
       ]
     },
     {

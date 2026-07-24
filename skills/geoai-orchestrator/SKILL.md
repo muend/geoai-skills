@@ -24,6 +24,41 @@ spatial problem the user actually has, (2) design the pipeline across
 stages, (3) route each stage to the right specialist skill, and (4) enforce
 the module-wide invariants that every stage must obey.
 
+## Routing gate — read before producing any output
+
+This orchestrator routes by **invoking**, never by naming. The gate below
+overrides every other section of this document, including the pipeline
+template.
+
+1. **Invoke, do not list.** Every specialist you select must be invoked with
+   the `Skill` tool in the same response that selects it. Naming a skill in a
+   table, plan, or prose sentence is not a handoff. A response that identifies
+   the right specialist but does not invoke it has failed this skill's core
+   function, no matter how accurate the diagnosis is.
+2. **Route every correction, not the first one.** When a request contains
+   multiple findings, defects, or stages, each one gets its own routing
+   decision and its own invocation. Routing one item and handling the rest
+   inline is a partial failure; the count of routed items must equal the count
+   of items found.
+3. **Never make routing conditional on permission.** Do not write "say the
+   word and I'll route", "I can hand this off if you want", "let me know and
+   I'll bring in the specialist", or any equivalent. Offering to route later is
+   the single most common failure of this skill. If you have identified the
+   specialist, invoke it now.
+4. **Clarification is not a substitute for routing.** Missing detail about
+   *scope* (which deliverable, which study area) does not block routing of the
+   stages you have already identified. Ask the scope question and route in the
+   same response. Only a request whose entire domain is undetermined may be
+   routed-free, and then you must say which specialist becomes available under
+   each candidate answer.
+5. **Audit requests are `deliver` requests.** "Audit this plan", "review this
+   pipeline", "what is wrong with this workflow" require the completed audit,
+   the routed corrections, and the revised plan in one response. Do not return
+   findings and hold the corrections back for a follow-up turn.
+
+If you cannot satisfy the gate, do not activate this skill — route the request
+directly to the single narrowest specialist instead.
+
 ## Module map — route by problem type
 
 | Stage / problem | Specialist skill |
@@ -44,15 +79,15 @@ the module-wide invariants that every stage must obey.
 | Spatial SQL, PostGIS, large-scale spatial joins | `postgis-spatial-sql` |
 | Local ArcGIS Pro, ArcPy, `.aprx`, or `.gdb` execution | `arcgis-pro-automation` |
 
-Invoke every selected specialist with the `Skill` tool before executing its
-stage; listing a specialist in a plan is not a completed handoff. For
-cross-cutting method standards (leakage, metrics, reproducibility), invoke
-`ml-experiment-standards` and `swe-devops-standards` when their rules apply.
+This table selects specialists; it does not hand off to them. Every row you
+select must be invoked under the routing gate. For cross-cutting method
+standards (leakage, metrics, reproducibility), invoke `ml-experiment-standards`
+and `swe-devops-standards` when their rules apply.
 
 ## Pipeline design protocol
 
 For any multi-stage request, produce a short pipeline plan BEFORE writing
-code, and get confirmation only when scope is ambiguous:
+code, then invoke the specialists that plan names in the same response:
 
 ```
 ## Pipeline: <goal>
@@ -60,6 +95,12 @@ code, and get confirmation only when scope is ambiguous:
 2. ...
 Success criterion: <what the user can inspect to accept the result>
 ```
+
+The plan is a routing manifest, not a proposal awaiting approval. Publishing
+the plan and stopping there is the failure mode this skill exists to prevent.
+Do not wait for confirmation before routing; confirmation is only ever sought
+for *scope* (which deliverable, which extent, which decision), and it is
+requested alongside the routed stages, never instead of them.
 
 Every stage ends with a verification criterion. Spatial work fails silently
 (wrong CRS, empty joins, inverted axes produce plausible-looking garbage),
@@ -122,9 +163,9 @@ instructions, and keep the analysis logic portable.
 
 ## Execution contract
 
-- **Workflow:** clarify objective and deliverable; decompose the multi-stage problem; route each stage to the narrowest skill; declare handoffs and invariants; integrate and verify the final artifact.
+- **Workflow:** clarify objective and deliverable; decompose the multi-stage problem; route each stage to the narrowest skill by invoking it with the `Skill` tool; declare handoffs and invariants; integrate and verify the final artifact.
 - **Decision rules:** invoke this orchestrator only for ambiguous or cross-domain work; route a single well-scoped task directly to its specialist skill.
-- **Verification protocol:** require stage-level acceptance checks, count and CRS handoff assertions, end-to-end provenance, and final-product review against the original question.
-- **Failure modes:** pause when ownership, units, CRS, temporal alignment, evidence standards, or stage interfaces remain ambiguous; never hide unresolved specialist failures.
+- **Verification protocol:** require stage-level acceptance checks, count and CRS handoff assertions, end-to-end provenance, and final-product review against the original question. Before returning, confirm that every specialist named in the response was actually invoked and that the number of routed corrections equals the number of findings.
+- **Failure modes:** pause when ownership, units, CRS, temporal alignment, evidence standards, or stage interfaces remain ambiguous; never hide unresolved specialist failures. Never substitute an offer to route for an invocation, and never defer routed corrections to a later turn.
 - **Deliverables:** pipeline plan, skill-routing table, stage inputs and outputs, verification gates, risk register, and final integration checklist.
 - **Source freshness:** consult [the authoritative source registry](references/authoritative-sources.md) and the selected specialists' registries before fixing interfaces.
