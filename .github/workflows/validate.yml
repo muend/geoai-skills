@@ -19,6 +19,12 @@ jobs:
         run: python tools/validate_skills.py
       - name: Validate evaluation suite
         run: python tools/validate_evals.py
+      - name: Check regression gates
+        # Behaviour and routing quality can only be measured by paid model runs,
+        # so CI cannot re-measure them here. These gates block the two ways
+        # quality degrades silently between runs: deleting the criterion that was
+        # failing, and leaving a stale benchmark presenting itself as current.
+        run: python tools/check_regression_gates.py
       - name: Install official Agent Skills reference validator
         run: >-
           pip install

@@ -295,3 +295,51 @@ routing and behavior claims cannot be accidentally conflated.
 - [ ] Publish suite hash, judge identity, sample size, and missing/error counts with every metric.
 - [ ] Require zero observed critical failures and disclose the exact one-sided 95% upper bound with its evaluated case count.
 - [ ] Never compare runs whose suite hashes differ without disclosing the suite change.
+
+## Regression gates in CI
+
+Behaviour and routing quality can only be measured by paid model runs, so CI
+cannot re-measure them on every pull request. `tools/check_regression_gates.py`
+blocks the two ways quality degrades silently between runs:
+
+```bash
+python tools/check_regression_gates.py                  # run both gates
+python tools/check_regression_gates.py --write-baseline  # seed/refresh Gate A
+```
+
+**Gate A — rubric non-weakening.** The cheapest way to make a failing score
+improve is to delete the criterion that was failing. Every expected and
+forbidden criterion is pinned in `evals/rubric-baseline.json`. Criteria may be
+added freely. An expected criterion may be *decomposed* into finer criteria when
+the decomposition is declared in the baseline's `decompositions` block, naming
+the replaced text and at least two replacements, all of which must be present —
+a one-to-one "decomposition" is a rewording and is rejected. Forbidden criteria
+are prohibitions and are never decomposed away.
+
+When a split is intended, add the declaration and then refresh the baseline:
+
+```json
+"decompositions": {
+  "<skill>/<case>": [
+    {"replaced": "<the old single criterion>", "with": ["<part 1>", "<part 2>"]}
+  ]
+}
+```
+
+Note that decomposition changes what criterion-attainment rates mean. Strict case
+pass rates are unaffected, but a response meeting two of four requirements scores
+2/4 where it previously scored 0/1, so attainment figures across a decomposition
+boundary are not comparable and must name the rubric version they were computed
+under.
+
+The baseline is forward-looking: it constrains changes made after it was seeded
+and makes no claim about the history before that point.
+
+**Gate B — benchmark currency.** Published benchmark artefacts are computed
+against one immutable suite hash. When a skill or eval changes, that hash changes
+and the published numbers stop describing the current repository. This gate
+recomputes the suite hash and requires every directory under `benchmarks/` to
+state `Suite state: current` or `Suite state: superseded` in its README, failing
+when the declaration disagrees with the computed truth. A superseded benchmark
+stays published — its evidence remains valid for the suite it was computed
+against — but it may not present itself as describing the current skills.
