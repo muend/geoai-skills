@@ -21,6 +21,29 @@ dominate this field designed out from the start: **spatial leakage**
 (inflated metrics from nearby train/test pixels) and **georeferencing loss**
 (predictions that no longer align with the map).
 
+## Characterise the label set before naming an architecture
+
+Architecture advice given without knowing the label set is guesswork. Before
+recommending U-Net versus a foundation model versus a non-deep baseline, state
+or ask for:
+
+- **Label count and labelled area** — polygons alone say nothing; 40 polygons
+  covering 2 ha and 40 covering 2 000 km² are different problems.
+- **Geographic spread** — are the labels clustered in one scene, one season and
+  one sensor, or distributed across the deployment domain? Clustered labels cap
+  what any model can generalise to, and they decide whether a geographically
+  independent validation split is even constructible.
+- **Class balance and minority-class pixel fraction**, so loss and sampling
+  choices are grounded rather than assumed.
+- **Deployment geography** — where predictions will be made, relative to where
+  the labels are.
+
+Do not answer "fine-tune a large model or use a simpler approach" before these
+are known. When the user has not supplied them, ask and give the provisional
+recommendation *conditioned on* the answers ("if the 40 polygons sit in one
+scene, then …; if they span the region, then …"), never a single unconditional
+recommendation.
+
 ## Problem framing first
 
 | Task | Head/architecture default | Metric |

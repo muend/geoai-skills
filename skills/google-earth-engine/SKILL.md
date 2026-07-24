@@ -119,6 +119,28 @@ Batch tasks queue (check task status; don't fire hundreds blindly).
 Interactive requests time out at ~5 min — long jobs go to batch export.
 Cache intermediate products as assets when a pipeline reuses them.
 
+## Provenance record
+
+Server-side computation is invisible after the fact: the catalog moves under
+you, a reducer default changes the number, and nothing in the exported file
+says which archive produced it. Every Earth Engine deliverable ships with a
+provenance record, emitted as a sidecar JSON next to the export — not left
+in the notebook:
+
+- **Catalog asset IDs with their version suffix** (`COPERNICUS/S2_SR_HARMONIZED`
+  and the specific collection version), plus the date range and filters applied.
+- **Mask method and thresholds** — cloud probability source, threshold value,
+  and any morphological buffer.
+- **Reducers and their arguments**, including `tileScale`, `bestEffort`, and
+  any `crsTransform`.
+- **Export parameters**: `region`, `scale`, `crs`, `maxPixels`, and the task ID.
+- **Run date and the `ee.__version__` / API client version**, because
+  server-side defaults change without notice.
+
+Recommending Earth Engine over a local workflow is incomplete without this:
+the reproducibility cost is the main thing the user trades away by moving
+server-side, so state how it is recovered.
+
 ## Verification protocol
 
 1. Probe: `composite.select("B4").projection().nominalScale().getInfo()`

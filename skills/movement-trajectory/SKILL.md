@@ -39,9 +39,23 @@ gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.lon, df.lat),
 tc = mpd.TrajectoryCollection(gdf, "object_id", t="timestamp")
 ```
 
-Work in a projected CRS for all speed/distance computation; keep
-timestamps timezone-aware UTC (mixed local times create midnight
-teleports).
+### Declare CRS and time base before any threshold
+
+Every distance radius, speed limit and dwell duration in this skill is
+meaningless until two things are stated **in the answer, before the number is
+used**:
+
+1. **The projected CRS** all distance and speed computation runs in — a "50 m
+   stop radius" applied to raw lon/lat degrees is not 50 m anywhere, and the
+   error scales with latitude. Name the CRS (`estimate_utm_crs()` for a local
+   fleet, an equal-distance projection for continental extents).
+2. **The timestamp base**, normalised to timezone-aware UTC. Fleet logs mix
+   local times, DST shifts and naive strings; a dwell that straddles a DST
+   boundary gains or loses an hour, and stop durations silently corrupt.
+
+State both before proposing a radius or duration, not afterwards as a caveat.
+If the CRS or timezone of the input is unknown, that is a question to ask, not
+a default to assume — never silently treat naive timestamps as UTC.
 
 ## Cleaning pipeline (in order)
 
