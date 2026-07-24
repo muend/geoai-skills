@@ -69,6 +69,17 @@ ANALYZE parcels;
   analysis CRS is not yet known, either use 4326 geography for a geodesic
   result or stop and select a verified local/equal-area CRS; do not present a
   known-distorting CRS as a runnable measurement alternative.
+- **Any stored geometry column you recommend must be typed with its SRID.**
+  Advising a "second projected geometry column" for repeated measurement is
+  incomplete until it is written as `geometry(<Type>, <SRID>)` with the index
+  and the populating `ST_Transform`. An untyped column recommended as a fix
+  reintroduces the mixed-SRID problem it was meant to solve:
+
+  ```sql
+  ALTER TABLE parcels ADD COLUMN geom_32633 geometry(MultiPolygon, 32633);
+  UPDATE parcels SET geom_32633 = ST_Transform(geom, 32633);
+  CREATE INDEX parcels_geom_32633_gix ON parcels USING gist (geom_32633);
+  ```
 - GiST index on every geometry column, `ANALYZE` after bulk loads; BRIN
   only for huge, spatially-ordered, append-only tables.
 - Load paths: `ogr2ogr -f PostgreSQL`, `shp2pgsql`, or GeoPandas

@@ -44,7 +44,8 @@
       "expected_behavior": [
         "Identifies CRS metadata loss and refuses to infer a CRS from coordinate ranges alone",
         "Preserves or explicitly assigns verified CRS and validates geometry bounds after every conversion",
-        "Adds row, null-geometry, validity, and extent accounting to the pipeline"
+        "Adds row-count and null-geometry accounting between every pipeline stage",
+        "Adds geometry validity and extent accounting after every conversion"
       ]
     },
     {

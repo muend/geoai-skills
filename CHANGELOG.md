@@ -68,3 +68,32 @@ required before the first stable release.
   the delivered product. A new resolve/transform/record section enumerates the
   required machine-readable metadata fields, and an unresolvable datum must ship
   as a labelled provisional product rather than silently.
+- `geo-deep-learning` now requires the label set to be characterised — count,
+  labelled area, geographic spread, class balance, and deployment geography —
+  before any architecture is recommended, and requires recommendations to be
+  conditioned on those answers when they are unknown rather than issued
+  unconditionally.
+- `movement-trajectory` now requires the projected CRS and the UTC-normalised
+  timestamp base to be declared before any distance radius, speed limit, or
+  dwell duration is proposed. An unknown input CRS or timezone is a question,
+  not a default; naive timestamps are never silently treated as UTC.
+- `postgis-spatial-sql` now requires any recommended stored geometry column to
+  be typed with its SRID, with the index and populating `ST_Transform` shown.
+  An untyped column offered as a fix reintroduces the mixed-SRID problem it was
+  meant to solve.
+- `google-earth-engine` now defines a provenance record as a named deliverable
+  emitted beside the export — catalog asset IDs with version, date ranges and
+  filters, mask method and thresholds, reducer arguments, export parameters,
+  and the run date and API client version.
+
+### Changed
+- Three evaluation criteria that bundled several independent requirements into
+  one pass/fail row were decomposed so partial delivery is distinguishable from
+  none: the leakage-audit fold/uncertainty/overlap/held-out row, the CRS-loss
+  row/null-geometry/validity/extent accounting row, and the Earth Engine
+  quota-and-provenance row. No requirement was removed, weakened, or reworded,
+  and tests assert that each original conjunct still appears. Note that
+  criterion-attainment rates computed before and after this decomposition are
+  **not comparable** — strict case pass rates are unaffected, but a response
+  satisfying two of four requirements now scores 2/4 on rows where it
+  previously scored 0/1.

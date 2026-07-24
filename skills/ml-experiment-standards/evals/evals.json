@@ -44,7 +44,9 @@
       "expected_behavior": [
         "Finds preprocessing, spatial, and selective-reporting leakage",
         "Moves learned preprocessing into a pipeline fitted inside geographically blocked folds",
-        "Requires all-fold metrics, uncertainty, overlap checks, and a held-out final test policy"
+        "Requires metrics across all folds reported with an explicit uncertainty measure rather than a single best fold",
+        "Requires an explicit train/test spatial overlap check between folds",
+        "Requires a held-out final test policy that is touched once, after model selection"
       ]
     },
     {

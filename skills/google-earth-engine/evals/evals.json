@@ -55,7 +55,8 @@
       "expected_behavior": [
         "Clarifies archive size, algorithms, data locality, quotas, reproducibility, and export needs",
         "Chooses Earth Engine only when server-side catalog and computation advantages outweigh constraints",
-        "Provides a quota-aware batching and provenance plan"
+        "Provides a quota-aware batching plan for interactive limits and batch export",
+        "Provides a provenance record pinning catalog assets, filters, reducers, and export parameters"
       ]
     },
     {
