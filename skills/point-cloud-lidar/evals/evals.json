@@ -44,6 +44,10 @@
         "Stops height comparison until horizontal and vertical CRS and geoid transformations are resolved",
         "Checks overlapping strips and tile seams numerically and with cross-sections",
         "Records the verified vertical datum and transformation in output metadata"
+      ],
+      "forbidden_behavior": [
+        "Must not treat stating the vertical datum in the answer as satisfying the requirement to record it in the output metadata",
+        "Must not deliver a corrected height product without the applied geoid model, transformation, and any per-tile offsets recorded"
       ]
     },
     {
