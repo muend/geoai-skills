@@ -5,6 +5,7 @@ in the repository [benchmark card](../../BENCHMARK.md).
 
 ## Provenance
 
+- Suite state: `superseded`
 - Runtime: `claude-code-2.1.214`
 - Model: `claude-sonnet-5`
 - Conditions: `skills-enabled` and `skills-disabled`
@@ -12,6 +13,19 @@ in the repository [benchmark card](../../BENCHMARK.md).
 - Suite SHA-256: `d45ad2c8263584f21dd500bcd6c4e8cdeeb38ed9cd18205f66a4570224ff8801`
 - Behavior judgments: none; behavior status is `not_evaluated`
 - Retry policy: primary records retained; no error was replaced by a retry
+
+### What `superseded` means here
+
+These numbers describe a 17-skill, 120-case suite that no longer exists in the
+repository. Since this run, `arcgis-pro-automation` was added and several skills
+were revised, so the current suite has a different SHA-256 and a different case
+count. The routing figures below remain valid evidence **for the suite they were
+computed against**, and remain reproducible from the recorded hash — but they do
+not describe the skills currently shipped here, and must not be cited as if they
+did.
+
+`tools/check_regression_gates.py` recomputes the current suite hash on every CI
+run and fails if this line claims currency it does not have.
 
 The disabled control used the same model, runtime, prompts, and non-skill tool
 configuration while exposing no Agent Skills.

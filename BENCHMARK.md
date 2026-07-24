@@ -6,6 +6,7 @@ pair below. These are routing results, not claims about answer quality.
 
 | Field | Value |
 |---|---|
+| Suite state | `superseded` — see [scope and limitations](#scope-and-limitations) |
 | Runtime | Claude Code `2.1.214` |
 | Model | `claude-sonnet-5` |
 | Skills | 17 |
@@ -97,8 +98,18 @@ closed if behavior judgments are present.
 
 - Results apply only to the declared runtime/model pair. Triggering can differ across
   Claude, Codex, Cursor, versions, and model families.
-- The later `arcgis-pro-automation` skill and its evals are outside this frozen
-  17-skill suite and receive no headline metric until a new exact pair is published.
+- **This suite is superseded.** The results describe the frozen 17-skill, 120-case
+  suite identified by the SHA-256 above. Since that run, `arcgis-pro-automation`
+  was added and six skills were revised — `geoai-orchestrator`,
+  `point-cloud-lidar`, `geo-deep-learning`, `movement-trajectory`,
+  `postgis-spatial-sql`, and `google-earth-engine` — so the current suite has a
+  different hash and case count. These numbers remain valid and reproducible
+  evidence *for the suite they were computed against*, and are not a description
+  of the skills shipped today. No new headline metric exists until a fresh exact
+  enabled/disabled pair is published against the current suite.
+  `tools/check_regression_gates.py` enforces this disclosure in CI: it recomputes
+  the current suite hash and fails if a published benchmark claims currency it
+  does not have.
 - The model identifier is the adapter-reported runtime value. If a provider remaps
   an alias, the identifier alone cannot prove the underlying snapshot.
 - The public eval prompts are a regression suite, not an independently hidden test

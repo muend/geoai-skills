@@ -86,6 +86,21 @@ required before the first stable release.
   filters, mask method and thresholds, reducer arguments, export parameters,
   and the run date and API client version.
 
+- `tools/check_regression_gates.py` adds two CI gates that need no model budget.
+  Gate A pins every expected and forbidden criterion against
+  `evals/rubric-baseline.json`, so a criterion can be added or decomposed into
+  declared finer criteria but never silently deleted or reworded away — the
+  cheapest way to make a failing score improve. Gate B recomputes the current
+  suite hash and requires every published benchmark to declare itself `current`
+  or `superseded`, failing when that declaration disagrees with the computed
+  truth. Neither gate asserts that quality is good; they prevent a requirement
+  from disappearing and a stale number from presenting itself as current.
+- The published routing benchmark now declares itself `superseded` in both
+  `BENCHMARK.md` and its evidence-package README, naming the six skills revised
+  since it was frozen. Its figures remain valid and reproducible for the suite
+  they were computed against, and are no longer presented as describing the
+  skills shipped today.
+
 ### Changed
 - Three evaluation criteria that bundled several independent requirements into
   one pass/fail row were decomposed so partial delivery is distinguishable from

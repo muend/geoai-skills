@@ -1,0 +1,1047 @@
+{
+  "note": "Pinned expected and forbidden criteria. A criterion may be added, or decomposed into finer criteria when the decomposition is declared below, but it may never be silently removed or reworded away. This baseline is forward-looking: it constrains changes made after it was seeded, and makes no claim about the history before that point.",
+  "seeded_from_suite_sha256": "667ff6e78b286b009d0c2d90008c25f08e58a4cce5c6c04b51329d2548030614",
+  "seeded_skill_count": 18,
+  "decompositions": {},
+  "cases": {
+    "arcgis-pro-automation/ambiguous-field-mutation": {
+      "expected_behavior": [
+        "Inspects schema and sample evidence but stops before calculation because fields, expression, intended values, and exact acceptance criteria are ambiguous",
+        "Explains that calculate_field mutates live data and requires an exact target plus explicit authorization before confirm=true",
+        "Proposes a working copy, validation query, and before/after count or value checks"
+      ],
+      "forbidden_behavior": [
+        "Must not invent a field expression or set confirm=true from a vague cleanup request"
+      ]
+    },
+    "arcgis-pro-automation/arcgis-online-rest-export": {
+      "expected_behavior": [
+        "Routes public feature-service acquisition and format conversion to geo-data-engineering",
+        "Does not activate local ArcGIS Pro automation merely because the source is hosted on ArcGIS Online"
+      ],
+      "forbidden_behavior": []
+    },
+    "arcgis-pro-automation/generic-dem-slope": {
+      "expected_behavior": [
+        "Routes to terrain-hydrology for the explicitly open-source raster workflow",
+        "Does not introduce ArcGIS Pro, ArcPy, Windows licensing, or the MCP bridge"
+      ],
+      "forbidden_behavior": []
+    },
+    "arcgis-pro-automation/guarded-gdb-inspection": {
+      "expected_behavior": [
+        "Calls health_check first and verifies the worker, allowed roots, scratch geodatabase, timeout, and concurrency",
+        "Uses read-only ArcPy-backed inspection after health_check because the ping alone does not import ArcPy",
+        "Uses list_layers plus describe/count/field/extent tools and does not set confirmation or overwrite flags"
+      ],
+      "forbidden_behavior": []
+    },
+    "arcgis-pro-automation/open-source-gdb-read": {
+      "expected_behavior": [
+        "Routes to geo-data-engineering for the explicitly open-source Linux conversion workflow",
+        "Does not activate ArcGIS automation merely because the input format is a file geodatabase"
+      ],
+      "forbidden_behavior": []
+    },
+    "arcgis-pro-automation/project-parcels-not-define": {
+      "expected_behavior": [
+        "Inspects the source CRS and target spatial reference and resolves a geographic transformation when datums differ",
+        "Uses project_features to transform coordinates and never substitutes define_projection",
+        "Writes a new output then verifies output CRS, units, extent, count, and geometry while confirming the source is unchanged"
+      ],
+      "forbidden_behavior": [
+        "Must not use define_projection as if assigning metadata transformed the feature coordinates"
+      ]
+    },
+    "arcgis-pro-automation/pyqgis-data-pipeline": {
+      "expected_behavior": [
+        "Routes the explicitly open-source PyQGIS conversion pipeline to geo-data-engineering",
+        "Does not substitute ArcGIS Pro, ArcPy, licensed Esri tools, or arcgis-mcp-bridge"
+      ],
+      "forbidden_behavior": []
+    },
+    "arcgis-pro-automation/saved-layout-export": {
+      "expected_behavior": [
+        "Inspects maps, layers, and layouts in the saved project before selecting exact elements",
+        "Uses cartographic decisions from cartography-geoviz and the bridge only for saved .aprx mechanics and export",
+        "Reopens the project and exported PDF to verify extent, scale, title, legend, page, DPI, clipping, and that unrelated project items were not changed"
+      ],
+      "forbidden_behavior": []
+    },
+    "arcgis-pro-automation/sketch-to-live-gdb": {
+      "expected_behavior": [
+        "Inspects the reference layout envelope, target geometry type, CRS, schema, and existing count and confirms required vision dependencies",
+        "Treats the request as authorization for the named append but uses confirm=true only after the exact target and registration inputs are validated",
+        "Verifies registration or control alignment, geometry validity, target CRS, count delta, visual overlay, and append provenance"
+      ],
+      "forbidden_behavior": [
+        "Must not claim a successful georeferenced commit from image extraction alone without registration and post-append verification"
+      ]
+    },
+    "arcgis-pro-automation/spatial-analyst-preflight": {
+      "expected_behavior": [
+        "Pairs ArcGIS execution with terrain-hydrology method checks for DEM CRS, horizontal/vertical units, z-factor, sinks, and resolution",
+        "Runs server and ArcPy preflight separately and treats Spatial Analyst availability as an execution gate",
+        "Uses slope_analysis only after license availability and output path are established, then validates CRS, units, cell size, NoData, and value range"
+      ],
+      "forbidden_behavior": []
+    },
+    "arcgis-pro-automation/worker-ping-is-not-arcpy": {
+      "expected_behavior": [
+        "States that health_check verifies the worker pipeline without importing ArcPy and is not proof that ArcPy or licenses are ready",
+        "Requires a non-mutating ArcPy-backed preflight and an exact obsolete-dataset list with evidence before deletion",
+        "Does not call delete_dataset or set confirm=true for unspecified targets"
+      ],
+      "forbidden_behavior": [
+        "Must not equate server ok with ArcPy readiness or treat a vague delete category as authorization"
+      ]
+    },
+    "cartography-geoviz/big-points-interactive": {
+      "expected_behavior": [
+        "Refuses raw GeoJSON into Leaflet; tiles (PMTiles) or GPU rendering (deck.gl/Kepler)",
+        "Ships a legend and formatted popups"
+      ],
+      "forbidden_behavior": []
+    },
+    "cartography-geoviz/choropleth-request": {
+      "expected_behavior": [
+        "Joins by county_id and colors the rate cases/population*100000 rather than raw counts",
+        "Uses and records a justified fixed classification, a colorblind-safe ramp, and neutral gray for the county with missing population",
+        "The HTML and metadata include legend units (cases per 100,000), synthetic source, CRS/projection, class edges, and accessible labels"
+      ],
+      "forbidden_behavior": [
+        "Colors raw case counts or silently treats missing population as zero",
+        "Uses a red-green ramp or omits the rate units from the legend"
+      ]
+    },
+    "cartography-geoviz/database-query-not-map": {
+      "expected_behavior": [
+        "Routes to postgis-spatial-sql for query-plan and index analysis",
+        "Does not redesign the map when the request is exclusively database performance"
+      ],
+      "forbidden_behavior": []
+    },
+    "cartography-geoviz/map-series": {
+      "expected_behavior": [
+        "Uses manual/defined identical breaks, ramp, and extent across all panels",
+        "Rejects per-date Jenks breaks as incomparable"
+      ],
+      "forbidden_behavior": []
+    },
+    "cartography-geoviz/misleading-projection-audit": {
+      "expected_behavior": [
+        "Flags Web Mercator area distortion as invalid for visual area comparison",
+        "Requires an equal-area projection or a non-area encoding and documents the projection",
+        "Checks legend units, source, and accessible color contrast before publication"
+      ],
+      "forbidden_behavior": []
+    },
+    "cartography-geoviz/raster-classification-not-map": {
+      "expected_behavior": [
+        "Routes to remote-sensing-analysis for imagery classification and spatial validation",
+        "Does not activate cartography-geoviz merely because the input is spatial"
+      ],
+      "forbidden_behavior": []
+    },
+    "cartography-geoviz/underspecified-publication-map": {
+      "expected_behavior": [
+        "Asks for audience, medium, geographic extent, and decision purpose before fixing the design",
+        "Offers a provisional layout while keeping classification, projection, and accessibility choices explicit"
+      ],
+      "forbidden_behavior": []
+    },
+    "change-detection/change-accuracy-audit": {
+      "expected_behavior": [
+        "Checks that the reference sample supports change-class accuracy and area estimation",
+        "Recomputes error-adjusted areas and confidence intervals from the stratified sample",
+        "Flags raw mapped pixel area as a biased final estimate when classification error is material"
+      ],
+      "forbidden_behavior": []
+    },
+    "change-detection/scene-correction-only": {
+      "expected_behavior": [
+        "Routes to remote-sensing-analysis for single-scene preprocessing",
+        "Does not activate change-detection when no change question is present"
+      ],
+      "forbidden_behavior": []
+    },
+    "change-detection/season-trap": {
+      "expected_behavior": [
+        "Flags the phenology impostor (detecting summer, not deforestation)",
+        "Proposes matched-season pairs, composites, or time-series methods"
+      ],
+      "forbidden_behavior": []
+    },
+    "change-detection/single-date-classification": {
+      "expected_behavior": [
+        "Routes to remote-sensing-analysis for a single-date classification workflow",
+        "Does not invent a change-detection stage without a temporal comparison"
+      ],
+      "forbidden_behavior": []
+    },
+    "change-detection/threshold-honesty": {
+      "expected_behavior": [
+        "Chooses a defensible threshold (k·sigma or Otsu) shown on the histogram",
+        "Reports sensitivity at k±0.5 and flags fragile detections"
+      ],
+      "forbidden_behavior": []
+    },
+    "change-detection/unclear-temporal-signal": {
+      "expected_behavior": [
+        "Clarifies whether abrupt breaks, gradual trends, or class transitions define change",
+        "Uses seasonal or time-series break methods rather than arbitrary two-date differencing",
+        "Requires observation-count and uncertainty reporting"
+      ],
+      "forbidden_behavior": []
+    },
+    "change-detection/urban-growth": {
+      "expected_behavior": [
+        "Checks co-registration, same processing level, matched season, intersected cloud masks",
+        "Builds a transition matrix and screens impossible transitions",
+        "Reports error-adjusted area estimates with confidence intervals (Olofsson), not raw pixel counts"
+      ],
+      "forbidden_behavior": []
+    },
+    "geo-data-engineering/crs-loss-audit": {
+      "expected_behavior": [
+        "Identifies CRS metadata loss and refuses to infer a CRS from coordinate ranges alone",
+        "Preserves or explicitly assigns verified CRS and validates geometry bounds after every conversion",
+        "Adds row-count and null-geometry accounting between every pipeline stage",
+        "Adds geometry validity and extent accounting after every conversion"
+      ],
+      "forbidden_behavior": []
+    },
+    "geo-data-engineering/messy-shapefile": {
+      "expected_behavior": [
+        "Uses make_valid (not buffer(0)) for repair, via scripts/clean_vector.py logic",
+        "Prints an accounting report (rows in/out, repaired count)",
+        "Handles encoding explicitly and normalizes text attributes; recommends GeoPackage/GeoParquet output over shapefile"
+      ],
+      "forbidden_behavior": []
+    },
+    "geo-data-engineering/osm-acquisition": {
+      "expected_behavior": [
+        "Chooses osmnx for a city-scale area; inspects tag value distributions before filtering",
+        "Records source, query parameters, retrieval date, and provenance manifest"
+      ],
+      "forbidden_behavior": []
+    },
+    "geo-data-engineering/postgis-plan-tuning": {
+      "expected_behavior": [
+        "Routes to postgis-spatial-sql for EXPLAIN and predicate/index diagnosis",
+        "Does not recommend another storage format before inspecting the database plan"
+      ],
+      "forbidden_behavior": []
+    },
+    "geo-data-engineering/scale-strategy": {
+      "expected_behavior": [
+        "Routes to DuckDB spatial over GeoParquet or PostGIS instead of raising RAM",
+        "Mentions predicate pushdown / spatial indexing rather than hand-rolled loops"
+      ],
+      "forbidden_behavior": []
+    },
+    "geo-data-engineering/spatial-model-not-ingestion": {
+      "expected_behavior": [
+        "Routes to spatial-statistics for weights, autocorrelation, and model diagnostics",
+        "Does not turn an analytical request into a data-ingestion project"
+      ],
+      "forbidden_behavior": []
+    },
+    "geo-data-engineering/unknown-source-schema": {
+      "expected_behavior": [
+        "Profiles format, layers, CRS, geometry types, bounds, fields, nulls, and validity before choosing storage",
+        "Asks for update and consumer requirements before defining a durable schema",
+        "Creates a provenance manifest and fail-loud validation gates"
+      ],
+      "forbidden_behavior": []
+    },
+    "geo-deep-learning/baseline-first": {
+      "expected_behavior": [
+        "Requires a cheap baseline (thresholded NDWI / random forest) before deep models",
+        "Frames the DL model as justified only if it clearly beats the baseline"
+      ],
+      "forbidden_behavior": []
+    },
+    "geo-deep-learning/building-extraction": {
+      "expected_behavior": [
+        "U-Net with pretrained encoder + Dice/CE hybrid for class imbalance",
+        "Spatially blocked split per the canonical spatial CV protocol, zero-overlap verified",
+        "Preserves chip georeferencing; sliding-window inference with overlap and blending"
+      ],
+      "forbidden_behavior": []
+    },
+    "geo-deep-learning/earth-engine-composite": {
+      "expected_behavior": [
+        "Routes to google-earth-engine for server-side collection reduction and export",
+        "Does not activate geo-deep-learning without a training or inference task"
+      ],
+      "forbidden_behavior": []
+    },
+    "geo-deep-learning/few-labels-model-choice": {
+      "expected_behavior": [
+        "Quantifies label coverage and geographic diversity before selecting a model",
+        "Establishes a non-deep baseline and considers transfer learning or active learning",
+        "Requires geographically independent validation before claiming generalization"
+      ],
+      "forbidden_behavior": []
+    },
+    "geo-deep-learning/random-split-catch": {
+      "expected_behavior": [
+        "Identifies spatial leakage from random chip splitting",
+        "Requires re-splitting by geographic block/scene and expects lower, honest metrics"
+      ],
+      "forbidden_behavior": []
+    },
+    "geo-deep-learning/seam-artifact-audit": {
+      "expected_behavior": [
+        "Checks chip transforms and output CRS against the source imagery",
+        "Uses overlapping sliding windows with weighted blending to remove border seams",
+        "Requires a mosaic-level visual and numeric alignment check"
+      ],
+      "forbidden_behavior": []
+    },
+    "geo-deep-learning/spectral-index-only": {
+      "expected_behavior": [
+        "Routes to remote-sensing-analysis for deterministic index computation",
+        "Does not introduce deep learning when no learned model is requested"
+      ],
+      "forbidden_behavior": []
+    },
+    "geoai-orchestrator/ambiguous-project-scope": {
+      "expected_behavior": [
+        "Clarifies the decision, hazard scenario, accessibility metric, population unit, and deliverable before implementation",
+        "Creates a staged plan spanning data engineering, terrain hydrology, network accessibility, and cartographic delivery",
+        "Assigns an explicit verification gate and handoff artifact to every stage"
+      ],
+      "forbidden_behavior": [
+        "Must not withhold the staged plan and its routed specialists pending an answer to the scope question"
+      ]
+    },
+    "geoai-orchestrator/degree-buffer-catch": {
+      "expected_behavior": [
+        "Routes directly to geo-data-engineering instead of activating the orchestrator",
+        "Refuses to buffer in degrees; reprojects to a local projected CRS first",
+        "Explains that 0.01 degree is not 1 km and varies with latitude"
+      ],
+      "forbidden_behavior": [
+        "Must not treat a single buffering correction as a multi-stage GeoAI project"
+      ]
+    },
+    "geoai-orchestrator/disaster-response-fusion": {
+      "expected_behavior": [
+        "Activates the orchestrator and decomposes hazard mapping, terrain checks, network disruption, exposure, and delivery",
+        "Defines common CRS, time, resolution, uncertainty, and provenance contracts before specialist execution",
+        "Requires cross-stage consistency checks and a decision-ready final artifact"
+      ],
+      "forbidden_behavior": []
+    },
+    "geoai-orchestrator/multi-stage-pipeline": {
+      "expected_behavior": [
+        "Produces a numbered pipeline plan BEFORE writing code, with one verification criterion per stage",
+        "Routes stages to geo-data-engineering, remote-sensing-analysis, terrain-hydrology, mcda-suitability-analysis, cartography-geoviz",
+        "Reports the CRS of every input on first contact and reprojects before area/distance computation"
+      ],
+      "forbidden_behavior": [
+        "Must not present the pipeline plan as a proposal awaiting approval instead of invoking the specialists it names"
+      ]
+    },
+    "geoai-orchestrator/pipeline-plan-audit": {
+      "expected_behavior": [
+        "Finds the CRS, spatial leakage, change-area accuracy, and projection failures across the pipeline",
+        "Routes each correction to the appropriate specialist instead of treating failures independently",
+        "Produces a revised ordered plan with a measurable verification gate per stage"
+      ],
+      "forbidden_behavior": [
+        "Must not offer to route corrections conditionally, defer routed handoffs to a later turn, or name a specialist without invoking it",
+        "Must not route only a subset of the findings while handling the remainder inline"
+      ]
+    },
+    "geoai-orchestrator/single-devops-task": {
+      "expected_behavior": [
+        "Routes directly to swe-devops-standards for geospatial CI and reproducibility checks",
+        "Does not activate the orchestrator for a bounded delivery task"
+      ],
+      "forbidden_behavior": []
+    },
+    "geoai-orchestrator/single-kriging-surface": {
+      "expected_behavior": [
+        "Routes directly to geostatistics-interpolation for the single scoped analysis",
+        "Does not create a multi-skill orchestration plan"
+      ],
+      "forbidden_behavior": []
+    },
+    "geoai-orchestrator/single-stage-routing": {
+      "expected_behavior": [
+        "Routes directly to geo-data-engineering instead of activating the orchestrator",
+        "Checks CRS alignment of both layers before the join",
+        "Reports row counts in vs out after the spatial join"
+      ],
+      "forbidden_behavior": [
+        "Must not create a multi-stage orchestration plan for this single scoped operation"
+      ]
+    },
+    "geostatistics-interpolation/dem-hole-repair": {
+      "expected_behavior": [
+        "Routes to terrain-hydrology for DEM conditioning and drainage-safe repair",
+        "Does not treat raster nodata repair as geostatistical interpolation by default"
+      ],
+      "forbidden_behavior": []
+    },
+    "geostatistics-interpolation/extrapolation-honesty": {
+      "expected_behavior": [
+        "Masks or flags cells beyond the variogram range from nearest samples",
+        "Refuses to present extrapolated areas at equal confidence"
+      ],
+      "forbidden_behavior": []
+    },
+    "geostatistics-interpolation/hotspot-inference-not-surface": {
+      "expected_behavior": [
+        "Routes to spatial-statistics for local cluster inference and multiple-testing control",
+        "Does not replace hotspot inference with an interpolated heatmap"
+      ],
+      "forbidden_behavior": []
+    },
+    "geostatistics-interpolation/idw-only": {
+      "expected_behavior": [
+        "Delivers IDW but states it has no error model and bullseyes extremes",
+        "Reports the power parameter and works in a projected CRS"
+      ],
+      "forbidden_behavior": []
+    },
+    "geostatistics-interpolation/rainfall-surface": {
+      "expected_behavior": [
+        "Explores first: duplicates, skew (log transform if needed), trend check",
+        "Models the variogram deliberately (nugget/sill/range reported, anisotropy checked)",
+        "Delivers prediction AND kriging SD raster; LOOCV plus block CV reported"
+      ],
+      "forbidden_behavior": []
+    },
+    "geostatistics-interpolation/sparse-data-method-choice": {
+      "expected_behavior": [
+        "Inspects sample spacing, clustering, trend, and support before promising a surface",
+        "Compares a transparent baseline with a variogram-based method only if the empirical structure is estimable",
+        "Limits spatial extent and communicates uncertainty when data support is weak"
+      ],
+      "forbidden_behavior": []
+    },
+    "geostatistics-interpolation/variogram-audit": {
+      "expected_behavior": [
+        "Challenges the unsupported variogram fit using empirical bins, sample geometry, and alternative models",
+        "Requires LOOCV plus spatial block CV and reports bias and RMSE",
+        "Rejects delivery without kriging standard deviation and extrapolation flags"
+      ],
+      "forbidden_behavior": []
+    },
+    "google-earth-engine/country-composite": {
+      "expected_behavior": [
+        "Stays server-side: filterBounds/filterDate, Cloud Score+ masking, median composite",
+        "reduceRegions with explicit scale and tileScale; exports the table instead of getInfo",
+        "Records collection IDs and mask threshold"
+      ],
+      "forbidden_behavior": []
+    },
+    "google-earth-engine/exported-map-styling": {
+      "expected_behavior": [
+        "Routes to cartography-geoviz for visual encoding and layout",
+        "Does not reactivate Earth Engine when the task is purely cartographic"
+      ],
+      "forbidden_behavior": []
+    },
+    "google-earth-engine/getinfo-loop-catch": {
+      "expected_behavior": [
+        "Rejects the per-element getInfo loop",
+        "Replaces it with sampleRegions/reduceRegions and a single export"
+      ],
+      "forbidden_behavior": []
+    },
+    "google-earth-engine/local-scene-analysis": {
+      "expected_behavior": [
+        "Routes to remote-sensing-analysis for local single-scene processing",
+        "Respects the explicit constraint not to introduce Earth Engine"
+      ],
+      "forbidden_behavior": []
+    },
+    "google-earth-engine/projection-scale-audit": {
+      "expected_behavior": [
+        "Flags the scale/projection mismatch and inspects nominal scale and analysis intent",
+        "Sets explicit scale, CRS when justified, and reduction parameters without unnecessary reprojection",
+        "Records collection IDs, filters, mask thresholds, and export configuration"
+      ],
+      "forbidden_behavior": []
+    },
+    "google-earth-engine/trend-map": {
+      "expected_behavior": [
+        "Applies Landsat C2 scale factors and consistent masking",
+        "Uses sensSlope/linearFit with a valid-observation-count mask",
+        "Notes significance/multiple-testing caveats for trend maps"
+      ],
+      "forbidden_behavior": []
+    },
+    "google-earth-engine/unclear-platform-choice": {
+      "expected_behavior": [
+        "Clarifies archive size, algorithms, data locality, quotas, reproducibility, and export needs",
+        "Chooses Earth Engine only when server-side catalog and computation advantages outweigh constraints",
+        "Provides a quota-aware batching plan for interactive limits and batch export",
+        "Provides a provenance record pinning catalog assets, filters, reducers, and export parameters"
+      ],
+      "forbidden_behavior": []
+    },
+    "mcda-suitability-analysis/crime-hotspots-not-suitability": {
+      "expected_behavior": [
+        "Routes to spatial-statistics for local cluster inference",
+        "Does not convert observed outcomes into a weighted suitability score"
+      ],
+      "forbidden_behavior": []
+    },
+    "mcda-suitability-analysis/factor-direction-audit": {
+      "expected_behavior": [
+        "Finds the incorrect factor directions and requires documented monotonic transformations",
+        "Moves protected areas from compensatory weighting to a hard constraint where policy requires exclusion",
+        "Recomputes weights/consistency and produces weight and threshold sensitivity results"
+      ],
+      "forbidden_behavior": []
+    },
+    "mcda-suitability-analysis/inconsistent-ahp": {
+      "expected_behavior": [
+        "Validates positivity and reciprocity and computes diagnostic weights, lambda_max, CI, RI=0.58, and CR for the three-criterion matrix",
+        "Because CR is at least 0.10, marks the decision revision_required and does not present the diagnostic vector as approved decision weights",
+        "Identifies the wind > slope > grid_distance > wind inconsistency cycle for stakeholder revision"
+      ],
+      "forbidden_behavior": [
+        "Marks the matrix accepted or uses its weights in a suitability decision despite CR >= 0.10",
+        "Silently changes matrix judgments to improve consistency"
+      ]
+    },
+    "mcda-suitability-analysis/missing-decision-preferences": {
+      "expected_behavior": [
+        "Refuses to invent stakeholder preferences or present one weight set as objective",
+        "Elicits constraints, factor directions, and defensible weight scenarios",
+        "Delivers stability or rank-reversal analysis across plausible preferences"
+      ],
+      "forbidden_behavior": []
+    },
+    "mcda-suitability-analysis/single-map-pushback": {
+      "expected_behavior": [
+        "Still performs/reports sensitivity at minimum ('a suitability map without sensitivity analysis is an opinion with a legend')",
+        "Documents weights, standardization, and limitations with the deliverable"
+      ],
+      "forbidden_behavior": []
+    },
+    "mcda-suitability-analysis/travel-time-routing-not-mcda": {
+      "expected_behavior": [
+        "Routes to network-accessibility-analysis for timetable-aware travel times",
+        "Does not introduce MCDA without a multi-criteria ranking decision"
+      ],
+      "forbidden_behavior": []
+    },
+    "mcda-suitability-analysis/wind-farm-siting": {
+      "expected_behavior": [
+        "Separates protected areas as a binary constraint mask applied last, not a weighted factor",
+        "Standardizes each factor with explicit direction check; AHP weights with CR < 0.10 via scripts/ahp_weights.py",
+        "Runs a sensitivity analysis and delivers a stability map"
+      ],
+      "forbidden_behavior": []
+    },
+    "ml-experiment-standards/difference-honesty": {
+      "expected_behavior": [
+        "Requests fold-level scores or uncertainty and compares the gap against across-fold standard deviation or a bootstrap confidence interval",
+        "Refuses to claim B is better from the point estimate alone and reports no clear difference only if the gap is within uncertainty"
+      ],
+      "forbidden_behavior": []
+    },
+    "ml-experiment-standards/leakage-pipeline-audit": {
+      "expected_behavior": [
+        "Finds preprocessing, spatial, and selective-reporting leakage",
+        "Moves learned preprocessing into a pipeline fitted inside geographically blocked folds",
+        "Requires metrics across all folds reported with an explicit uncertainty measure rather than a single best fold",
+        "Requires an explicit train/test spatial overlap check between folds",
+        "Requires a held-out final test policy that is touched once, after model selection"
+      ],
+      "forbidden_behavior": []
+    },
+    "ml-experiment-standards/moran-hotspot-task": {
+      "expected_behavior": [
+        "Routes to spatial-statistics for weights and permutation inference",
+        "Does not impose an ML experiment workflow on a spatial inference task"
+      ],
+      "forbidden_behavior": []
+    },
+    "ml-experiment-standards/simple-fit-request": {
+      "expected_behavior": [
+        "Runs EDA first (target balance, missingness) and justifies the metric (F1/AUC-PR if imbalanced)",
+        "Uses a Pipeline so preprocessing fits on train only; documents the split rationale",
+        "Reports uncertainty (CV mean ± std), not a single number"
+      ],
+      "forbidden_behavior": []
+    },
+    "ml-experiment-standards/spatial-split-routing": {
+      "expected_behavior": [
+        "Applies references/spatial-cv-protocol.md: block IDs, GroupKFold, overlap verification",
+        "Reports the blocked metric as THE metric"
+      ],
+      "forbidden_behavior": []
+    },
+    "ml-experiment-standards/unet-architecture-task": {
+      "expected_behavior": [
+        "Routes to geo-deep-learning for architecture, chipping, loss, and inference details",
+        "Does not let the cross-cutting experiment standard replace the specialist workflow"
+      ],
+      "forbidden_behavior": []
+    },
+    "ml-experiment-standards/unknown-spatial-dependence": {
+      "expected_behavior": [
+        "Clarifies the deployment domain and estimates spatial dependence before choosing blocks",
+        "Compares honest spatial validation designs and documents the selected buffer or group logic",
+        "Reports sensitivity to block size rather than one convenient split"
+      ],
+      "forbidden_behavior": []
+    },
+    "movement-trajectory/distance-driven": {
+      "expected_behavior": [
+        "Refuses raw-fix path length (noise inflates it); map-matches or smooths first",
+        "Reports match confidence / unmatched share"
+      ],
+      "forbidden_behavior": []
+    },
+    "movement-trajectory/fleet-stops": {
+      "expected_behavior": [
+        "Cleans first (dedupe, accuracy filter, speed filter, gap splitting) with accounting per step",
+        "Stop detection parameters reported with a ±50% sensitivity check",
+        "Works in a projected CRS with UTC timestamps"
+      ],
+      "forbidden_behavior": []
+    },
+    "movement-trajectory/gps-storage-only": {
+      "expected_behavior": [
+        "Routes to geo-data-engineering for schema, CRS, and storage design",
+        "Does not infer stops, trips, or routes when the request is ingestion only"
+      ],
+      "forbidden_behavior": []
+    },
+    "movement-trajectory/privacy-guard": {
+      "expected_behavior": [
+        "Flags re-identification risk (home/work anchors) and legal constraints",
+        "Proposes aggregation with k-anonymity suppression and trip-end truncation instead"
+      ],
+      "forbidden_behavior": []
+    },
+    "movement-trajectory/sparse-fix-interpretation": {
+      "expected_behavior": [
+        "Clarifies whether aggregate flows or individual paths are required and warns that exact routes may be unidentifiable",
+        "Uses accuracy and gap-aware preprocessing with uncertainty-aware outputs",
+        "Applies privacy-preserving aggregation before any release"
+      ],
+      "forbidden_behavior": []
+    },
+    "movement-trajectory/timestamp-order-audit": {
+      "expected_behavior": [
+        "Normalizes timezone-aware timestamps, sorts per entity, and removes duplicates with accounting",
+        "Splits trajectories at defensible temporal gaps instead of bridging missing observations",
+        "Recomputes metrics in a suitable projected CRS and reports affected-trip counts"
+      ],
+      "forbidden_behavior": []
+    },
+    "movement-trajectory/transit-isochrones-not-trajectories": {
+      "expected_behavior": [
+        "Routes to network-accessibility-analysis for scheduled transit routing",
+        "Does not treat a modeled network path as an observed movement trajectory"
+      ],
+      "forbidden_behavior": []
+    },
+    "network-accessibility-analysis/crime-clusters-not-network": {
+      "expected_behavior": [
+        "Routes to spatial-statistics for areal weights and local inference",
+        "Does not construct a routing network for an adjacency-based cluster task"
+      ],
+      "forbidden_behavior": []
+    },
+    "network-accessibility-analysis/disconnected-graph-audit": {
+      "expected_behavior": [
+        "Checks duplicate/self pairs, graph components, directionality, and impedance units",
+        "Reports snap-distance and unmatched-origin distributions instead of dropping failures",
+        "Recomputes coverage with explicit unreachable handling and row accounting"
+      ],
+      "forbidden_behavior": []
+    },
+    "network-accessibility-analysis/euclidean-catch": {
+      "expected_behavior": [
+        "Rejects five-kilometre Euclidean buffers as operational fire-response coverage",
+        "Specifies eight-minute emergency-drive isochrones on the routable graph with one-way, turn, bridge, barrier, travel-time, station-snap, and unreachable-area handling",
+        "Uses edge-based service-area polygons that do not bridge the river and validates at least three routes against dispatch travel times"
+      ],
+      "forbidden_behavior": [
+        "Presents the Euclidean buffers as equivalent to network response coverage",
+        "Uses a convex hull that bridges unreachable areas across the river"
+      ]
+    },
+    "network-accessibility-analysis/hospital-access": {
+      "expected_behavior": [
+        "Uses r5py with OSM + GTFS; validates GTFS calendar coverage; computes over a time window, not a single departure",
+        "Picks an accessibility metric deliberately (e.g., E2SFCA) and states its weakness",
+        "Reports per-group distributions for equity, not just city means"
+      ],
+      "forbidden_behavior": []
+    },
+    "network-accessibility-analysis/observed-gps-map-matching": {
+      "expected_behavior": [
+        "Routes to movement-trajectory for observed-track cleaning and map matching",
+        "Does not substitute an OD accessibility model for measured trajectories"
+      ],
+      "forbidden_behavior": []
+    },
+    "network-accessibility-analysis/od-matrix-scale": {
+      "expected_behavior": [
+        "Avoids looping NetworkX shortest_path; uses pandana/r5py",
+        "Checks snap distances and connectivity; stores the matrix as Parquet"
+      ],
+      "forbidden_behavior": []
+    },
+    "network-accessibility-analysis/unspecified-access-mode": {
+      "expected_behavior": [
+        "Clarifies mode, time window, opportunity definition, population units, and equity question",
+        "Selects a metric only after stating its behavioral assumptions and weaknesses",
+        "Plans sensitivity across plausible travel thresholds or departure times"
+      ],
+      "forbidden_behavior": []
+    },
+    "point-cloud-lidar/chm-forestry": {
+      "expected_behavior": [
+        "Normalizes heights (HAG) against the DTM; pit-free CHM",
+        "Tree detection validated against field/manual samples",
+        "Reports height percentiles and canopy cover definitions"
+      ],
+      "forbidden_behavior": []
+    },
+    "point-cloud-lidar/dtm-from-laz": {
+      "expected_behavior": [
+        "Runs pdal info first; reports density, CRS incl. vertical datum, classes",
+        "Denoises before ground classification (SMRF/CSF), audits vendor class 2 on cross-sections",
+        "Checks density supports 1 m; processes tiles with buffered edges; hillshade artifact check"
+      ],
+      "forbidden_behavior": []
+    },
+    "point-cloud-lidar/imagery-segmentation-not-lidar": {
+      "expected_behavior": [
+        "Routes to geo-deep-learning for imagery segmentation",
+        "Does not activate point-cloud-lidar based only on a three-dimensional target concept"
+      ],
+      "forbidden_behavior": []
+    },
+    "point-cloud-lidar/raster-slope-not-lidar": {
+      "expected_behavior": [
+        "Routes to terrain-hydrology for raster terrain and drainage analysis",
+        "Does not require a point-cloud workflow when a DTM is already provided"
+      ],
+      "forbidden_behavior": []
+    },
+    "point-cloud-lidar/sfm-not-lidar": {
+      "expected_behavior": [
+        "States SfM cannot penetrate canopy — a 'DTM' over forest from SfM is a canopy model",
+        "Limits claims accordingly or requests LiDAR"
+      ],
+      "forbidden_behavior": []
+    },
+    "point-cloud-lidar/unknown-classification-quality": {
+      "expected_behavior": [
+        "Profiles density, returns, classes, CRS, and vertical datum before trusting vendor labels",
+        "Audits ground classification on representative cross-sections and difficult terrain",
+        "Chooses raster resolution from measured density and reports unsupported areas"
+      ],
+      "forbidden_behavior": []
+    },
+    "point-cloud-lidar/vertical-datum-audit": {
+      "expected_behavior": [
+        "Stops height comparison until horizontal and vertical CRS and geoid transformations are resolved",
+        "Checks overlapping strips and tile seams numerically and with cross-sections",
+        "Records the verified vertical datum and transformation in output metadata"
+      ],
+      "forbidden_behavior": [
+        "Must not treat stating the vertical datum in the answer as satisfying the requirement to record it in the output metadata",
+        "Must not deliver a corrected height product without the applied geoid model, transformation, and any per-tile offsets recorded"
+      ]
+    },
+    "postgis-spatial-sql/area-4326-catch": {
+      "expected_behavior": [
+        "Explains square degrees; proposes projected geometry or geography type",
+        "Recommends typed geometry columns with explicit SRID",
+        "Rejects EPSG:3857 or Web Mercator for measurement and keeps materially different SQL alternatives in separately labeled blocks"
+      ],
+      "forbidden_behavior": [
+        "Must not present Web Mercator as an area or length measurement solution, even alongside a later distortion warning",
+        "Must not put an unknown CRS placeholder or other non-SQL template token inside a block presented as executable SQL"
+      ]
+    },
+    "postgis-spatial-sql/backend-choice-unclear": {
+      "expected_behavior": [
+        "Clarifies data volume, concurrency, mutation, latency, and operational requirements",
+        "Chooses DuckDB for bounded local analytics or PostGIS for managed concurrent workloads based on evidence",
+        "Defines benchmark queries and correctness checks before migration"
+      ],
+      "forbidden_behavior": [
+        "Must not make an unconditional backend recommendation while material workload requirements are unknown, omit latency or mutation requirements, or defer the benchmark and correctness gate to a later response"
+      ]
+    },
+    "postgis-spatial-sql/duckdb-path": {
+      "expected_behavior": [
+        "Uses DuckDB spatial reading GeoParquet directly",
+        "Includes row-count accounting and a rendered sample check"
+      ],
+      "forbidden_behavior": []
+    },
+    "postgis-spatial-sql/kriging-after-export": {
+      "expected_behavior": [
+        "Routes to geostatistics-interpolation for variogram and uncertainty modeling",
+        "Does not keep the task in SQL merely because the data originated in PostGIS"
+      ],
+      "forbidden_behavior": []
+    },
+    "postgis-spatial-sql/predicate-audit": {
+      "expected_behavior": [
+        "Flags SQL injection and replaces string construction with parameterized geometry input",
+        "Moves stable CRS normalization out of the indexed predicate and confirms GiST usage with EXPLAIN",
+        "Defines intended join cardinality and accounts for duplicate matches"
+      ],
+      "forbidden_behavior": []
+    },
+    "postgis-spatial-sql/slow-join": {
+      "expected_behavior": [
+        "Runs EXPLAIN (ANALYZE, BUFFERS) to check index usage",
+        "Applies ST_Subdivide for the big polygons; ensures GiST + same SRID on both sides",
+        "Verifies ST_DWithin usage instead of ST_Distance < x where relevant",
+        "Presents each runnable SQL block as a self-contained statement with consistent CTE and table aliases"
+      ],
+      "forbidden_behavior": [
+        "Must not mix abandoned joins, incomplete aliases, ellipses, angle-bracket placeholders, invalid set-returning-function field access, or mutually inconsistent fragments into SQL presented as executable"
+      ]
+    },
+    "postgis-spatial-sql/thematic-map-not-sql": {
+      "expected_behavior": [
+        "Routes to cartography-geoviz for visual encoding and layout",
+        "Does not activate database optimization when the query result is already final"
+      ],
+      "forbidden_behavior": []
+    },
+    "remote-sensing-analysis/classification-validation": {
+      "expected_behavior": [
+        "Uses a spatially independent test set (block split), citing the spatial CV protocol",
+        "Reports per-class F1/IoU and confusion matrix, not overall accuracy alone",
+        "Maps misclassifications spatially"
+      ],
+      "forbidden_behavior": []
+    },
+    "remote-sensing-analysis/cloud-mask-audit": {
+      "expected_behavior": [
+        "Requires cloud and shadow masking on reflectance bands before index calculation",
+        "Recomputes valid-pixel coverage and inspects mask errors visually",
+        "Records collection, item IDs, acquisition dates, processing level, bands, and mask thresholds"
+      ],
+      "forbidden_behavior": []
+    },
+    "remote-sensing-analysis/mixed-level-trap": {
+      "expected_behavior": [
+        "Flags TOA vs BOA mismatch and refuses to compare directly",
+        "Proposes consistent atmospheric correction or same-level reacquisition"
+      ],
+      "forbidden_behavior": []
+    },
+    "remote-sensing-analysis/ndvi-request": {
+      "expected_behavior": [
+        "Uses STAC search with sentinel-2-l2a (surface reflectance), records item IDs",
+        "Applies SCL cloud masking BEFORE computing the index and reports valid-pixel %",
+        "Uses B8/B4 explicitly and warns against hardcoded NDVI thresholds"
+      ],
+      "forbidden_behavior": []
+    },
+    "remote-sensing-analysis/planetary-server-workflow": {
+      "expected_behavior": [
+        "Routes to google-earth-engine for planetary server-side collection processing",
+        "Does not default to a local raster workflow for the explicitly declared platform and scale"
+      ],
+      "forbidden_behavior": []
+    },
+    "remote-sensing-analysis/temporal-change-quantification": {
+      "expected_behavior": [
+        "Routes to change-detection for transition, sampling, and adjusted-area inference",
+        "Does not stop at generic image classification once temporal change is the requested product"
+      ],
+      "forbidden_behavior": []
+    },
+    "remote-sensing-analysis/vague-imagery-analysis": {
+      "expected_behavior": [
+        "Clarifies decision variable, spatial and temporal scale, season, sensor constraints, and validation data",
+        "Selects processing level, masking, bands or indices only after those requirements are defined",
+        "Plans uncertainty and ground-reference validation rather than equating one index with condition"
+      ],
+      "forbidden_behavior": []
+    },
+    "spatial-statistics/continuous-surface-not-clusters": {
+      "expected_behavior": [
+        "Routes to geostatistics-interpolation for continuous-surface prediction",
+        "Does not substitute autocorrelation statistics for a prediction and uncertainty model"
+      ],
+      "forbidden_behavior": []
+    },
+    "spatial-statistics/hotspot-request": {
+      "expected_behavior": [
+        "Designs and reports spatial weights (type, islands) with a sensitivity alternative",
+        "Uses rates (with EB smoothing for small populations), not raw counts",
+        "FDR-corrects local statistics before mapping clusters"
+      ],
+      "forbidden_behavior": []
+    },
+    "spatial-statistics/maup-awareness": {
+      "expected_behavior": [
+        "Uses permutation inference for Moran's I",
+        "Discloses MAUP and tests one alternative aggregation"
+      ],
+      "forbidden_behavior": []
+    },
+    "spatial-statistics/ols-on-spatial": {
+      "expected_behavior": [
+        "Rejects OLS residual independence and follows the robust LM results to the SAR candidate rather than SEM",
+        "Accepts the SAR residual diagnostic only after reporting Moran's I=0.02 and permutation p=0.28, while noting the SEM residual remains significant",
+        "Reports square-footage direct=0.44, indirect=0.19, and total=0.63 impacts instead of interpreting raw beta=0.37 as the marginal effect"
+      ],
+      "forbidden_behavior": [
+        "Accepts OLS despite significant residual Moran's I",
+        "Interprets the SAR raw coefficient as the complete square-footage effect"
+      ]
+    },
+    "spatial-statistics/unclear-analysis-unit": {
+      "expected_behavior": [
+        "Clarifies the inferential question, outcome denominator, support, and plausible spatial mechanism",
+        "Tests sensitivity to at least one alternative aggregation or weights design",
+        "Separates exploratory cluster mapping from confirmatory model claims"
+      ],
+      "forbidden_behavior": []
+    },
+    "spatial-statistics/weighted-site-ranking": {
+      "expected_behavior": [
+        "Routes to mcda-suitability-analysis for compensatory scoring and sensitivity",
+        "Does not turn a decision-ranking workflow into spatial hypothesis testing"
+      ],
+      "forbidden_behavior": []
+    },
+    "spatial-statistics/weights-result-audit": {
+      "expected_behavior": [
+        "Audits weights construction, island handling, and sensitivity to an alternative defensible weights design",
+        "Uses exposure-adjusted rates and considers empirical Bayes smoothing where denominators are small",
+        "Applies FDR correction and reports permutation settings before interpreting clusters"
+      ],
+      "forbidden_behavior": []
+    },
+    "swe-devops-standards/geospatial-etl-script": {
+      "expected_behavior": [
+        "Uses pathlib, type hints, docstring, specific exceptions, main-guard",
+        "Defines explicit CRS, geometry, nodata, and row-accounting invariants",
+        "Ships pytest coverage for the core function and spatial edge cases"
+      ],
+      "forbidden_behavior": []
+    },
+    "swe-devops-standards/packaging-audit": {
+      "expected_behavior": [
+        "Requires bounded dependencies and records GDAL/PROJ runtime versions",
+        "Replaces swallowed failures with specific exceptions and actionable context",
+        "Adds cross-platform tests for CRS, transform, nodata, geometry validity, dimensions, and values"
+      ],
+      "forbidden_behavior": []
+    },
+    "swe-devops-standards/prototype-production-boundary": {
+      "expected_behavior": [
+        "Clarifies batch versus service delivery, scale, platform, failure policy, and reproducibility needs",
+        "Separates deterministic core functions from I/O and configuration",
+        "Defines tests and observability around geospatial invariants before selecting infrastructure"
+      ],
+      "forbidden_behavior": []
+    },
+    "swe-devops-standards/repro-setup": {
+      "expected_behavior": [
+        "Creates a pinned environment and records GDAL/PROJ runtime versions plus seeded randomness",
+        "Adds cross-platform CI with tests for CRS, transform, nodata, dimensions, and deterministic outputs"
+      ],
+      "forbidden_behavior": []
+    },
+    "swe-devops-standards/review-mode": {
+      "expected_behavior": [
+        "Orders findings by correctness, security, performance, then readability and identifies mixed SRIDs, SQL injection through identifiers and values, silent bare-except failure, and missing rollback",
+        "Uses psycopg SQL composition for the allowlisted table identifier, value parameters for WKT/SRID, explicit MULTIPOLYGON/3857 validation or transformation, and specific exceptions with rollback",
+        "Ships focused tests for malicious identifiers, parameterized WKT, unsupported SRID, and rollback plus propagated database context"
+      ],
+      "forbidden_behavior": [
+        "Interpolates the table identifier, WKT, or SRID directly into executable SQL",
+        "Keeps a bare exception handler or silently accepts mixed-SRID geometry"
+      ]
+    },
+    "swe-devops-standards/scientific-crs-choice": {
+      "expected_behavior": [
+        "Routes to geo-data-engineering for CRS and geometry correctness",
+        "Does not expand a bounded scientific data task into DevOps work"
+      ],
+      "forbidden_behavior": []
+    },
+    "swe-devops-standards/spatial-validation-design": {
+      "expected_behavior": [
+        "Routes to ml-experiment-standards for experimental validity and leakage control",
+        "Does not replace methodological design with generic CI or packaging advice"
+      ],
+      "forbidden_behavior": []
+    },
+    "terrain-hydrology/flow-direction-audit": {
+      "expected_behavior": [
+        "Checks DEM type, nodata mask, CRS units, conditioning, and flow-direction convention",
+        "Snaps the pour point to a plausible high-accumulation cell within a documented tolerance",
+        "Uses ridge, drainage, area, and authoritative-basin comparisons to diagnose the failure"
+      ],
+      "forbidden_behavior": []
+    },
+    "terrain-hydrology/lidar-ground-classification": {
+      "expected_behavior": [
+        "Routes to point-cloud-lidar for raw point classification and rasterization",
+        "Does not begin terrain derivatives before the point-cloud DTM is validated"
+      ],
+      "forbidden_behavior": []
+    },
+    "terrain-hydrology/rainfall-kriging-not-terrain": {
+      "expected_behavior": [
+        "Routes to geostatistics-interpolation for sampled-field prediction",
+        "Does not activate terrain-hydrology merely because rainfall is hydrologically relevant"
+      ],
+      "forbidden_behavior": []
+    },
+    "terrain-hydrology/slope-4326-catch": {
+      "expected_behavior": [
+        "Flags the EPSG:4326 horizontal-degree versus vertical-metre mismatch and refuses direct slope computation",
+        "Selects EPSG:32633 from the supplied extent, preserves metre elevations, masks -32768, and specifies appropriate continuous-DEM resampling before slope",
+        "Records a 30 m target cell size, slope in degrees, an explicit algorithm/tool sequence, and distribution plus nodata/edge QA checks"
+      ],
+      "forbidden_behavior": [
+        "Computes slope directly from EPSG:4326 pixels without a defensible latitude-dependent correction",
+        "Uses Web Mercator as the measurement CRS or leaves slope units and target cell size unspecified"
+      ]
+    },
+    "terrain-hydrology/surface-choice-unclear": {
+      "expected_behavior": [
+        "Clarifies whether bare-earth terrain or buildings and vegetation represent the causal surface",
+        "Selects DTM, DSM, or both with explicit resolution and vertical-unit checks",
+        "Documents scale sensitivity and validates derived surfaces visually"
+      ],
+      "forbidden_behavior": []
+    },
+    "terrain-hydrology/viewshed-surface-choice": {
+      "expected_behavior": [
+        "Uses a DSM (or DTM + feature heights), not bare earth, and says which",
+        "Sets observer/target heights explicitly and handles curvature/refraction beyond ~5 km",
+        "Delivers parameters in the output metadata"
+      ],
+      "forbidden_behavior": []
+    },
+    "terrain-hydrology/watershed-delineation": {
+      "expected_behavior": [
+        "Uses a DTM, masks nodata, reprojects so horizontal units match vertical",
+        "Conditions with breach-before-fill, D8 flow direction, snaps the pour point to the high-accumulation cell",
+        "Cross-checks watershed area against authoritative basin data"
+      ],
+      "forbidden_behavior": []
+    }
+  }
+}
