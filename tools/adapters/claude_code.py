@@ -232,6 +232,57 @@ def stage_blind_plugin(source: Path, destination: Path) -> Path:
     return destination
 
 
+def expand_long_path(path: Path) -> Path:
+    """Return the long form of a path, expanding Windows 8.3 short names.
+
+    Windows may hand back a TEMP path such as `C:\\Users\\EXCALI~1\\...`. Claude
+    Code compares that against its resolved working directory and can then treat
+    an in-scope Write as out of scope. Expanding to the long form fixes that at
+    the source, so the workspace no longer has to be hidden inside the repository
+    to avoid it.
+    """
+    resolved = path.resolve()
+    if os.name != "nt":
+        return resolved
+
+    import ctypes
+    from ctypes import wintypes
+
+    get_long_path_name = ctypes.windll.kernel32.GetLongPathNameW
+    get_long_path_name.argtypes = [wintypes.LPCWSTR, wintypes.LPWSTR, wintypes.DWORD]
+    get_long_path_name.restype = wintypes.DWORD
+
+    text = str(resolved)
+    required = get_long_path_name(text, None, 0)
+    if not required:
+        return resolved
+    buffer = ctypes.create_unicode_buffer(required)
+    if not get_long_path_name(text, buffer, required):
+        return resolved
+    return Path(buffer.value)
+
+
+def assert_outside_repository(path: Path, *, repository_root: Path = ROOT) -> None:
+    """Fail loudly if an execution workspace sits inside the repository.
+
+    The disabled condition is only meaningful when the skills are genuinely
+    unreachable. A workspace inside the repository leaves `skills/*/SKILL.md`
+    readable through the `Read` tool that both conditions are granted, which
+    silently converts the control into "skill not auto-invoked". This must never
+    regress quietly, so it is checked at runtime rather than trusted.
+    """
+    try:
+        path.resolve().relative_to(repository_root.resolve())
+    except ValueError:
+        return
+    raise AdapterError(
+        f"Execution workspace {path} is inside the repository root "
+        f"{repository_root}. Both conditions are granted Read, so the disabled "
+        f"control could read skills/*/SKILL.md directly and would no longer "
+        f"measure skill availability."
+    )
+
+
 def safe_workspace_path(workspace: Path, relative_path: str) -> Path:
     target = (workspace / relative_path).resolve()
     try:
@@ -650,15 +701,18 @@ def execute_run(args: argparse.Namespace) -> Path:
 
     pending = [case for case in selected_cases if case["case_id"] not in completed]
     completed_cost = sum(float(row.get("cost_usd", 0.0)) for row in completed.values())
-    # Keep the isolated workspace under the run root. On Windows, the system
-    # TEMP path may use an 8.3 short name (for example, EXCALI~1), which can
-    # make Claude Code treat an otherwise in-scope Write as outside the
-    # working directory. evals/runs is ignored and TemporaryDirectory still
-    # removes the workspace after every execution.
-    with tempfile.TemporaryDirectory(
-        prefix=".geoai-claude-adapter-", dir=run_dir.parent
-    ) as temporary:
-        temporary_root = Path(temporary)
+    # The isolated workspace MUST live outside the repository. It was briefly
+    # placed under evals/runs to dodge a Windows 8.3 short TEMP path (EXCALI~1)
+    # that made in-scope Writes look out of scope. That fix leaked the thing the
+    # disabled condition exists to hide: with the working directory inside the
+    # repository, the Read tool granted to both conditions can open
+    # skills/*/SKILL.md, so `skills-disabled` measured "skill not auto-invoked"
+    # rather than "skill unavailable". Six of eighteen disabled responses in run
+    # optionA-r2-20260725 cited the repository, one quoting a SKILL.md verbatim.
+    # The short-path problem is now solved properly by expanding the long name.
+    with tempfile.TemporaryDirectory(prefix="geoai-claude-adapter-") as temporary:
+        temporary_root = expand_long_path(Path(temporary))
+        assert_outside_repository(temporary_root)
         workspace_root = temporary_root / "workspaces"
         workspace_root.mkdir()
         plugin_dir = None
