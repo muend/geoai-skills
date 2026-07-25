@@ -375,10 +375,21 @@ def base_claude_command(
     *,
     claude_command: str,
     model: str,
-    case_budget_usd: float,
+    case_budget_usd: float | None,
     max_turns: int,
 ) -> list[str]:
-    return [
+    """Build the per-case invocation.
+
+    `case_budget_usd` is optional because the cap is visible to the model, which
+    treats it as a user constraint and reports the *remaining fraction* rather
+    than the absolute headroom. In run `optionA-r2-20260725` a case that spent
+    $0.0978 under a $0.50 cap told the user "this session's budget is nearly
+    exhausted ($0.43 of $0.50 left)" and offered to skip the AHP and sensitivity
+    workflow it was being measured on. Raising the cap does not fix this: any
+    finite number can be read as scarcity. Omitting the flag removes the surface
+    entirely, and `--max-total-cost-usd` still bounds the run.
+    """
+    command = [
         claude_command,
         "-p",
         "--model",
@@ -388,9 +399,10 @@ def base_claude_command(
         "acceptEdits",
         "--max-turns",
         str(max_turns),
-        "--max-budget-usd",
-        str(case_budget_usd),
     ]
+    if case_budget_usd is not None:
+        command.extend(["--max-budget-usd", str(case_budget_usd)])
+    return command
 
 
 def execution_command(
@@ -399,7 +411,7 @@ def execution_command(
     model: str,
     condition: str,
     plugin_dir: Path | None,
-    case_budget_usd: float,
+    case_budget_usd: float | None,
     max_turns: int,
     tool_profile: str,
 ) -> list[str]:
@@ -450,7 +462,7 @@ def judge_command(
     claude_command: str,
     model: str,
     schema: dict[str, Any],
-    case_budget_usd: float,
+    case_budget_usd: float | None,
 ) -> list[str]:
     command = base_claude_command(
         claude_command=claude_command,
@@ -974,7 +986,16 @@ def add_shared_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--claude-command", default="claude")
     parser.add_argument("--workers", type=int, default=1, choices=range(1, 9))
     parser.add_argument("--timeout-seconds", type=int, default=300)
-    parser.add_argument("--max-case-cost-usd", type=float, required=True)
+    parser.add_argument(
+        "--max-case-cost-usd",
+        type=float,
+        default=None,
+        help=(
+            "Optional per-case ceiling. Omit it to hide the cap from the model: "
+            "the model reads a cap as a user constraint and curtails measured work. "
+            "--max-total-cost-usd still bounds the run."
+        ),
+    )
     parser.add_argument("--max-total-cost-usd", type=float, required=True)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
@@ -1003,10 +1024,13 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def validate_args(args: argparse.Namespace) -> None:
-    if args.max_case_cost_usd <= 0 or args.max_total_cost_usd <= 0:
+    if args.max_total_cost_usd <= 0:
         raise AdapterError("Cost limits must be positive")
-    if args.max_case_cost_usd > args.max_total_cost_usd:
-        raise AdapterError("Per-case cost limit cannot exceed total cost limit")
+    if args.max_case_cost_usd is not None:
+        if args.max_case_cost_usd <= 0:
+            raise AdapterError("Cost limits must be positive")
+        if args.max_case_cost_usd > args.max_total_cost_usd:
+            raise AdapterError("Per-case cost limit cannot exceed total cost limit")
     if args.timeout_seconds < 1:
         raise AdapterError("timeout-seconds must be positive")
 
