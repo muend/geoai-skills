@@ -117,6 +117,18 @@ required before the first stable release.
   record, so choosing Earth Engine surfaces the obligation rather than leaving it
   in an unreferenced later section.
 
+- The Claude Code adapter no longer creates execution workspaces inside the
+  repository. They had been placed under `evals/runs/` to dodge a Windows 8.3
+  short `TEMP` path that made in-scope writes look out of scope. That leaked
+  exactly what the disabled condition exists to hide: with the working directory
+  inside the repository, the `Read` tool granted to **both** conditions could
+  open `skills/*/SKILL.md`, so `skills-disabled` measured "skill not
+  auto-invoked" rather than "skill unavailable". Disabling the `Skill` tool
+  prevents invocation, not reading. The short-path problem is now solved at
+  source by expanding the Windows long path name, the workspace returns to system
+  temp, and a runtime assertion plus regression tests fail loudly if a workspace
+  ever resolves inside the repository again.
+
 ### Changed
 - Three evaluation criteria that bundled several independent requirements into
   one pass/fail row were decomposed so partial delivery is distinguishable from
