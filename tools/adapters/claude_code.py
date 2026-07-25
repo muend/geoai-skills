@@ -41,6 +41,7 @@ from tools.adapters.judge_contract import (  # noqa: E402
 RUN_SCHEMA_PATH = ROOT / "evals" / "run-schema.json"
 ADAPTER_VERSION = "3"
 MAX_ARTIFACT_PREVIEW_CHARS = 20_000
+SEMANTIC_VERSION_PATTERN = re.compile(r"(\d+\.\d+\.\d+)")
 
 
 class AdapterError(RuntimeError):
@@ -495,6 +496,54 @@ def auth_available(claude_command: str) -> bool:
     return bool(status.get("loggedIn"))
 
 
+def detect_cli_version(claude_command: str) -> str:
+    """Ask the CLI which version it actually is.
+
+    Every response row carries a `runtime` field, and that field is copied
+    verbatim out of the manifest. Nothing used to check the manifest against
+    reality, so an auto-updated CLI would silently stamp its output with the
+    version named when the run directory was prepared. That corruption is
+    unrecoverable after the fact: the rows look identical to genuine ones.
+    """
+    process = subprocess.run(
+        [claude_command, "--version"],
+        text=True,
+        capture_output=True,
+        check=False,
+        timeout=30,
+    )
+    if process.returncode != 0:
+        detail = process.stderr.strip() or f"exit code {process.returncode}"
+        raise AdapterError(f"`{claude_command} --version` failed: {detail}")
+    match = SEMANTIC_VERSION_PATTERN.search(process.stdout)
+    if match is None:
+        raise AdapterError(
+            f"Could not read a version from `{claude_command} --version` output: "
+            f"{process.stdout.strip()!r}"
+        )
+    return match.group(1)
+
+
+def assert_runtime_matches_cli(claude_command: str, declared_runtime: str) -> str:
+    """Refuse to execute when the CLI is not the runtime the manifest names."""
+    declared = SEMANTIC_VERSION_PATTERN.search(declared_runtime)
+    if declared is None:
+        raise AdapterError(
+            f"Manifest runtime {declared_runtime!r} names no version, so responses "
+            "cannot be attributed to a runtime; prepare the run with an explicit "
+            "version such as claude-code-2.1.214"
+        )
+    detected = detect_cli_version(claude_command)
+    if declared.group(1) != detected:
+        raise AdapterError(
+            f"Manifest declares runtime {declared_runtime!r} but "
+            f"`{claude_command} --version` reports {detected}. Executing would stamp "
+            "responses with a version that did not produce them. Install the declared "
+            "version, or prepare a new run directory for this runtime."
+        )
+    return detected
+
+
 def run_process(
     command: list[str],
     *,
@@ -685,6 +734,7 @@ def execute_run(args: argparse.Namespace) -> Path:
         raise AdapterError(
             "Claude Code is not authenticated; run `claude auth login` and retry"
         )
+    assert_runtime_matches_cli(args.claude_command, manifest["runtime"])
 
     adapter_dir = run_dir / "adapter"
     checkpoint_path = adapter_dir / "claude-code.responses.jsonl"
