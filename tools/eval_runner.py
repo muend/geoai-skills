@@ -312,39 +312,102 @@ def slug(value: str) -> str:
     return normalized[:60] or "unknown"
 
 
+VALID_SPLITS = ("all", "dev", "holdout")
+DEFAULT_SPLIT_PATH = ROOT / "evals" / "split.json"
+
+
+def load_split_ids(split: str, split_path: Path) -> set[str] | None:
+    """Case ids belonging to one half of the dev / held-out split.
+
+    Returns None for `all`, so callers can distinguish "no filter" from "an
+    empty half" — the second is an error and must not silently behave like the
+    first.
+    """
+    if split == "all":
+        return None
+    if split not in VALID_SPLITS:
+        raise EvalRunnerError(f"split must be one of {list(VALID_SPLITS)}")
+    if not split_path.exists():
+        raise EvalRunnerError(
+            f"{split_path} is missing, so '{split}' does not name a set of cases. "
+            f"Generate it with `python tools/build_split.py --write`."
+        )
+    payload = load_json(split_path)
+    ids = set(payload.get(split) or ())
+    if not ids:
+        raise EvalRunnerError(f"the '{split}' half of {split_path} is empty")
+    return ids
+
+
+def select_cases(
+    cases: list[dict[str, Any]],
+    *,
+    evaluation_scope: str = "all",
+    split: str = "all",
+    split_path: Path | None = None,
+) -> list[dict[str, Any]]:
+    """The single definition of "which cases does this run cover".
+
+    Both regression gates and `prepare` read it, so a benchmark's declared
+    population and the population the harness actually ran cannot drift apart.
+
+    Two independent filters:
+
+    * `evaluation_scope` — only `behavior` narrows, to the cases carrying
+      criteria. `routing` deliberately keeps every case, because activation is
+      observable on a behaviour case too: it still tells you whether the right
+      skill fired. `routing-only` marks a case as not behaviour-judged, not as
+      the population routing is measured on. Filtering it here would silently
+      shrink routing measurement to a subset of the suite.
+    * `split` — which half of the dev / held-out split.
+
+    Order is preserved, because the suite hash is computed over this list.
+    """
+    if evaluation_scope not in {"routing", "behavior", "all"}:
+        raise EvalRunnerError("evaluation_scope must be routing, behavior, or all")
+    selected = cases
+    if evaluation_scope == "behavior":
+        selected = [c for c in selected if c["behavior_class"] != "routing-only"]
+        if not selected:
+            raise EvalRunnerError(
+                "behavior scope has no explicitly behavior-evaluable cases"
+            )
+    ids = load_split_ids(split, split_path or DEFAULT_SPLIT_PATH)
+    if ids is not None:
+        selected = [c for c in selected if c["case_id"] in ids]
+        if not selected:
+            raise EvalRunnerError(
+                f"the '{split}' half contains no cases in scope '{evaluation_scope}'"
+            )
+    return selected
+
+
 def prepare_run(
     *,
     runtime: str,
     model: str,
     condition: str,
     evaluation_scope: str = "all",
+    split: str = "all",
     runs_dir: Path = DEFAULT_RUNS_DIR,
     run_id: str | None = None,
     skills_dir: Path = SKILLS,
     eval_schema_path: Path = EVAL_SCHEMA_PATH,
     run_schema_path: Path = RUN_SCHEMA_PATH,
+    split_path: Path = DEFAULT_SPLIT_PATH,
 ) -> Path:
     if condition not in {"skills-enabled", "skills-disabled"}:
         raise EvalRunnerError("condition must be skills-enabled or skills-disabled")
-    if evaluation_scope not in {"routing", "behavior", "all"}:
-        raise EvalRunnerError("evaluation_scope must be routing, behavior, or all")
     cases, _, skill_names = load_suite(
         skills_dir=skills_dir,
         eval_schema_path=eval_schema_path,
     )
-    # Only `behavior` narrows the case set. `routing` deliberately keeps every
-    # case, because activation is observable on all of them — a behaviour case
-    # still tells you whether the right skill fired. `routing-only` marks a case
-    # as not behaviour-judged; it does not mark the cases routing is measured on.
-    # Filtering here would silently shrink routing measurement from the whole
-    # suite to the routing-only subset. See EVALUATION.md, "Prepare blind
-    # requests".
-    if evaluation_scope == "behavior":
-        cases = [case for case in cases if case["behavior_class"] != "routing-only"]
-        if not cases:
-            raise EvalRunnerError(
-                "behavior scope has no explicitly behavior-evaluable cases"
-            )
+    cases = select_cases(
+        cases,
+        evaluation_scope=evaluation_scope,
+        split=split,
+        split_path=split_path,
+    )
     suite_sha256 = sha256_json(cases)
     run_schema = load_json(run_schema_path)
     Draft202012Validator.check_schema(run_schema)
@@ -356,6 +419,7 @@ def prepare_run(
         "model": model,
         "condition": condition,
         "evaluation_scope": evaluation_scope,
+        "split": split,
         "available_skills": skill_names if condition == "skills-enabled" else [],
         "cases": cases,
     }
@@ -363,8 +427,10 @@ def prepare_run(
         contract_validator(run_schema, "manifest"), manifest, label="manifest"
     )
 
+    split_tag = "" if split == "all" else f"--{split}"
     selected_id = run_id or (
-        f"{slug(runtime)}--{slug(model)}--{condition}--{evaluation_scope}--{suite_sha256[:12]}"
+        f"{slug(runtime)}--{slug(model)}--{condition}--{evaluation_scope}"
+        f"{split_tag}--{suite_sha256[:12]}"
     )
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,199}", selected_id):
         raise EvalRunnerError("run-id must be 1-200 safe filename characters")
@@ -908,6 +974,15 @@ def build_parser() -> argparse.ArgumentParser:
         default="all",
         help="Select all routing cases, only behavior-evaluable cases, or the combined suite",
     )
+    prepare.add_argument(
+        "--split",
+        choices=VALID_SPLITS,
+        default="all",
+        help=(
+            "Restrict the run to one half of evals/split.json. Use 'dev' while "
+            "iterating; 'holdout' only for a release candidate."
+        ),
+    )
 
     compose = subparsers.add_parser(
         "compose",
@@ -977,6 +1052,7 @@ def main(argv: list[str] | None = None) -> int:
                 model=args.model,
                 condition=args.condition,
                 evaluation_scope=args.evaluation_scope,
+                split=args.split,
                 runs_dir=args.runs_dir,
                 run_id=args.run_id,
             )

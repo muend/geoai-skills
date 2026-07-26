@@ -183,6 +183,96 @@ def test_only_the_behavior_scope_narrows_the_case_set(tmp_path: Path) -> None:
     assert hashes["behavior"] != hashes["all"]
 
 
+def _manifest(tmp_path: Path, **kwargs: object) -> dict:
+    run_dir = prepare_run(
+        runtime="test-runtime",
+        model="test-model-v1",
+        condition="skills-enabled",
+        runs_dir=tmp_path / "runs",
+        **kwargs,  # type: ignore[arg-type]
+    )
+    return json.loads((run_dir / "manifest.json").read_text(encoding="utf-8"))
+
+
+def test_the_split_and_the_scope_filter_independently(tmp_path: Path) -> None:
+    """Two axes, so nine combinations, and the harness must honour both.
+
+    Before this the split could only be *checked* by a regression gate, never
+    *used* by the harness: there was no way to run the dev half. That made the
+    disciplined path — measure on dev, keep held-out for the release candidate —
+    impossible to actually take, which is a poor way to enforce a discipline.
+    """
+    sizes = {}
+    hashes = {}
+    for scope in ("all", "routing", "behavior"):
+        for split in ("all", "dev", "holdout"):
+            manifest = _manifest(
+                tmp_path / f"{scope}-{split}", evaluation_scope=scope, split=split
+            )
+            sizes[(scope, split)] = len(manifest["cases"])
+            hashes[(scope, split)] = manifest["suite_sha256"]
+            assert manifest["split"] == split
+
+    for scope in ("all", "routing", "behavior"):
+        assert sizes[(scope, "dev")] + sizes[(scope, "holdout")] == sizes[(scope, "all")]
+    for split in ("all", "dev", "holdout"):
+        assert sizes[("behavior", split)] < sizes[("all", split)]
+        assert sizes[("routing", split)] == sizes[("all", split)]
+
+    # Six distinct hashes, not nine: routing and all cover the same cases, so
+    # they must hash alike or the two would look incomparable when they are not.
+    assert len(set(hashes.values())) == 6
+
+
+def test_a_split_scoped_run_names_its_half_in_the_run_id(tmp_path: Path) -> None:
+    """A directory whose name omits the split invites pooling two halves later."""
+    dev = prepare_run(
+        runtime="rt",
+        model="m",
+        condition="skills-enabled",
+        split="dev",
+        runs_dir=tmp_path / "runs",
+    )
+    everything = prepare_run(
+        runtime="rt",
+        model="m",
+        condition="skills-enabled",
+        runs_dir=tmp_path / "runs",
+    )
+
+    assert "--dev--" in dev.name
+    assert "--dev--" not in everything.name
+    assert dev.name != everything.name
+
+
+def test_a_missing_split_file_is_refused_rather_than_ignored(tmp_path: Path) -> None:
+    """Silently running the whole suite when 'dev' was asked for is the bad case."""
+    with pytest.raises(EvalRunnerError, match="does not name a set of cases"):
+        prepare_run(
+            runtime="rt",
+            model="m",
+            condition="skills-enabled",
+            split="dev",
+            runs_dir=tmp_path / "runs",
+            split_path=tmp_path / "absent.json",
+        )
+
+
+def test_an_empty_split_half_is_refused(tmp_path: Path) -> None:
+    empty = tmp_path / "split.json"
+    empty.write_text(json.dumps({"dev": [], "holdout": ["a/b"]}), encoding="utf-8")
+
+    with pytest.raises(EvalRunnerError, match="is empty"):
+        prepare_run(
+            runtime="rt",
+            model="m",
+            condition="skills-enabled",
+            split="dev",
+            runs_dir=tmp_path / "runs",
+            split_path=empty,
+        )
+
+
 def test_score_routing_only_overrides_combined_run(tmp_path: Path) -> None:
     run_dir, manifest = prepared_run(tmp_path)
     response_path = tmp_path / "combined-responses.jsonl"

@@ -44,13 +44,14 @@ import argparse
 import json
 import re
 import sys
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from tools.build_split import SplitError, build, load_cases, load_inputs
-from tools.eval_runner import load_suite
+from tools.eval_runner import EvalRunnerError, load_suite, select_cases, sha256_json
 
 ROOT = Path(__file__).resolve().parent.parent
 BASELINE_PATH = ROOT / "evals" / "rubric-baseline.json"
@@ -89,7 +90,7 @@ class GateFailure(Exception):
 
 
 def current_rubric() -> dict[str, dict[str, list[str]]]:
-    cases, _suite_sha256, _skills = load_suite()
+    cases, _suite_sha256, _skills = suite()
     return {
         case["case_id"]: {
             "expected_behavior": list(case["expected_behavior"]),
@@ -100,7 +101,7 @@ def current_rubric() -> dict[str, dict[str, list[str]]]:
 
 
 def build_baseline() -> dict[str, Any]:
-    _cases, suite_sha256, skills = load_suite()
+    _cases, suite_sha256, skills = suite()
     return {
         "note": (
             "Pinned expected and forbidden criteria. A criterion may be added, or "
@@ -178,18 +179,46 @@ def check_rubric_not_weakened(baseline: dict[str, Any]) -> list[str]:
 # ---------------------------------------------------------------------------
 
 
+def expected_population_sha256(metrics: dict[str, Any], fallback: str) -> str:
+    """The hash a benchmark's declared population should have today.
+
+    Measured problem this solves: a narrow run records the hash of the cases it
+    covered, not of the whole suite — `--scope behavior` is documented as
+    producing its own suite hash. Comparing every benchmark against the
+    full-suite hash therefore forced a freshly computed behaviour benchmark to
+    declare `superseded`, which is false in the other direction: the 84-case
+    behaviour population still exists, and the numbers do describe the current
+    skills. The label was wrong either way, so the comparison has to know which
+    population was run.
+
+    Falls back to the full-suite hash when the benchmark declares no scope, which
+    is the pre-split shape.
+    """
+    scope = metrics.get("scope")
+    evaluated = metrics.get("evaluation_scope", "all")
+    if scope not in SPLIT_FOR_SCOPE or evaluated not in VALID_EVAL_SCOPES:
+        return fallback
+    try:
+        return population_sha256(scope, evaluated)
+    except (EvalRunnerError, KeyError):
+        # An unbuildable population is Gate C's business to report; currency
+        # falls back rather than raising twice for one cause.
+        return fallback
+
+
 def check_benchmark_currency() -> list[str]:
     if not BENCHMARKS_DIR.exists():
         return []
 
-    _cases, current_suite_sha256, skills = load_suite()
+    _cases, current_suite_sha256, skills = suite()
     failures: list[str] = []
 
     for metrics_path in sorted(BENCHMARKS_DIR.glob("*/metrics.json")):
         directory = metrics_path.parent
         metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
         published = metrics.get("suite_sha256")
-        is_current = published == current_suite_sha256
+        expected = expected_population_sha256(metrics, current_suite_sha256)
+        is_current = published == expected
         truth = "current" if is_current else "superseded"
 
         readme = directory / "README.md"
@@ -210,9 +239,13 @@ def check_benchmark_currency() -> list[str]:
 
         declared = match.group(1).lower()
         if declared != truth:
+            scope_note = (
+                f"scope '{metrics.get('scope')}' / evaluation_scope "
+                f"'{metrics.get('evaluation_scope', 'all')}'"
+            )
             detail = (
-                f"published suite {published[:12]}… vs current "
-                f"{current_suite_sha256[:12]}… ({len(skills)} skills)"
+                f"published suite {str(published)[:12]}… vs the {scope_note} "
+                f"population's current hash {expected[:12]}… ({len(skills)} skills)"
             )
             failures.append(
                 f"{directory.name}: README.md declares 'Suite state: {declared}' but "
@@ -228,16 +261,61 @@ def check_benchmark_currency() -> list[str]:
 # ---------------------------------------------------------------------------
 
 
+SPLIT_FOR_SCOPE = {"dev": "dev", "holdout": "holdout", "full": "all"}
+
+
+@lru_cache(maxsize=1)
+def _suite() -> tuple[tuple[dict[str, Any], ...], str, tuple[str, ...]]:
+    """Parse and validate the suite once per process.
+
+    All three gates need it, and each was re-reading and re-validating eighteen
+    eval files. Safe to cache because this is a short-lived CLI; a caller that
+    edits eval files mid-process would need to clear it, which nothing does.
+    """
+    cases, suite_sha256, skills = load_suite()
+    return tuple(cases), suite_sha256, tuple(skills)
+
+
+def suite() -> tuple[list[dict[str, Any]], str, list[str]]:
+    cases, suite_sha256, skills = _suite()
+    return [dict(case) for case in cases], suite_sha256, list(skills)
+
+
+def population(scope: str, evaluation_scope: str) -> list[dict[str, Any]]:
+    """The cases a run declaring (scope, evaluation_scope) should have covered.
+
+    Delegates to `select_cases`, the same function `prepare` uses to build a
+    manifest. That shared definition is the point: if the gates carried their own
+    copy of the filtering rules, a benchmark's declared population and the
+    population the harness actually ran could drift apart silently, and the gates
+    would keep passing while the numbers described something else.
+    """
+    cases, _suite_sha256, _skills = suite()
+    return select_cases(
+        cases,
+        evaluation_scope=evaluation_scope,
+        split=SPLIT_FOR_SCOPE[scope],
+        split_path=SPLIT_PATH,
+    )
+
+
+def population_sha256(scope: str, evaluation_scope: str) -> str:
+    return sha256_json(population(scope, evaluation_scope))
+
+
 def scope_populations(committed: dict[str, Any]) -> dict[tuple[str, str], int]:
-    """(scope, kind) -> how many cases that combination should cover.
+    """(scope, evaluation_scope) -> how many cases that combination should cover.
 
     Keyed on both because they cut the suite along different axes: `scope` picks
-    a split half, `kind` picks a case class. A routing benchmark over the dev
-    half covers their intersection, and comparing it against either total alone
-    would reject an honest run.
+    a split half, `evaluation_scope` picks which case classes ran. `routing` and
+    `all` coincide — a routing run keeps every case, because activation is
+    observable on a behaviour case too — and only `behavior` narrows. The
+    `routing-only-cases` entry counts the cases that are *not* behaviour-judged;
+    it exists for reporting and for the test that the two classes partition each
+    half, not for the arithmetic check.
     """
     cases = load_cases()
-    routing = {
+    routing_only = {
         case_id
         for case_id, meta in cases.items()
         if meta["behavior_class"] == "routing-only"
@@ -250,14 +328,10 @@ def scope_populations(committed: dict[str, Any]) -> dict[tuple[str, str], int]:
 
     sizes: dict[tuple[str, str], int] = {}
     for scope, members in halves.items():
-        # `routing` and `all` cover the same cases. A routing run keeps every
-        # case because activation is observable on all of them; only `behavior`
-        # narrows, to the cases that carry criteria. The unused `routing`-side
-        # intersection is recorded for reporting, not for this check.
         sizes[(scope, "routing")] = len(members)
         sizes[(scope, "all")] = len(members)
-        sizes[(scope, "behavior")] = len(members - routing)
-        sizes[(scope, "routing-only-cases")] = len(members & routing)
+        sizes[(scope, "behavior")] = len(members - routing_only)
+        sizes[(scope, "routing-only-cases")] = len(members & routing_only)
     return sizes
 
 
@@ -303,14 +377,20 @@ def check_holdout_containment() -> list[str]:
     if not BENCHMARKS_DIR.exists():
         return failures
 
-    _cases, current_suite_sha256, _skills = load_suite()
+    _cases, current_suite_sha256, _skills = suite()
 
     for metrics_path in sorted(BENCHMARKS_DIR.glob("*/metrics.json")):
         directory = metrics_path.parent
         name = directory.name
         metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
         scope = metrics.get("scope")
-        suite_is_current = metrics.get("suite_sha256") == current_suite_sha256
+        # Currency is judged against the population the run declares, matching
+        # Gate B. Using the full-suite hash here would treat every narrow-scope
+        # benchmark as superseded and quietly skip the count check below —
+        # turning the gate off for exactly the runs it most needs to bound.
+        suite_is_current = metrics.get("suite_sha256") == expected_population_sha256(
+            metrics, current_suite_sha256
+        )
 
         if scope is None:
             failures.append(

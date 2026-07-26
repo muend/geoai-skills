@@ -75,6 +75,8 @@ python tools/eval_runner.py prepare \
 
 `--scope routing` keeps all suite cases and requires no criterion judgments. `--scope behavior` includes only explicitly behavior-evaluable cases and produces its own suite hash. `--scope all` retains the combined, backward-compatible workflow. Never pool routing and behavior metrics across different suite hashes.
 
+`--split {all,dev,holdout}` restricts a run to one half of `evals/split.json`. Use `dev` while iterating and `holdout` only for a release candidate; the two filters are independent, so `--scope behavior --split dev` is the 53-case behaviour development population. Each combination has its own suite hash, and the run directory name carries the half, so two halves cannot be pooled by accident. A missing or empty split half is an error rather than a silent fall back to the whole suite.
+
 ## 2. Execute with any runtime adapter
 
 An adapter reads each request, executes it once under the manifest's declared condition, and writes one response object per line:
@@ -338,9 +340,18 @@ and makes no claim about the history before that point.
 **Gate B — benchmark currency.** Published benchmark artefacts are computed
 against one immutable suite hash. When a skill or eval changes, that hash changes
 and the published numbers stop describing the current repository. This gate
-recomputes the suite hash and requires every directory under `benchmarks/` to
-state `Suite state: current` or `Suite state: superseded` in its README, failing
-when the declaration disagrees with the computed truth. A superseded benchmark
+recomputes the hash of the population the benchmark declares — from its `scope`
+and `evaluation_scope` — and requires every directory under `benchmarks/` to state
+`Suite state: current` or `Suite state: superseded` in its README, failing when
+the declaration disagrees with the computed truth.
+
+The comparison is against the declared population, not always the whole suite,
+and that distinction was measured rather than assumed. A narrow run records the
+hash of the cases it covered, so comparing every benchmark against the full-suite
+hash forced a behaviour benchmark computed today to declare `superseded` — false
+in the opposite direction, since the 84-case behaviour population still exists
+and its numbers do describe the current skills. A benchmark that declares no
+scope is still judged against the full suite, which is the pre-split shape. A superseded benchmark
 stays published — its evidence remains valid for the suite it was computed
 against — but it may not present itself as describing the current skills.
 
