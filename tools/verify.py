@@ -44,7 +44,7 @@ def _load_json(path: str | None) -> dict | list | None:
     if not file.exists():
         return None
     try:
-        return json.loads(file.read_text(encoding="utf-8"))
+        return json.loads(file.read_text(encoding="utf-8-sig"))
     except json.JSONDecodeError:
         return None
 

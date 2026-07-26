@@ -136,7 +136,7 @@ def check_skill(folder: Path) -> None:
         warn(name, "W3", "no evals/evals.json")
     else:
         try:
-            data = json.loads(ev.read_text(encoding="utf-8"))
+            data = json.loads(ev.read_text(encoding="utf-8-sig"))
             if len(data.get("evals", [])) < 3:
                 warn(name, "W3", "fewer than 3 eval scenarios")
         except json.JSONDecodeError:
