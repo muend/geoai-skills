@@ -46,11 +46,13 @@ def sample_response() -> dict[str, Any]:
 
 def provider_payload() -> dict[str, Any]:
     result = {
-        "expected": [
+        "expected_clauses": [
             {"met": True, "evidence": "Calls EPSG:4326 angular."},
             {"met": True, "evidence": "Requires an equal-area CRS."},
         ],
-        "forbidden": [{"observed": False, "evidence": "No square-degree result."}],
+        "forbidden_clauses": [
+            {"observed": False, "evidence": "No square-degree result."}
+        ],
         "critical_failure": False,
         "notes": "",
     }
@@ -92,15 +94,20 @@ def test_request_body_uses_strict_positional_json_schema() -> None:
     config = body["generationConfig"]
     assert config["responseMimeType"] == "application/json"
     assert config["temperature"] == 0
-    assert config["responseJsonSchema"]["properties"]["expected"]["minItems"] == 2
-    assert config["responseJsonSchema"]["properties"]["forbidden"]["maxItems"] == 1
+    assert (
+        config["responseJsonSchema"]["properties"]["expected_clauses"]["minItems"] == 2
+    )
+    assert (
+        config["responseJsonSchema"]["properties"]["forbidden_clauses"]["maxItems"]
+        == 1
+    )
     assert '"interaction_mode": "deliver"' in body["contents"][0]["parts"][0]["text"]
     assert "api" not in json.dumps(body).lower()
 
 
 def test_judge_namespace_separates_model_and_prompt_versions() -> None:
     assert judge_namespace("gemini-3.1-flash-lite") == (
-        "gemini-api--gemini-3-1-flash-lite--geoai-behavior-judge-v3"
+        "gemini-api--gemini-3-1-flash-lite--geoai-behavior-judge-v6"
     )
 
 
@@ -128,7 +135,7 @@ def test_judge_request_encodes_frozen_interaction_policy(
 def test_parse_generate_response_preserves_usage_and_model_version() -> None:
     parsed, metadata = parse_generate_response(provider_payload())
 
-    assert parsed["expected"][0]["met"] is True
+    assert parsed["expected_clauses"][0]["met"] is True
     assert metadata["model_version"] == "gemini-3.1-flash-lite"
     assert metadata["usage"] == {
         "prompt_tokens": 120,

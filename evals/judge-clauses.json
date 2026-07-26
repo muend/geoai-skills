@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "criteria": [
+    {
+      "criterion": "Joins by county_id and colors the rate cases/population*100000 rather than raw counts",
+      "operator": "all",
+      "clauses": [
+        "Joins geometry and attributes by county_id",
+        "Colors cases/population*100000",
+        "Does not color raw case counts"
+      ]
+    },
+    {
+      "criterion": "Uses and records a justified fixed classification, a colorblind-safe ramp, and neutral gray for the county with missing population",
+      "operator": "all",
+      "clauses": [
+        "Uses and records a justified fixed classification",
+        "Uses and records a colorblind-safe ramp",
+        "Uses neutral gray for the county with missing population"
+      ]
+    },
+    {
+      "criterion": "The HTML and metadata include legend units (cases per 100,000), synthetic source, CRS/projection, class edges, and accessible labels",
+      "operator": "all",
+      "clauses": [
+        "The HTML and metadata include legend units of cases per 100,000",
+        "The HTML and metadata identify the synthetic source",
+        "The HTML and metadata identify the CRS or projection",
+        "The HTML and metadata record class edges",
+        "The HTML includes accessible labels"
+      ]
+    },
+    {
+      "criterion": "Colors raw case counts or silently treats missing population as zero",
+      "operator": "any",
+      "clauses": [
+        "Colors raw case counts",
+        "Silently treats missing population as zero"
+      ]
+    },
+    {
+      "criterion": "Uses a red-green ramp or omits the rate units from the legend",
+      "operator": "any",
+      "clauses": [
+        "Uses a red-green ramp",
+        "Omits the rate units from the legend"
+      ]
+    },
+    {
+      "criterion": "Clarifies whether abrupt breaks, gradual trends, or class transitions define change",
+      "operator": "all",
+      "clauses": [
+        "Clarifies which of abrupt breaks, gradual trends, or class transitions defines change"
+      ]
+    },
+    {
+      "criterion": "Uses seasonal or time-series break methods rather than arbitrary two-date differencing",
+      "operator": "all",
+      "clauses": [
+        "Uses seasonal or time-series break methods rather than arbitrary two-date differencing"
+      ]
+    },
+    {
+      "criterion": "Requires observation-count and uncertainty reporting",
+      "operator": "all",
+      "clauses": [
+        "Requires observation-count reporting",
+        "Requires uncertainty reporting"
+      ]
+    },
+    {
+      "criterion": "Still performs/reports sensitivity at minimum ('a suitability map without sensitivity analysis is an opinion with a legend')",
+      "operator": "all",
+      "clauses": [
+        "Still performs or reports sensitivity analysis at minimum"
+      ]
+    },
+    {
+      "criterion": "Documents weights, standardization, and limitations with the deliverable",
+      "operator": "all",
+      "clauses": [
+        "Documents weights with the deliverable",
+        "Documents standardization with the deliverable",
+        "Documents limitations with the deliverable"
+      ]
+    },
+    {
+      "criterion": "Rejects five-kilometre Euclidean buffers as operational fire-response coverage",
+      "operator": "all",
+      "clauses": [
+        "Rejects five-kilometre Euclidean buffers as operational fire-response coverage"
+      ]
+    },
+    {
+      "criterion": "Specifies eight-minute emergency-drive isochrones on the routable graph with one-way, turn, bridge, barrier, travel-time, station-snap, and unreachable-area handling",
+      "operator": "all",
+      "clauses": [
+        "Specifies eight-minute emergency-drive isochrones",
+        "Uses a routable graph",
+        "Handles one-way restrictions",
+        "Handles turn restrictions",
+        "Handles bridges and barriers",
+        "Uses travel-time weights",
+        "Handles station snapping",
+        "Handles unreachable areas"
+      ]
+    },
+    {
+      "criterion": "Uses edge-based service-area polygons that do not bridge the river and validates at least three routes against dispatch travel times",
+      "operator": "all",
+      "clauses": [
+        "Uses edge-based service-area polygons",
+        "Service-area polygons do not bridge the river across unreachable areas",
+        "Validates at least three routes",
+        "Compares validation routes against dispatch travel times"
+      ]
+    },
+    {
+      "criterion": "Presents the Euclidean buffers as equivalent to network response coverage",
+      "operator": "all",
+      "clauses": [
+        "Presents the Euclidean buffers as equivalent to network response coverage"
+      ]
+    },
+    {
+      "criterion": "Uses a convex hull that bridges unreachable areas across the river",
+      "operator": "all",
+      "clauses": [
+        "Uses a convex hull that bridges unreachable areas across the river"
+      ]
+    },
+    {
+      "criterion": "Orders findings by correctness, security, performance, then readability and identifies mixed SRIDs, SQL injection through identifiers and values, silent bare-except failure, and missing rollback",
+      "operator": "all",
+      "clauses": [
+        "Orders findings by correctness, security, performance, then readability",
+        "Identifies mixed SRIDs",
+        "Identifies SQL injection through identifiers",
+        "Identifies SQL injection through values",
+        "Identifies silent bare-except failure",
+        "Identifies missing rollback"
+      ]
+    },
+    {
+      "criterion": "Uses psycopg SQL composition for the allowlisted table identifier, value parameters for WKT/SRID, explicit MULTIPOLYGON/3857 validation or transformation, and specific exceptions with rollback",
+      "operator": "all",
+      "clauses": [
+        "Uses psycopg SQL composition for the allowlisted table identifier",
+        "Uses value parameters for WKT",
+        "Uses value parameters for SRID",
+        "Explicitly validates or transforms to MULTIPOLYGON in SRID 3857",
+        "Uses specific exceptions",
+        "Rolls back on database failure"
+      ]
+    },
+    {
+      "criterion": "Ships focused tests for malicious identifiers, parameterized WKT, unsupported SRID, and rollback plus propagated database context",
+      "operator": "all",
+      "clauses": [
+        "Ships a focused test for malicious identifiers",
+        "Ships a focused test for parameterized WKT",
+        "Ships a focused test for unsupported SRID",
+        "Ships a focused test for rollback on database failure",
+        "Ships a focused test for propagated database context"
+      ]
+    },
+    {
+      "criterion": "Interpolates the table identifier, WKT, or SRID directly into executable SQL",
+      "operator": "any",
+      "clauses": [
+        "Interpolates the table identifier directly into executable SQL",
+        "Interpolates WKT directly into executable SQL",
+        "Interpolates SRID directly into executable SQL"
+      ]
+    },
+    {
+      "criterion": "Keeps a bare exception handler or silently accepts mixed-SRID geometry",
+      "operator": "any",
+      "clauses": [
+        "Keeps a bare exception handler",
+        "Silently accepts mixed-SRID geometry"
+      ]
+    }
+  ]
+}

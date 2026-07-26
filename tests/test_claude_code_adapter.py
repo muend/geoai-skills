@@ -351,15 +351,15 @@ def test_judgment_schema_locks_criterion_counts() -> None:
         }
     )
 
-    assert schema["properties"]["expected"]["minItems"] == 2
-    assert schema["properties"]["expected"]["maxItems"] == 2
-    assert schema["properties"]["forbidden"]["minItems"] == 1
-    assert schema["properties"]["forbidden"]["maxItems"] == 1
+    assert schema["properties"]["expected_clauses"]["minItems"] == 2
+    assert schema["properties"]["expected_clauses"]["maxItems"] == 2
+    assert schema["properties"]["forbidden_clauses"]["minItems"] == 1
+    assert schema["properties"]["forbidden_clauses"]["maxItems"] == 1
 
 
 def test_judge_namespace_separates_model_and_prompt_versions() -> None:
     assert judge_namespace("claude-sonnet-5") == (
-        "claude-code--claude-sonnet-5--geoai-behavior-judge-v3"
+        "claude-code--claude-sonnet-5--geoai-behavior-judge-v6"
     )
 
 
