@@ -198,7 +198,30 @@ python tools/adapters/claude_code.py judge \
   --max-total-cost-usd <approved-judge-cap>
 ```
 
-The judge receives rubric text and the immutable interaction contract only after execution. Its structured output contains decisions and evidence by array position; the adapter restores exact manifest criterion text, so the model cannot rewrite the scoring standard. Claude and Gemini resumable judge state is namespaced by provider, exact judge model, and prompt version, preventing a changed judge contract from silently resuming old partial decisions. Model judgments remain reviewable evidence, not ground truth. Prefer a judge from a different model family than the executor. Label same-family results preliminary, never use them as headline evidence, and disclose judge provider, model, family, prompt/schema version, retries, and missing/error cases. Manually review every critical case, every execution error, and a stratified sample of at least 20% of the remainder before publishing metrics.
+The judge receives rubric text and the immutable interaction contract only after
+execution. `evals/judge-clauses.json` can decompose an exact manifest criterion
+into ordered material clauses and declare whether the parent uses `all` or
+`any`. The model returns evidence and a Boolean for every flattened atomic
+clause; it never returns the parent decision. The adapter restores the exact
+manifest criterion and computes the parent deterministically. Criteria absent
+from the registry remain one atomic clause, so coverage can expand without
+changing execution manifests or response hashes. This prevents a conjunctive
+parent from passing when any model-supplied atom is false, but it does not prove
+that the model judged each atom correctly; a candidate judge must still pass
+the precommitted calibration gate before its decisions support a behavior
+claim.
+
+Claude and Gemini resumable judge state is namespaced by provider, exact judge
+model, and prompt version, preventing a changed judge contract from silently
+resuming old partial decisions. Changing either the prompt instructions or the
+atomic-clause registry requires a new prompt version; never resume an existing
+namespace after either input changes. Model judgments remain reviewable
+evidence, not ground truth. Prefer a judge from a different model family than the executor.
+Label same-family results preliminary, never use them as headline evidence, and
+disclose judge provider, model, family, prompt/schema version, retries, and
+missing/error cases. Manually review every critical case, every execution
+error, and a stratified sample of at least 20% of the remainder before
+publishing metrics.
 
 For an independent-family judgment through the Google Gemini REST API, set the
 key in `GEMINI_API_KEY` and run a bounded pilot first:

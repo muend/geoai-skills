@@ -42,6 +42,11 @@ required before the first stable release.
   exact provider model-version capture, explicit external-data acknowledgement,
   bounded request/RPM controls, no automatic retries, ignored local traces, and
   resumable criterion-preserving checkpoints shared with the Claude judge.
+- Provider-neutral atomic-clause judging: exact registered criteria can be
+  flattened into material clauses, model evidence is collected per atom, and
+  parent `all`/`any` decisions are derived deterministically. Unregistered
+  criteria remain backwards-compatible single clauses; candidate models still
+  require independent calibration before their judgments support a claim.
 - Repo tooling: `tools/validate_skills.py` frontmatter/structure linter,
   GitHub Actions CI, plugin marketplace manifest.
 
