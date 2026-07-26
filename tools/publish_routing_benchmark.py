@@ -30,6 +30,9 @@ def write_reproducible(path: Path, content: str, *, force: bool) -> None:
     path.write_text(content, encoding="utf-8", newline="\n")
 
 
+SCOPE_FOR_SPLIT = {"all": "full", "dev": "dev", "holdout": "holdout"}
+
+
 def index_exact(rows: list[dict[str, Any]], ids: list[str], *, label: str) -> dict[str, dict]:
     indexed: dict[str, dict] = {}
     for row in rows:
@@ -142,6 +145,16 @@ def publish_routing_benchmark(
     for key in ("runtime", "model", "suite_sha256"):
         if enabled_manifest[key] != disabled_manifest[key]:
             raise EvalRunnerError(f"Enabled/disabled {key} mismatch")
+    # Equal suite hashes already imply the same population, since the hash is
+    # computed over the selected cases. Checking the label too turns a puzzling
+    # hash mismatch into a sentence that names the actual mistake.
+    if enabled_manifest.get("split", "all") != disabled_manifest.get("split", "all"):
+        raise EvalRunnerError(
+            "Enabled/disabled split mismatch: "
+            f"{enabled_manifest.get('split', 'all')} vs "
+            f"{disabled_manifest.get('split', 'all')}. A benchmark may not pool "
+            f"two halves of the split."
+        )
     if not enabled_manifest["available_skills"]:
         raise EvalRunnerError("Enabled run exposes no skills")
     if disabled_manifest["available_skills"]:
@@ -182,6 +195,11 @@ def publish_routing_benchmark(
         # cannot serve that purpose because routing metrics are normally
         # computed from a full-suite run.
         "evaluation_scope": enabled_manifest.get("evaluation_scope", "all"),
+        # Which half of the dev / held-out split. Derived from the manifest
+        # rather than passed in, so a benchmark cannot claim a scope its runs
+        # did not have. `all` becomes `full`: the metrics vocabulary names the
+        # whole suite `full`, while the harness names "no split filter" `all`.
+        "scope": SCOPE_FOR_SPLIT[enabled_manifest.get("split", "all")],
         "model": enabled_manifest["model"],
         "runtime": enabled_manifest["runtime"],
         "schema_version": 1,
