@@ -380,10 +380,24 @@ side — a benchmark must declare, in `metrics.json`, which population it measur
 | `full` | Measured everything. Requires disclosure. |
 | `pre-split` | Finished before the split existed. Legal only on a superseded suite. |
 
+`scope` alone does not determine the population, because a benchmark also covers
+a case *class*, and the two cut the suite along different axes. `metrics.json`
+already declares that as `kind` — `routing`, `behavior` or `all` — and the
+expected count is the intersection:
+
+| | `routing` | `behavior` | `all` |
+|---|---:|---:|---:|
+| `dev` | 43 | 53 | 96 |
+| `holdout` | 31 | 31 | 62 |
+| `full` | 74 | 84 | 158 |
+
 The gate then checks the declaration against arithmetic rather than intent: when
-the suite is current, `case_mix.total` must equal the declared population's size.
-A run labelled `dev` that reports every case has spent the held-out set and
-mislabelled it, and the numbers say so without needing per-case rows.
+the suite is current, `case_mix.total` must equal `population[(scope, kind)]`. A
+run labelled `dev` that reports every case has spent the held-out set and
+mislabelled it, and the numbers say so without needing per-case rows. A current
+benchmark that declares no `kind` is rejected: without it the expected population
+is undecidable rather than merely unknown, and defaulting to `all` would silently
+excuse every partial-class run.
 
 Reporting held-out results is allowed — once — and has to be visible. A `holdout`
 or `full` benchmark must carry in its README:
