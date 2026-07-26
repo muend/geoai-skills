@@ -177,6 +177,11 @@ def publish_routing_benchmark(
         },
         "conditions": {},
         "kind": "routing",
+        # Which cases ran, as opposed to which metrics are reported. Gate C
+        # reads this to decide the population the run should cover; `kind`
+        # cannot serve that purpose because routing metrics are normally
+        # computed from a full-suite run.
+        "evaluation_scope": enabled_manifest.get("evaluation_scope", "all"),
         "model": enabled_manifest["model"],
         "runtime": enabled_manifest["runtime"],
         "schema_version": 1,

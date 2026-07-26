@@ -380,24 +380,35 @@ side — a benchmark must declare, in `metrics.json`, which population it measur
 | `full` | Measured everything. Requires disclosure. |
 | `pre-split` | Finished before the split existed. Legal only on a superseded suite. |
 
-`scope` alone does not determine the population, because a benchmark also covers
-a case *class*, and the two cut the suite along different axes. `metrics.json`
-already declares that as `kind` — `routing`, `behavior` or `all` — and the
-expected count is the intersection:
+`scope` alone does not determine the population, because a benchmark also runs
+some subset of case classes, and the two cut the suite along different axes. The
+field that says which cases ran is `evaluation_scope`, copied from the run
+manifest, and the expected count is the intersection:
 
 | | `routing` | `behavior` | `all` |
 |---|---:|---:|---:|
-| `dev` | 43 | 53 | 96 |
-| `holdout` | 31 | 31 | 62 |
-| `full` | 74 | 84 | 158 |
+| `dev` | 96 | 53 | 96 |
+| `holdout` | 62 | 31 | 62 |
+| `full` | 158 | 84 | 158 |
+
+`routing` and `all` cover the same cases, and that is deliberate. A routing run
+keeps every case because activation is observable on all of them — a behaviour
+case still tells you whether the right skill fired. `routing-only` marks a case
+as not behaviour-judged; it does not mark the population routing is measured on.
+Only `behavior` narrows, to the cases that carry criteria.
+
+`evaluation_scope` is also not the same as `kind`. `kind` says which *metrics*
+are reported, which is why the first published benchmark here carries
+`kind: "routing"` with a `case_mix.total` of 120 — the whole suite of its era.
 
 The gate then checks the declaration against arithmetic rather than intent: when
-the suite is current, `case_mix.total` must equal `population[(scope, kind)]`. A
-run labelled `dev` that reports every case has spent the held-out set and
-mislabelled it, and the numbers say so without needing per-case rows. A current
-benchmark that declares no `kind` is rejected: without it the expected population
-is undecidable rather than merely unknown, and defaulting to `all` would silently
-excuse every partial-class run.
+the suite is current, `case_mix.total` must equal
+`population[(scope, evaluation_scope)]`. A run labelled `dev` that reports every
+case has spent the held-out set and mislabelled it, and the numbers say so
+without needing per-case rows. A current benchmark that declares no
+`evaluation_scope` is rejected: without it the population is undecidable rather
+than merely unknown, and defaulting to `all` would silently excuse every partial
+run.
 
 Reporting held-out results is allowed — once — and has to be visible. A `holdout`
 or `full` benchmark must carry in its README:

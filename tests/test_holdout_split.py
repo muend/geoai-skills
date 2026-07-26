@@ -214,7 +214,7 @@ def gate_c(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, committed: dict):
 
 
 def test_a_benchmark_without_a_scope_is_refused(gate_c) -> None:
-    failures = gate_c({"suite_sha256": gate_c.suite_sha256, "kind": "routing"})
+    failures = gate_c({"suite_sha256": gate_c.suite_sha256, "evaluation_scope": "routing"})
 
     assert any("does not declare a `scope`" in f for f in failures)
 
@@ -235,7 +235,7 @@ def test_a_dev_scoped_run_reporting_the_full_suite_is_caught(gate_c) -> None:
         {
             "suite_sha256": gate_c.suite_sha256,
             "scope": "dev",
-            "kind": "all",
+            "evaluation_scope": "all",
             "case_mix": {"total": gate_c.pop[("full", "all")]},
         }
     )
@@ -248,7 +248,7 @@ def test_a_correctly_counted_dev_run_passes(gate_c) -> None:
         {
             "suite_sha256": gate_c.suite_sha256,
             "scope": "dev",
-            "kind": "all",
+            "evaluation_scope": "all",
             "case_mix": {"total": gate_c.pop[("dev", "all")]},
         }
     )
@@ -261,7 +261,7 @@ def test_a_holdout_run_without_a_disclosure_is_refused(gate_c) -> None:
         {
             "suite_sha256": gate_c.suite_sha256,
             "scope": "holdout",
-            "kind": "all",
+            "evaluation_scope": "all",
             "case_mix": {"total": gate_c.pop[("holdout", "all")]},
         },
         readme="# Run\n\nNothing declared.\n",
@@ -275,7 +275,7 @@ def test_a_holdout_run_with_the_right_disclosure_passes(gate_c) -> None:
         {
             "suite_sha256": gate_c.suite_sha256,
             "scope": "holdout",
-            "kind": "all",
+            "evaluation_scope": "all",
             "case_mix": {"total": gate_c.pop[("holdout", "all")]},
         },
         readme=f"# Run\n\n- Held-out disclosure: `{gate_c.assignment}`\n",
@@ -290,7 +290,7 @@ def test_a_disclosure_for_a_different_split_is_refused(gate_c) -> None:
         {
             "suite_sha256": gate_c.suite_sha256,
             "scope": "holdout",
-            "kind": "all",
+            "evaluation_scope": "all",
             "case_mix": {"total": gate_c.pop[("holdout", "all")]},
         },
         readme="# Run\n\n- Held-out disclosure: `" + "0" * 64 + "`\n",
@@ -302,38 +302,43 @@ def test_a_disclosure_for_a_different_split_is_refused(gate_c) -> None:
 # --- Gate C: scope and kind cut the suite along different axes ------------
 
 
-def test_a_routing_benchmark_is_measured_against_the_routing_population(
+def test_a_routing_run_covers_the_whole_half_not_the_routing_only_subset(
     gate_c,
 ) -> None:
-    """The defect this pins.
+    """Two wrong answers preceded this test, in opposite directions.
 
-    An earlier Gate C compared `case_mix.total` against the whole split half, so
-    a routing-only run over the dev half — which covers neither 96 dev cases nor
-    all 74 routing cases, but their intersection — was rejected for being
-    honest. The first benchmark this project intends to publish is exactly that
-    shape, and the gate would have blocked it.
+    Gate C first compared `case_mix.total` against the whole split half. I then
+    "fixed" it to expect the routing-only subset, on the reading that a routing
+    benchmark covers routing cases. Both the reading and the fix were wrong:
+    `--scope routing` deliberately keeps every case, because activation is
+    observable on a behaviour case too. `routing-only` marks a case as not
+    behaviour-judged, not as the population routing is measured on.
+
+    So the original rule was right here, and this test pins why — including the
+    number that makes the two readings distinguishable.
     """
     passing = gate_c(
         {
             "suite_sha256": gate_c.suite_sha256,
             "scope": "dev",
-            "kind": "routing",
-            "case_mix": {"total": gate_c.pop[("dev", "routing")]},
+            "evaluation_scope": "routing",
+            "case_mix": {"total": gate_c.pop[("dev", "all")]},
         }
     )
 
     assert passing == []
-    assert gate_c.pop[("dev", "routing")] < gate_c.pop[("dev", "all")]
+    assert gate_c.pop[("dev", "routing")] == gate_c.pop[("dev", "all")]
+    assert gate_c.pop[("dev", "routing-only-cases")] < gate_c.pop[("dev", "all")]
 
 
-def test_a_routing_run_claiming_the_whole_dev_half_is_still_caught(gate_c) -> None:
-    """Widening the population must not turn the gate off."""
+def test_a_routing_run_reporting_the_routing_only_subset_is_caught(gate_c) -> None:
+    """The shape my mistaken fix would have blessed."""
     failures = gate_c(
         {
             "suite_sha256": gate_c.suite_sha256,
             "scope": "dev",
-            "kind": "routing",
-            "case_mix": {"total": gate_c.pop[("dev", "all")]},
+            "evaluation_scope": "routing",
+            "case_mix": {"total": gate_c.pop[("dev", "routing-only-cases")]},
         }
     )
 
@@ -347,7 +352,7 @@ def test_a_behaviour_benchmark_is_measured_against_the_behaviour_population(
         {
             "suite_sha256": gate_c.suite_sha256,
             "scope": "holdout",
-            "kind": "behavior",
+            "evaluation_scope": "behavior",
             "case_mix": {"total": gate_c.pop[("holdout", "behavior")]},
         },
         readme=f"# Run\n\n- Held-out disclosure: `{gate_c.assignment}`\n",
@@ -356,16 +361,16 @@ def test_a_behaviour_benchmark_is_measured_against_the_behaviour_population(
     assert failures == []
 
 
-def test_the_populations_partition_each_half(gate_c) -> None:
-    """routing + behaviour must exhaust the half, or a class is unaccounted for."""
+def test_the_case_classes_partition_each_half(gate_c) -> None:
+    """The routing-only and behaviour-judged cases must exhaust the half."""
     for scope in ("dev", "holdout", "full"):
-        routing = gate_c.pop[(scope, "routing")]
+        routing_only = gate_c.pop[(scope, "routing-only-cases")]
         behaviour = gate_c.pop[(scope, "behavior")]
-        assert routing + behaviour == gate_c.pop[(scope, "all")], scope
+        assert routing_only + behaviour == gate_c.pop[(scope, "all")], scope
 
 
-def test_a_current_benchmark_without_a_kind_is_refused(gate_c) -> None:
-    """Without a kind the expected population is undecidable, not merely unknown."""
+def test_a_current_benchmark_without_an_evaluation_scope_is_refused(gate_c) -> None:
+    """Without it the expected population is undecidable, not merely unknown."""
     failures = gate_c(
         {
             "suite_sha256": gate_c.suite_sha256,
@@ -374,20 +379,20 @@ def test_a_current_benchmark_without_a_kind_is_refused(gate_c) -> None:
         }
     )
 
-    assert any("no `kind`" in f for f in failures)
+    assert any("no `evaluation_scope`" in f for f in failures)
 
 
-def test_an_unknown_kind_is_refused(gate_c) -> None:
+def test_an_unknown_evaluation_scope_is_refused(gate_c) -> None:
     failures = gate_c(
         {
             "suite_sha256": gate_c.suite_sha256,
             "scope": "dev",
-            "kind": "vibes",
+            "evaluation_scope": "vibes",
             "case_mix": {"total": 1},
         }
     )
 
-    assert any("unknown kind" in f for f in failures)
+    assert any("unknown evaluation_scope" in f for f in failures)
 
 
 def test_pre_split_is_refused_on_a_current_suite(gate_c) -> None:
