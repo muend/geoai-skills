@@ -209,8 +209,7 @@ def gate_c(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, committed: dict):
 
     run.suite_sha256 = suite_sha256  # type: ignore[attr-defined]
     run.assignment = committed["assignment_sha256"]  # type: ignore[attr-defined]
-    run.dev_count = len(committed["dev"])  # type: ignore[attr-defined]
-    run.holdout_count = len(committed["holdout"])  # type: ignore[attr-defined]
+    run.pop = gates.scope_populations(committed)  # type: ignore[attr-defined]
     return run
 
 
@@ -236,7 +235,8 @@ def test_a_dev_scoped_run_reporting_the_full_suite_is_caught(gate_c) -> None:
         {
             "suite_sha256": gate_c.suite_sha256,
             "scope": "dev",
-            "case_mix": {"total": gate_c.dev_count + gate_c.holdout_count},
+            "kind": "all",
+            "case_mix": {"total": gate_c.pop[("full", "all")]},
         }
     )
 
@@ -248,7 +248,8 @@ def test_a_correctly_counted_dev_run_passes(gate_c) -> None:
         {
             "suite_sha256": gate_c.suite_sha256,
             "scope": "dev",
-            "case_mix": {"total": gate_c.dev_count},
+            "kind": "all",
+            "case_mix": {"total": gate_c.pop[("dev", "all")]},
         }
     )
 
@@ -260,7 +261,8 @@ def test_a_holdout_run_without_a_disclosure_is_refused(gate_c) -> None:
         {
             "suite_sha256": gate_c.suite_sha256,
             "scope": "holdout",
-            "case_mix": {"total": gate_c.holdout_count},
+            "kind": "all",
+            "case_mix": {"total": gate_c.pop[("holdout", "all")]},
         },
         readme="# Run\n\nNothing declared.\n",
     )
@@ -273,7 +275,8 @@ def test_a_holdout_run_with_the_right_disclosure_passes(gate_c) -> None:
         {
             "suite_sha256": gate_c.suite_sha256,
             "scope": "holdout",
-            "case_mix": {"total": gate_c.holdout_count},
+            "kind": "all",
+            "case_mix": {"total": gate_c.pop[("holdout", "all")]},
         },
         readme=f"# Run\n\n- Held-out disclosure: `{gate_c.assignment}`\n",
     )
@@ -287,12 +290,104 @@ def test_a_disclosure_for_a_different_split_is_refused(gate_c) -> None:
         {
             "suite_sha256": gate_c.suite_sha256,
             "scope": "holdout",
-            "case_mix": {"total": gate_c.holdout_count},
+            "kind": "all",
+            "case_mix": {"total": gate_c.pop[("holdout", "all")]},
         },
         readme="# Run\n\n- Held-out disclosure: `" + "0" * 64 + "`\n",
     )
 
     assert any("made against a different split" in f for f in failures)
+
+
+# --- Gate C: scope and kind cut the suite along different axes ------------
+
+
+def test_a_routing_benchmark_is_measured_against_the_routing_population(
+    gate_c,
+) -> None:
+    """The defect this pins.
+
+    An earlier Gate C compared `case_mix.total` against the whole split half, so
+    a routing-only run over the dev half — which covers neither 96 dev cases nor
+    all 74 routing cases, but their intersection — was rejected for being
+    honest. The first benchmark this project intends to publish is exactly that
+    shape, and the gate would have blocked it.
+    """
+    passing = gate_c(
+        {
+            "suite_sha256": gate_c.suite_sha256,
+            "scope": "dev",
+            "kind": "routing",
+            "case_mix": {"total": gate_c.pop[("dev", "routing")]},
+        }
+    )
+
+    assert passing == []
+    assert gate_c.pop[("dev", "routing")] < gate_c.pop[("dev", "all")]
+
+
+def test_a_routing_run_claiming_the_whole_dev_half_is_still_caught(gate_c) -> None:
+    """Widening the population must not turn the gate off."""
+    failures = gate_c(
+        {
+            "suite_sha256": gate_c.suite_sha256,
+            "scope": "dev",
+            "kind": "routing",
+            "case_mix": {"total": gate_c.pop[("dev", "all")]},
+        }
+    )
+
+    assert any("the arithmetic does not permit both" in f for f in failures)
+
+
+def test_a_behaviour_benchmark_is_measured_against_the_behaviour_population(
+    gate_c,
+) -> None:
+    failures = gate_c(
+        {
+            "suite_sha256": gate_c.suite_sha256,
+            "scope": "holdout",
+            "kind": "behavior",
+            "case_mix": {"total": gate_c.pop[("holdout", "behavior")]},
+        },
+        readme=f"# Run\n\n- Held-out disclosure: `{gate_c.assignment}`\n",
+    )
+
+    assert failures == []
+
+
+def test_the_populations_partition_each_half(gate_c) -> None:
+    """routing + behaviour must exhaust the half, or a class is unaccounted for."""
+    for scope in ("dev", "holdout", "full"):
+        routing = gate_c.pop[(scope, "routing")]
+        behaviour = gate_c.pop[(scope, "behavior")]
+        assert routing + behaviour == gate_c.pop[(scope, "all")], scope
+
+
+def test_a_current_benchmark_without_a_kind_is_refused(gate_c) -> None:
+    """Without a kind the expected population is undecidable, not merely unknown."""
+    failures = gate_c(
+        {
+            "suite_sha256": gate_c.suite_sha256,
+            "scope": "dev",
+            "case_mix": {"total": gate_c.pop[("dev", "routing")]},
+        }
+    )
+
+    assert any("no `kind`" in f for f in failures)
+
+
+def test_an_unknown_kind_is_refused(gate_c) -> None:
+    failures = gate_c(
+        {
+            "suite_sha256": gate_c.suite_sha256,
+            "scope": "dev",
+            "kind": "vibes",
+            "case_mix": {"total": 1},
+        }
+    )
+
+    assert any("unknown kind" in f for f in failures)
 
 
 def test_pre_split_is_refused_on_a_current_suite(gate_c) -> None:

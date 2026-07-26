@@ -66,6 +66,13 @@ DISCLOSURE_PATTERN = re.compile(
 
 VALID_SCOPES = ("dev", "holdout", "full", "pre-split")
 
+# A benchmark covers a case *class* as well as a split half, and the two are
+# independent. A routing run over the dev half covers neither 96 cases (the dev
+# half) nor 74 (all routing cases) but their intersection. Checking `scope`
+# alone would reject every honest partial-class benchmark, so `kind` is part of
+# the population key.
+VALID_KINDS = ("routing", "behavior", "all")
+
 
 class GateFailure(Exception):
     """Raised when a regression gate rejects the working tree."""
@@ -216,6 +223,34 @@ def check_benchmark_currency() -> list[str]:
 # ---------------------------------------------------------------------------
 
 
+def scope_populations(committed: dict[str, Any]) -> dict[tuple[str, str], int]:
+    """(scope, kind) -> how many cases that combination should cover.
+
+    Keyed on both because they cut the suite along different axes: `scope` picks
+    a split half, `kind` picks a case class. A routing benchmark over the dev
+    half covers their intersection, and comparing it against either total alone
+    would reject an honest run.
+    """
+    cases = load_cases()
+    routing = {
+        case_id
+        for case_id, meta in cases.items()
+        if meta["behavior_class"] == "routing-only"
+    }
+    halves = {
+        "dev": set(committed.get("dev", [])),
+        "holdout": set(committed.get("holdout", [])),
+    }
+    halves["full"] = halves["dev"] | halves["holdout"]
+
+    sizes: dict[tuple[str, str], int] = {}
+    for scope, members in halves.items():
+        sizes[(scope, "routing")] = len(members & routing)
+        sizes[(scope, "behavior")] = len(members - routing)
+        sizes[(scope, "all")] = len(members)
+    return sizes
+
+
 def check_holdout_containment() -> list[str]:
     """Two questions: is the split current, and does any benchmark spend it?
 
@@ -252,11 +287,7 @@ def check_holdout_containment() -> list[str]:
         # Keep going: the per-benchmark declarations are still worth checking,
         # and reporting only the first problem hides the rest.
 
-    population = {
-        "dev": len(committed.get("dev", [])),
-        "holdout": len(committed.get("holdout", [])),
-        "full": len(committed.get("dev", [])) + len(committed.get("holdout", [])),
-    }
+    population = scope_populations(committed)
     assignment = committed.get("assignment_sha256")
 
     if not BENCHMARKS_DIR.exists():
@@ -293,13 +324,25 @@ def check_holdout_containment() -> list[str]:
                 )
             continue
 
-        if suite_is_current and metrics.get("case_mix", {}).get("total") is not None:
-            reported = metrics["case_mix"]["total"]
-            if reported != population[scope]:
+        reported = metrics.get("case_mix", {}).get("total")
+        if suite_is_current and reported is not None:
+            kind = metrics.get("kind")
+            if kind is None:
                 failures.append(
-                    f"{name}: declares scope '{scope}' but reports "
-                    f"{reported} cases, and the {scope} population holds "
-                    f"{population[scope]}. Either the scope label or the run is "
+                    f"{name}: declares scope '{scope}' but no `kind`, so the "
+                    f"population it should cover is undecidable. Add one of "
+                    f"{list(VALID_KINDS)}."
+                )
+            elif kind not in VALID_KINDS:
+                failures.append(
+                    f"{name}: unknown kind {kind!r}; expected one of "
+                    f"{list(VALID_KINDS)}."
+                )
+            elif reported != population[(scope, kind)]:
+                failures.append(
+                    f"{name}: declares scope '{scope}' and kind '{kind}' but "
+                    f"reports {reported} cases, and that population holds "
+                    f"{population[(scope, kind)]}. Either a label or the run is "
                     f"wrong; the arithmetic does not permit both."
                 )
 
