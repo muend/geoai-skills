@@ -4,7 +4,11 @@
   "title": "GeoAI Skills evaluation suite",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "skill", "evals"],
+  "required": [
+    "schema_version",
+    "skill",
+    "evals"
+  ],
   "properties": {
     "schema_version": {
       "const": 1
@@ -20,7 +24,12 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "prompt", "case_types", "expected_behavior"],
+        "required": [
+          "id",
+          "prompt",
+          "case_types",
+          "expected_behavior"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -93,10 +102,17 @@
             ]
           },
           "interaction_mode": {
-            "enum": ["clarify", "deliver", "clarify_then_provisional"]
+            "enum": [
+              "clarify",
+              "deliver",
+              "clarify_then_provisional"
+            ]
           },
           "tool_profile": {
-            "enum": ["read-only", "workspace-write"]
+            "enum": [
+              "read-only",
+              "workspace-write"
+            ]
           },
           "fixtures": {
             "type": "array",
@@ -105,17 +121,29 @@
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "required": ["source", "workspace_path"],
+              "required": [
+                "source",
+                "workspace_path"
+              ],
               "properties": {
                 "source": {
                   "type": "string",
                   "pattern": "^fixtures/(?:[A-Za-z0-9._-]+/)*[A-Za-z0-9._-]+$",
-                  "not": {"pattern": "(^|/)\\.\\.(/|$)"}
+                  "not": {
+                    "pattern": "(^|/)\\.\\.(/|$)"
+                  }
                 },
                 "workspace_path": {
                   "type": "string",
                   "pattern": "^(?:[A-Za-z0-9._-]+/)*[A-Za-z0-9._-]+$",
-                  "not": {"pattern": "(^|/)\\.\\.(/|$)"}
+                  "not": {
+                    "pattern": "(^|/)\\.\\.(/|$)"
+                  }
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$",
+                  "description": "Optional. When present the loader refuses the fixture unless its bytes hash to this value, so a content swap is visible in the diff."
                 }
               }
             }
@@ -127,12 +155,17 @@
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "required": ["path", "media_type"],
+              "required": [
+                "path",
+                "media_type"
+              ],
               "properties": {
                 "path": {
                   "type": "string",
                   "pattern": "^(?:[A-Za-z0-9._-]+/)*[A-Za-z0-9._-]+$",
-                  "not": {"pattern": "(^|/)\\.\\.(/|$)"}
+                  "not": {
+                    "pattern": "(^|/)\\.\\.(/|$)"
+                  }
                 },
                 "media_type": {
                   "type": "string",
@@ -149,37 +182,80 @@
         "allOf": [
           {
             "if": {
-              "required": ["behavior_class"],
+              "required": [
+                "behavior_class"
+              ],
               "properties": {
-                "behavior_class": {"not": {"const": "routing-only"}}
+                "behavior_class": {
+                  "not": {
+                    "const": "routing-only"
+                  }
+                }
               }
             },
-            "then": {"required": ["interaction_mode"]}
+            "then": {
+              "required": [
+                "interaction_mode"
+              ]
+            }
           },
           {
-            "if": {"required": ["interaction_mode"]},
+            "if": {
+              "required": [
+                "interaction_mode"
+              ]
+            },
             "then": {
-              "required": ["behavior_class"],
+              "required": [
+                "behavior_class"
+              ],
               "properties": {
-                "behavior_class": {"not": {"const": "routing-only"}}
+                "behavior_class": {
+                  "not": {
+                    "const": "routing-only"
+                  }
+                }
               }
             }
           },
           {
             "if": {
-              "required": ["behavior_class"],
-              "properties": {"behavior_class": {"const": "fixture-backed"}}
+              "required": [
+                "behavior_class"
+              ],
+              "properties": {
+                "behavior_class": {
+                  "const": "fixture-backed"
+                }
+              }
             },
-            "then": {"required": ["fixtures"]}
+            "then": {
+              "required": [
+                "fixtures"
+              ]
+            }
           },
           {
             "if": {
-              "required": ["behavior_class"],
-              "properties": {"behavior_class": {"const": "artifact-producing"}}
+              "required": [
+                "behavior_class"
+              ],
+              "properties": {
+                "behavior_class": {
+                  "const": "artifact-producing"
+                }
+              }
             },
             "then": {
-              "required": ["expected_artifacts", "tool_profile"],
-              "properties": {"tool_profile": {"const": "workspace-write"}}
+              "required": [
+                "expected_artifacts",
+                "tool_profile"
+              ],
+              "properties": {
+                "tool_profile": {
+                  "const": "workspace-write"
+                }
+              }
             }
           }
         ]

@@ -62,7 +62,8 @@ def main() -> int:
 
         if data.get("skill") != folder.name:
             errors.append(
-                f"{relative(eval_path)}: skill '{data.get('skill')}' does not match folder '{folder.name}'"
+                f"{relative(eval_path)}: skill '{data.get('skill')}' "
+                f"does not match folder '{folder.name}'"
             )
 
         cases = data.get("evals", [])
@@ -73,7 +74,7 @@ def main() -> int:
                 f"found {len(cases)}"
             )
         ids = (
-            [case.get("id") for case in cases if isinstance(case, dict)]
+            [str(case.get("id")) for case in cases if isinstance(case, dict)]
             if isinstance(cases, list)
             else []
         )
@@ -113,7 +114,8 @@ def main() -> int:
                 )
             if not should_trigger and "negative" not in case_types:
                 errors.append(
-                    f"{relative(eval_path)}:{case_id}: non-triggering cases require the negative type"
+                    f"{relative(eval_path)}:{case_id}: "
+                    f"non-triggering cases require the negative type"
                 )
             if "positive" in case_types and "negative" in case_types:
                 errors.append(
@@ -135,7 +137,7 @@ def main() -> int:
                     f"{relative(eval_path)}:{case_id}: negative case cannot route to its own skill"
                 )
             fixture_paths = [
-                fixture.get("workspace_path")
+                str(fixture.get("workspace_path"))
                 for fixture in case.get("fixtures", [])
                 if isinstance(fixture, dict)
             ]
@@ -166,7 +168,7 @@ def main() -> int:
                         f"{fixture.get('workspace_path')}"
                     )
             artifact_paths = [
-                artifact.get("path")
+                str(artifact.get("path"))
                 for artifact in case.get("expected_artifacts", [])
                 if isinstance(artifact, dict)
             ]

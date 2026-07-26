@@ -5,9 +5,17 @@ on:
     branches: [main]
   pull_request:
 
+# The job only reads the checkout and runs validators. Without this block the
+# workflow inherits the repository default, which on a write-enabled repository
+# hands a read-write GITHUB_TOKEN to every step — including the build code of
+# the third-party validator installed below.
+permissions:
+  contents: read
+
 jobs:
   lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -15,6 +23,16 @@ jobs:
           python-version: "3.12"
       - name: Install validation and test dependencies
         run: pip install -r requirements-dev.txt
+      - name: Audit dependencies for known vulnerabilities
+        run: pip-audit -r requirements-dev.txt
+      - name: Lint
+        run: ruff check .
+      - name: Type check
+        # Loose mode, and non-blocking on purpose. Type coverage is a ratchet,
+        # not a gate: it should surface regressions without turning a first
+        # contribution into a typing exercise. Tighten once the suite settles.
+        continue-on-error: true
+        run: mypy tools/
       - name: Validate all skills
         run: python tools/validate_skills.py
       - name: Validate evaluation suite

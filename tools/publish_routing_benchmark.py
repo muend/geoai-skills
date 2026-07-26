@@ -164,7 +164,10 @@ def publish_routing_benchmark(
     summary = {
         "behavior": {
             "status": "not_evaluated",
-            "reason": "This release publishes routing evidence only; no behavior judgments are included.",
+            "reason": (
+                "This release publishes routing evidence only; "
+                "no behavior judgments are included."
+            ),
         },
         "case_mix": {
             "case_types": dict(sorted(case_types.items())),

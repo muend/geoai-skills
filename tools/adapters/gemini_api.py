@@ -13,8 +13,9 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
@@ -156,8 +157,9 @@ def parse_generate_response(payload: Any) -> tuple[dict[str, Any], dict[str, Any
             f"Gemini candidate did not finish cleanly: {finish_reason}"
         )
     parts = candidate.get("content", {}).get("parts", [])
-    texts = [part.get("text") for part in parts if isinstance(part, dict)]
-    if not texts or any(not isinstance(text, str) for text in texts):
+    raw_texts = [part.get("text") for part in parts if isinstance(part, dict)]
+    texts = [text for text in raw_texts if isinstance(text, str)]
+    if not raw_texts or len(texts) != len(raw_texts):
         raise GeminiAdapterError("Gemini candidate contains no complete text response")
     try:
         parsed = json.loads("".join(texts))
@@ -197,7 +199,10 @@ def post_generate_content(
 ) -> tuple[dict[str, Any], int]:
     encoded_model = urllib.parse.quote(model, safe="-._")
     endpoint = f"{API_ROOT}/models/{encoded_model}:generateContent"
-    request = urllib.request.Request(
+    # noqa justification: the endpoint is API_ROOT (a module constant) plus a
+    # model name validated against MODEL_PATTERN and percent-encoded. No caller
+    # supplies a scheme, so file:// and custom schemes are unreachable.
+    request = urllib.request.Request(  # noqa: S310
         endpoint,
         data=canonical_json(body).encode("utf-8"),
         headers={"Content-Type": "application/json", "x-goog-api-key": api_key},
@@ -222,6 +227,36 @@ def post_generate_content(
     return payload, latency_ms
 
 
+SECRET_PATTERNS: tuple[re.Pattern[str], ...] = (
+    re.compile(r"(?i)(x-goog-api-key\s*[:=]\s*)\S+"),
+    re.compile(r"(?i)([?&]key=)[^&\s\"']+"),
+    re.compile(r"(?i)((?:api[_-]?key|bearer|authorization)\s*[:=]\s*)\S+"),
+    # Not `\b...\b`: a Google key may end in `-` or `_`, and `\b` fails between
+    # a hyphen and the following space, so a key ending in a hyphen would have
+    # slipped through unredacted. Explicit look-around on the key alphabet.
+    re.compile(r"(?<![0-9A-Za-z_-])AIza[0-9A-Za-z_-]{35}(?![0-9A-Za-z_-])"),
+)
+
+
+def redact_secrets(text: str) -> str:
+    """Mask anything credential-shaped before it reaches a trace on disk.
+
+    No key leak was observed in Gemini's error bodies during the 2026-07-26
+    audit, and the key travels in a header rather than the URL. This exists
+    because the provider's error format is outside our control: the day it
+    starts echoing request context, traces would silently begin carrying a
+    secret, and traces are written before anyone reads them.
+    """
+    for pattern in SECRET_PATTERNS:
+        text = pattern.sub(
+            lambda match: (match.group(1) + "[REDACTED]")
+            if match.groups()
+            else "[REDACTED]",
+            text,
+        )
+    return text
+
+
 def write_attempt_trace(
     trace_dir: Path, case_sha256: str, envelope: dict[str, Any]
 ) -> tuple[Path, str]:
@@ -230,7 +265,7 @@ def write_attempt_trace(
     for attempt in range(1, 1000):
         path = case_dir / f"{attempt:03d}.json"
         if not path.exists():
-            content = pretty_json(envelope)
+            content = redact_secrets(pretty_json(envelope))
             atomic_write(path, content)
             return path, sha256_text(content)
     raise GeminiAdapterError(f"Too many trace attempts for {case_sha256}")

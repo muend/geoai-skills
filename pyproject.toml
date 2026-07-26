@@ -1,4 +1,58 @@
+[project]
+name = "geoai-skills"
+version = "0.1.0"
+description = "Measured GeoAI agent skills with a reproducible evaluation harness."
+# numpy 2.4.x requires >=3.11 and CI runs 3.12. Without this declaration a
+# contributor on an older interpreter gets "Could not find a version that
+# satisfies the requirement numpy==2.4.3", which reads as a broken repository
+# rather than an unsupported Python.
+requires-python = ">=3.12"
+
 [tool.pytest.ini_options]
 addopts = "-q"
 testpaths = ["tests"]
 
+[tool.ruff]
+# 88 flags 76 existing lines that are deliberate and readable; 100 keeps the
+# rule meaningful without a reformatting campaign.
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "B",    # bugbear
+    "C4",   # comprehensions
+    "SIM",  # simplify
+    "RET",  # return
+    "UP",   # pyupgrade
+    "S",    # bandit security
+]
+ignore = [
+    # Long, specific exception messages are the operator interface here.
+    # "Workspace path escapes case root: <path>" is the diagnostic; collapsing
+    # it into an exception class would lose that.
+    "TRY003",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# assert is what a test is made of; the S101 hits here are not findings.
+"tests/*" = ["S101"]
+# The long lines here are the judge prompt itself — continuous English
+# sentences inside one string. Rewrapping them would change no behaviour and
+# would churn the file the judge calibration work is actively editing.
+"tools/adapters/judge_contract.py" = ["E501"]
+
+[tool.mypy]
+python_version = "3.12"
+# tools/ carries no __init__.py, so the same file resolves under two module
+# names without these two settings.
+explicit_package_bases = true
+namespace_packages = true
+ignore_missing_imports = true
+# Deliberately not strict. Loose mode already catches the mistakes that matter
+# and does not put a wall in front of contributors. Revisit once the evaluation
+# suite is stable.
+warn_unused_ignores = true
+warn_redundant_casts = true
