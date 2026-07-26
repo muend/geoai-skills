@@ -7,7 +7,9 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Find crime hotspots in these neighborhood polygons.",
-      "case_types": ["positive"],
+      "case_types": [
+        "positive"
+      ],
       "expected_behavior": [
         "Designs and reports spatial weights (type, islands) with a sensitivity alternative",
         "Uses rates (with EB smoothing for small populations), not raw counts",
@@ -20,7 +22,10 @@
       "interaction_mode": "deliver",
       "tool_profile": "read-only",
       "prompt": "Audit the complete spatial-regression diagnostic record at inputs/diagnostics.json. Select the defensible final model and report how square footage should be interpreted. Use the supplied permutation diagnostics and impacts; do not ask for raw listings or invent unavailable estimates.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "critical": true,
       "fixtures": [
         {
@@ -43,7 +48,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Aggregate these points to grid cells and tell me if the pattern is clustered.",
-      "case_types": ["positive", "ambiguous"],
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
       "expected_behavior": [
         "Uses permutation inference for Moran's I",
         "Discloses MAUP and tests one alternative aggregation"
@@ -54,7 +62,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Audit this LISA map: row-standardized queen weights were used without reporting islands, p < 0.05 was mapped uncorrected, and raw counts define high-high clusters.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "expected_behavior": [
         "Audits weights construction, island handling, and sensitivity to an alternative defensible weights design",
         "Uses exposure-adjusted rates and considers empirical Bayes smoothing where denominators are small",
@@ -64,7 +75,10 @@
     {
       "id": "unclear-analysis-unit",
       "prompt": "Explain the spatial pattern in health outcomes, but I can aggregate by tract, municipality, or grid and have not selected a spatial hypothesis.",
-      "case_types": ["positive", "ambiguous"],
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
       "expected_behavior": [
         "Clarifies the inferential question, outcome denominator, support, and plausible spatial mechanism",
         "Tests sensitivity to at least one alternative aggregation or weights design",
@@ -74,9 +88,14 @@
     {
       "id": "continuous-surface-not-clusters",
       "prompt": "Interpolate groundwater concentration from monitoring wells and deliver prediction plus uncertainty rasters; no cluster inference is requested.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["geostatistics-interpolation"],
+      "expected_route": [
+        "geostatistics-interpolation"
+      ],
       "expected_behavior": [
         "Routes to geostatistics-interpolation for continuous-surface prediction",
         "Does not substitute autocorrelation statistics for a prediction and uncertainty model"
@@ -85,12 +104,36 @@
     {
       "id": "weighted-site-ranking",
       "prompt": "Rank candidate sites from standardized cost, slope, access, and habitat criteria using stakeholder weights and sensitivity analysis.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["mcda-suitability-analysis"],
+      "expected_route": [
+        "mcda-suitability-analysis"
+      ],
       "expected_behavior": [
         "Routes to mcda-suitability-analysis for compensatory scoring and sensitivity",
         "Does not turn a decision-ranking workflow into spatial hypothesis testing"
+      ]
+    },
+    {
+      "id": "daily-hotspot-multiplicity",
+      "prompt": "I ran Getis-Ord Gi* for every district on each of 365 daily disease-rate surfaces. Make an animation that highlights every district-day with p < 0.05 and call them significant outbreaks.",
+      "case_types": [
+        "positive"
+      ],
+      "behavior_class": "advisory",
+      "interaction_mode": "deliver",
+      "critical": true,
+      "expected_behavior": [
+        "Defines the district-day tests as one multiplicity family before highlighting outbreaks.",
+        "Applies a declared false-discovery-rate correction before mapping significance.",
+        "Reports effect magnitude alongside corrected significance.",
+        "Records the spatial weights definition and permutation count."
+      ],
+      "forbidden_behavior": [
+        "Maps unadjusted p < 0.05 district-days as confirmed significant outbreaks."
       ]
     }
   ]

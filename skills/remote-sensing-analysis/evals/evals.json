@@ -7,7 +7,9 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Compute NDVI for my study area from Sentinel-2 for last summer.",
-      "case_types": ["positive"],
+      "case_types": [
+        "positive"
+      ],
       "expected_behavior": [
         "Uses STAC search with sentinel-2-l2a (surface reflectance), records item IDs",
         "Applies SCL cloud masking BEFORE computing the index and reports valid-pixel %",
@@ -19,7 +21,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Compare vegetation between this 2018 L1C scene and this 2025 L2A scene.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "critical": true,
       "expected_behavior": [
         "Flags TOA vs BOA mismatch and refuses to compare directly",
@@ -29,7 +34,10 @@
     {
       "id": "classification-validation",
       "prompt": "Classify land cover from this imagery and report accuracy.",
-      "case_types": ["positive", "collision"],
+      "case_types": [
+        "positive",
+        "collision"
+      ],
       "expected_behavior": [
         "Uses a spatially independent test set (block split), citing the spatial CV protocol",
         "Reports per-class F1/IoU and confusion matrix, not overall accuracy alone",
@@ -39,7 +47,10 @@
     {
       "id": "cloud-mask-audit",
       "prompt": "Audit this Sentinel-2 NDVI raster: clouds were masked after index calculation, shadows remain, and no valid-pixel percentage or item IDs were saved.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "expected_behavior": [
         "Requires cloud and shadow masking on reflectance bands before index calculation",
         "Recomputes valid-pixel coverage and inspects mask errors visually",
@@ -51,7 +62,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "clarify_then_provisional",
       "prompt": "Use satellite imagery to assess vegetation condition, but the sensor, season, scale, and meaning of condition are not specified.",
-      "case_types": ["positive", "ambiguous"],
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
       "expected_behavior": [
         "Clarifies decision variable, spatial and temporal scale, season, sensor constraints, and validation data",
         "Selects processing level, masking, bands or indices only after those requirements are defined",
@@ -61,9 +75,14 @@
     {
       "id": "temporal-change-quantification",
       "prompt": "Estimate deforestation transitions and error-adjusted changed area between 2018 and 2025 from two validated land-cover maps.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["change-detection"],
+      "expected_route": [
+        "change-detection"
+      ],
       "expected_behavior": [
         "Routes to change-detection for transition, sampling, and adjusted-area inference",
         "Does not stop at generic image classification once temporal change is the requested product"
@@ -72,12 +91,67 @@
     {
       "id": "planetary-server-workflow",
       "prompt": "Compute monthly cloud-masked Landsat composites for an entire continent in Earth Engine and export provincial summaries.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["google-earth-engine"],
+      "expected_route": [
+        "google-earth-engine"
+      ],
       "expected_behavior": [
         "Routes to google-earth-engine for planetary server-side collection processing",
         "Does not default to a local raster workflow for the explicitly declared platform and scale"
+      ]
+    },
+    {
+      "id": "cross-sensor-drought-comparability",
+      "prompt": "Compare drought severity by subtracting Sentinel-2 NDVI from 2017 against Landsat NDVI from 2024. The acquisition months differ, and I do not know which atmospheric products were used.",
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
+      "behavior_class": "advisory",
+      "interaction_mode": "clarify_then_provisional",
+      "critical": false,
+      "expected_behavior": [
+        "Refuses to interpret the direct cross-sensor NDVI difference as drought severity.",
+        "Requires matched seasonal windows before temporal comparison.",
+        "Requires surface-reflectance products with documented cross-sensor harmonization.",
+        "Uses a common spatial resolution before calculating change.",
+        "Records the source item IDs and cloud-mask versions."
+      ],
+      "forbidden_behavior": [
+        "Attributes the unharmonized NDVI subtraction directly to drought."
+      ]
+    },
+    {
+      "id": "snow-composite-ordering-spec",
+      "prompt": "Write outputs/snow-composite-spec.json for monthly snow cover from daily optical imagery. Use NDSI >= 0.40 as snow, include a valid-observation count, and make cloud handling reproducible.",
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
+      "behavior_class": "artifact-producing",
+      "interaction_mode": "deliver",
+      "critical": false,
+      "expected_behavior": [
+        "Places cloud and shadow masking before monthly compositing.",
+        "Records the NDSI threshold as 0.40.",
+        "Records the collection identifier and date window.",
+        "Records the output CRS and scale.",
+        "Requires a per-pixel valid-observation-count layer."
+      ],
+      "forbidden_behavior": [
+        "Builds the monthly composite before masking cloud-contaminated observations."
+      ],
+      "tool_profile": "workspace-write",
+      "expected_artifacts": [
+        {
+          "path": "outputs/snow-composite-spec.json",
+          "media_type": "application/json",
+          "required": true
+        }
       ]
     }
   ]

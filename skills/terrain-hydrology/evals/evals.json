@@ -7,7 +7,9 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Delineate the watershed upstream of this gauge station from a 30 m DEM.",
-      "case_types": ["positive"],
+      "case_types": [
+        "positive"
+      ],
       "expected_behavior": [
         "Uses a DTM, masks nodata, reprojects so horizontal units match vertical",
         "Conditions with breach-before-fill, D8 flow direction, snaps the pour point to the high-accumulation cell",
@@ -20,7 +22,10 @@
       "interaction_mode": "deliver",
       "tool_profile": "workspace-write",
       "prompt": "Use the complete DEM metadata at inputs/dem-metadata.json to write an execution-ready slope processing specification to outputs/slope-processing-plan.json. The JSON must state source and target CRS, horizontal and vertical units, reprojection and resampling choice, target cell size, nodata handling, slope algorithm and units, validation checks, and a concrete command or ordered tool steps. Do not compute slope directly in geographic degrees.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "critical": true,
       "fixtures": [
         {
@@ -49,7 +54,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "What can be seen from this proposed observation tower site?",
-      "case_types": ["positive", "ambiguous"],
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
       "expected_behavior": [
         "Uses a DSM (or DTM + feature heights), not bare earth, and says which",
         "Sets observer/target heights explicitly and handles curvature/refraction beyond ~5 km",
@@ -59,7 +67,10 @@
     {
       "id": "flow-direction-audit",
       "prompt": "Audit this watershed output: flow was computed across nodata gaps, the pour point was not snapped, and the delineated basin crosses a verified ridge.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "expected_behavior": [
         "Checks DEM type, nodata mask, CRS units, conditioning, and flow-direction convention",
         "Snaps the pour point to a plausible high-accumulation cell within a documented tolerance",
@@ -71,7 +82,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "clarify_then_provisional",
       "prompt": "Derive terrain metrics for urban heat analysis, but I have both a DTM and DSM and the relevant surface is not specified.",
-      "case_types": ["positive", "ambiguous"],
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
       "expected_behavior": [
         "Clarifies whether bare-earth terrain or buildings and vegetation represent the causal surface",
         "Selects DTM, DSM, or both with explicit resolution and vertical-unit checks",
@@ -81,9 +95,14 @@
     {
       "id": "rainfall-kriging-not-terrain",
       "prompt": "Fit a variogram to rain-gauge observations and produce kriging prediction and standard-deviation rasters; no DEM analysis is requested.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["geostatistics-interpolation"],
+      "expected_route": [
+        "geostatistics-interpolation"
+      ],
       "expected_behavior": [
         "Routes to geostatistics-interpolation for sampled-field prediction",
         "Does not activate terrain-hydrology merely because rainfall is hydrologically relevant"
@@ -92,12 +111,37 @@
     {
       "id": "lidar-ground-classification",
       "prompt": "Classify ground returns in raw LAZ tiles and create a density-supported DTM with buffered tile edges.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["point-cloud-lidar"],
+      "expected_route": [
+        "point-cloud-lidar"
+      ],
       "expected_behavior": [
         "Routes to point-cloud-lidar for raw point classification and rasterization",
         "Does not begin terrain derivatives before the point-cloud DTM is validated"
+      ]
+    },
+    {
+      "id": "blanket-depression-fill-refusal",
+      "prompt": "Estimate reservoir storage from this DEM, but first fill every depression to make the surface smooth and avoid drainage artefacts. I have not supplied bathymetry or a surveyed water level.",
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
+      "behavior_class": "advisory",
+      "interaction_mode": "clarify_then_provisional",
+      "critical": true,
+      "expected_behavior": [
+        "Refuses blanket depression filling for reservoir-volume estimation.",
+        "Separates genuine reservoir storage depressions from DEM artefacts before conditioning.",
+        "Requests bathymetry or a surveyed water-surface elevation for the volume estimate.",
+        "Records any accepted fill-depth threshold in the provisional workflow."
+      ],
+      "forbidden_behavior": [
+        "Calculates reservoir capacity from a DEM after indiscriminately filling all depressions."
       ]
     }
   ]

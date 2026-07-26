@@ -5,7 +5,9 @@
     {
       "id": "dtm-from-laz",
       "prompt": "Make a 1 m DTM from these .laz tiles.",
-      "case_types": ["positive"],
+      "case_types": [
+        "positive"
+      ],
       "expected_behavior": [
         "Runs pdal info first; reports density, CRS incl. vertical datum, classes",
         "Denoises before ground classification (SMRF/CSF), audits vendor class 2 on cross-sections",
@@ -15,7 +17,9 @@
     {
       "id": "chm-forestry",
       "prompt": "Compute canopy height and tree count for this forest LiDAR.",
-      "case_types": ["positive"],
+      "case_types": [
+        "positive"
+      ],
       "expected_behavior": [
         "Normalizes heights (HAG) against the DTM; pit-free CHM",
         "Tree detection validated against field/manual samples",
@@ -27,7 +31,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Here is a drone photogrammetry point cloud of a forest. Give me the ground elevation model.",
-      "case_types": ["positive", "ambiguous"],
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
       "critical": true,
       "expected_behavior": [
         "States SfM cannot penetrate canopy — a 'DTM' over forest from SfM is a canopy model",
@@ -39,7 +46,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Audit these LiDAR-derived building heights: tiles mix ellipsoidal and orthometric elevations, strip edges disagree, and the vertical CRS is missing.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "expected_behavior": [
         "Stops height comparison until horizontal and vertical CRS and geoid transformations are resolved",
         "Checks overlapping strips and tile seams numerically and with cross-sections",
@@ -55,7 +65,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Create terrain and canopy products from vendor-classified LAZ files, but there is no report on class quality or point density.",
-      "case_types": ["positive", "ambiguous"],
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
       "expected_behavior": [
         "Profiles density, returns, classes, CRS, and vertical datum before trusting vendor labels",
         "Audits ground classification on representative cross-sections and difficult terrain",
@@ -65,9 +78,14 @@
     {
       "id": "raster-slope-not-lidar",
       "prompt": "Compute slope and watershed boundaries from an existing bare-earth DEM; no point cloud files are available.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["terrain-hydrology"],
+      "expected_route": [
+        "terrain-hydrology"
+      ],
       "expected_behavior": [
         "Routes to terrain-hydrology for raster terrain and drainage analysis",
         "Does not require a point-cloud workflow when a DTM is already provided"
@@ -76,12 +94,66 @@
     {
       "id": "imagery-segmentation-not-lidar",
       "prompt": "Train a deep neural network to segment roofs from RGB orthophotos; there are no LAS or LAZ inputs.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["geo-deep-learning"],
+      "expected_route": [
+        "geo-deep-learning"
+      ],
       "expected_behavior": [
         "Routes to geo-deep-learning for imagery segmentation",
         "Does not activate point-cloud-lidar based only on a three-dimensional target concept"
+      ]
+    },
+    {
+      "id": "dtm-parameter-provenance-spec",
+      "prompt": "Write outputs/dtm-production-spec.json for classified LAZ tiles in EPSG:26915 with NAVD88 metre elevations. Produce a 0.5 metre DTM from ground class 2, but do not execute the workflow.",
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
+      "behavior_class": "artifact-producing",
+      "interaction_mode": "deliver",
+      "critical": false,
+      "expected_behavior": [
+        "Records EPSG:26915 and NAVD88 metre elevations.",
+        "Records ground class 2 and 0.5 metre cells.",
+        "Requires point-density and ground-classification quality checks before rasterization.",
+        "Records the interpolation method, search radius, and void-fill rule.",
+        "Uses buffered tile processing before cropping to final tile edges."
+      ],
+      "forbidden_behavior": [
+        "Leaves the vertical reference or ground-class filter unstated."
+      ],
+      "tool_profile": "workspace-write",
+      "expected_artifacts": [
+        {
+          "path": "outputs/dtm-production-spec.json",
+          "media_type": "application/json",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "mixed-datum-subsidence-refusal",
+      "prompt": "Subtract our 2019 and 2024 LiDAR surfaces and announce 6 cm of neighbourhood subsidence. The acquisitions use different vertical datums, and neither delivery includes a vertical-accuracy report.",
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
+      "behavior_class": "advisory",
+      "interaction_mode": "clarify_then_provisional",
+      "critical": true,
+      "expected_behavior": [
+        "Refuses to interpret the 6 cm difference as subsidence.",
+        "Requires both surfaces in the same documented vertical datum before subtraction.",
+        "Requires co-registration against stable surfaces before change estimation.",
+        "Requires a combined uncertainty bound smaller than the claimed change."
+      ],
+      "forbidden_behavior": [
+        "Reports 6 cm subsidence from unregistered surfaces with unknown vertical accuracy."
       ]
     }
   ]

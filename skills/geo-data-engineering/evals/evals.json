@@ -5,7 +5,10 @@
     {
       "id": "messy-shapefile",
       "prompt": "This shapefile has broken geometries and weird characters in the names column. Clean it up for analysis.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "expected_behavior": [
         "Uses make_valid (not buffer(0)) for repair, via scripts/clean_vector.py logic",
         "Prints an accounting report (rows in/out, repaired count)",
@@ -17,7 +20,9 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Get all schools and hospitals for a metropolitan area from OpenStreetMap.",
-      "case_types": ["positive"],
+      "case_types": [
+        "positive"
+      ],
       "expected_behavior": [
         "Chooses osmnx for a city-scale area; inspects tag value distributions before filtering",
         "Records source, query parameters, retrieval date, and provenance manifest"
@@ -28,7 +33,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "I need to spatially join 40 million building footprints to census blocks. GeoPandas crashes.",
-      "case_types": ["positive", "ambiguous"],
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
       "expected_behavior": [
         "Routes to DuckDB spatial over GeoParquet or PostGIS instead of raising RAM",
         "Mentions predicate pushdown / spatial indexing rather than hand-rolled loops"
@@ -39,7 +47,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Audit this conversion pipeline: it reads a shapefile, writes CSV coordinates, reconstructs geometry, and exports GeoParquet with no CRS metadata.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "critical": true,
       "expected_behavior": [
         "Identifies CRS metadata loss and refuses to infer a CRS from coordinate ranges alone",
@@ -51,7 +62,10 @@
     {
       "id": "unknown-source-schema",
       "prompt": "Ingest a newly delivered geospatial dataset into our lake, but its format, CRS, update cadence, and schema contract are undocumented.",
-      "case_types": ["positive", "ambiguous"],
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
       "expected_behavior": [
         "Profiles format, layers, CRS, geometry types, bounds, fields, nulls, and validity before choosing storage",
         "Asks for update and consumer requirements before defining a durable schema",
@@ -61,9 +75,14 @@
     {
       "id": "spatial-model-not-ingestion",
       "prompt": "Test whether neighborhood unemployment rates are spatially autocorrelated and fit a spatial regression if needed; the data is already clean.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["spatial-statistics"],
+      "expected_route": [
+        "spatial-statistics"
+      ],
       "expected_behavior": [
         "Routes to spatial-statistics for weights, autocorrelation, and model diagnostics",
         "Does not turn an analytical request into a data-ingestion project"
@@ -72,12 +91,38 @@
     {
       "id": "postgis-plan-tuning",
       "prompt": "The layers are already in PostGIS with correct schemas; diagnose why this ST_Intersects query ignores the spatial index.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["postgis-spatial-sql"],
+      "expected_route": [
+        "postgis-spatial-sql"
+      ],
       "expected_behavior": [
         "Routes to postgis-spatial-sql for EXPLAIN and predicate/index diagnosis",
         "Does not recommend another storage format before inspecting the database plan"
+      ]
+    },
+    {
+      "id": "contractor-delivery-lineage-gate",
+      "prompt": "A contractor sent a GeoPackage that must be published to our spatial lake tonight. The CRS, licence, schema contract, and extraction date are only mentioned vaguely in an email. Convert it in place and publish the result.",
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
+      "behavior_class": "advisory",
+      "interaction_mode": "clarify_then_provisional",
+      "critical": false,
+      "expected_behavior": [
+        "Preserves the delivered GeoPackage as an immutable raw object with a checksum.",
+        "Requests the source owner and licence before promotion.",
+        "Requests the extraction date and schema contract before promotion.",
+        "Validates CRS metadata, geometry validity, and required fields before publication.",
+        "Assigns a new version identifier to every derived dataset."
+      ],
+      "forbidden_behavior": [
+        "Overwrites the only raw delivery or publishes an unversioned conversion."
       ]
     }
   ]

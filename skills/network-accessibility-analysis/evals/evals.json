@@ -7,7 +7,9 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "How accessible are hospitals for the residents of this city by public transport?",
-      "case_types": ["positive"],
+      "case_types": [
+        "positive"
+      ],
       "expected_behavior": [
         "Uses r5py with OSM + GTFS; validates GTFS calendar coverage; computes over a time window, not a single departure",
         "Picks an accessibility metric deliberately (e.g., E2SFCA) and states its weakness",
@@ -20,7 +22,10 @@
       "interaction_mode": "deliver",
       "tool_profile": "read-only",
       "prompt": "Audit the proposed response-coverage method using inputs/fire-stations.geojson and inputs/coverage-request.json. Provide the correct operational coverage workflow from these complete fixtures; do not fabricate a coverage geometry or ask for information already present.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "critical": true,
       "fixtures": [
         {
@@ -47,7 +52,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Compute travel times between 5,000 origins and 3,000 destinations on the street network.",
-      "case_types": ["positive", "ambiguous"],
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
       "expected_behavior": [
         "Avoids looping NetworkX shortest_path; uses pandana/r5py",
         "Checks snap distances and connectivity; stores the matrix as Parquet"
@@ -56,7 +64,10 @@
     {
       "id": "disconnected-graph-audit",
       "prompt": "Audit this accessibility result: many origins have zero travel time, remote islands silently disappeared, and snapping distances were not recorded.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "expected_behavior": [
         "Checks duplicate/self pairs, graph components, directionality, and impedance units",
         "Reports snap-distance and unmatched-origin distributions instead of dropping failures",
@@ -68,7 +79,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "clarify_then_provisional",
       "prompt": "Measure access to jobs across the region, but the travel mode, departure time, population groups, and decision threshold are not specified.",
-      "case_types": ["positive", "ambiguous"],
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
       "expected_behavior": [
         "Clarifies mode, time window, opportunity definition, population units, and equity question",
         "Selects a metric only after stating its behavioral assumptions and weaknesses",
@@ -78,9 +92,14 @@
     {
       "id": "crime-clusters-not-network",
       "prompt": "Find statistically significant clusters of neighborhood crime rates using adjacency weights; no travel network is involved.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["spatial-statistics"],
+      "expected_route": [
+        "spatial-statistics"
+      ],
       "expected_behavior": [
         "Routes to spatial-statistics for areal weights and local inference",
         "Does not construct a routing network for an adjacency-based cluster task"
@@ -89,12 +108,36 @@
     {
       "id": "observed-gps-map-matching",
       "prompt": "Map-match noisy vehicle GPS traces and compute observed trip distances; do not estimate hypothetical accessibility.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["movement-trajectory"],
+      "expected_route": [
+        "movement-trajectory"
+      ],
       "expected_behavior": [
         "Routes to movement-trajectory for observed-track cleaning and map matching",
         "Does not substitute an OD accessibility model for measured trajectories"
+      ]
+    },
+    {
+      "id": "citywide-average-equity-audit",
+      "prompt": "Our weekday 08:00 public-transit OD matrix shows a citywide average of 18 minutes to primary care. Summarize that as an accessibility success; neighbourhood income groups and unreachable origins are also in the table.",
+      "case_types": [
+        "positive"
+      ],
+      "behavior_class": "advisory",
+      "interaction_mode": "deliver",
+      "critical": false,
+      "expected_behavior": [
+        "Reports travel-time distributions separately by neighbourhood income group.",
+        "Reports each group's population share reaching care within exactly 30 minutes.",
+        "Reports unreachable origins explicitly rather than dropping them or assigning zero.",
+        "Keeps the weekday 08:00 departure condition in the result."
+      ],
+      "forbidden_behavior": [
+        "Uses the single citywide mean as sufficient evidence of equitable access."
       ]
     }
   ]
