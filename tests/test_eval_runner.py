@@ -148,6 +148,41 @@ def test_prepare_routing_scope_needs_no_behavior_judgments(tmp_path: Path) -> No
     assert metrics["behavior"]["pass_rate"] is None
 
 
+def test_only_the_behavior_scope_narrows_the_case_set(tmp_path: Path) -> None:
+    """Routing keeps every case, and that is deliberate rather than an oversight.
+
+    Activation is observable on all cases: a behaviour case still tells you
+    whether the right skill fired. `routing-only` marks a case as not
+    behaviour-judged; it does not mark the cases routing is measured on. Anyone
+    reading `--scope routing` as "only the routing-only cases" would shrink
+    routing measurement from the whole suite to a subset of it — which is exactly
+    the mistake this test exists to stop, having already been made once.
+    """
+    manifests = {}
+    for scope in ("routing", "behavior", "all"):
+        run_dir = prepare_run(
+            runtime="test-runtime",
+            model="test-model-v1",
+            condition="skills-enabled",
+            evaluation_scope=scope,
+            runs_dir=tmp_path / scope,
+        )
+        manifests[scope] = json.loads(
+            (run_dir / "manifest.json").read_text(encoding="utf-8")
+        )
+
+    counts = {scope: len(manifest["cases"]) for scope, manifest in manifests.items()}
+    assert counts["routing"] == counts["all"]
+    assert counts["behavior"] < counts["all"]
+
+    classes = {case["behavior_class"] for case in manifests["behavior"]["cases"]}
+    assert "routing-only" not in classes
+
+    hashes = {scope: manifest["suite_sha256"] for scope, manifest in manifests.items()}
+    assert hashes["routing"] == hashes["all"]
+    assert hashes["behavior"] != hashes["all"]
+
+
 def test_score_routing_only_overrides_combined_run(tmp_path: Path) -> None:
     run_dir, manifest = prepared_run(tmp_path)
     response_path = tmp_path / "combined-responses.jsonl"

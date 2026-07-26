@@ -332,6 +332,13 @@ def prepare_run(
         skills_dir=skills_dir,
         eval_schema_path=eval_schema_path,
     )
+    # Only `behavior` narrows the case set. `routing` deliberately keeps every
+    # case, because activation is observable on all of them — a behaviour case
+    # still tells you whether the right skill fired. `routing-only` marks a case
+    # as not behaviour-judged; it does not mark the cases routing is measured on.
+    # Filtering here would silently shrink routing measurement from the whole
+    # suite to the routing-only subset. See EVALUATION.md, "Prepare blind
+    # requests".
     if evaluation_scope == "behavior":
         cases = [case for case in cases if case["behavior_class"] != "routing-only"]
         if not cases:

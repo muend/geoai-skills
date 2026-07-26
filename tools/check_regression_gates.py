@@ -67,11 +67,16 @@ DISCLOSURE_PATTERN = re.compile(
 VALID_SCOPES = ("dev", "holdout", "full", "pre-split")
 
 # A benchmark covers a case *class* as well as a split half, and the two are
-# independent. A routing run over the dev half covers neither 96 cases (the dev
-# half) nor 74 (all routing cases) but their intersection. Checking `scope`
-# alone would reject every honest partial-class benchmark, so `kind` is part of
-# the population key.
-VALID_KINDS = ("routing", "behavior", "all")
+# independent: a routing-scoped run over the dev half covers neither 96 cases
+# (the dev half) nor 74 (all routing cases) but their intersection.
+#
+# The field that says which cases ran is `evaluation_scope`, copied from the run
+# manifest — NOT `kind`. `kind` says which metrics are reported, and the two come
+# apart: the first published benchmark here has `kind: "routing"` and a
+# `case_mix.total` of 120, the whole suite of its era, because routing metrics
+# were computed from a full-suite run. Keying the population on `kind` would
+# reject that shape, which is the more common one.
+VALID_EVAL_SCOPES = ("routing", "behavior", "all")
 
 
 class GateFailure(Exception):
@@ -245,9 +250,14 @@ def scope_populations(committed: dict[str, Any]) -> dict[tuple[str, str], int]:
 
     sizes: dict[tuple[str, str], int] = {}
     for scope, members in halves.items():
-        sizes[(scope, "routing")] = len(members & routing)
-        sizes[(scope, "behavior")] = len(members - routing)
+        # `routing` and `all` cover the same cases. A routing run keeps every
+        # case because activation is observable on all of them; only `behavior`
+        # narrows, to the cases that carry criteria. The unused `routing`-side
+        # intersection is recorded for reporting, not for this check.
+        sizes[(scope, "routing")] = len(members)
         sizes[(scope, "all")] = len(members)
+        sizes[(scope, "behavior")] = len(members - routing)
+        sizes[(scope, "routing-only-cases")] = len(members & routing)
     return sizes
 
 
@@ -326,24 +336,26 @@ def check_holdout_containment() -> list[str]:
 
         reported = metrics.get("case_mix", {}).get("total")
         if suite_is_current and reported is not None:
-            kind = metrics.get("kind")
-            if kind is None:
+            evaluated = metrics.get("evaluation_scope")
+            if evaluated is None:
                 failures.append(
-                    f"{name}: declares scope '{scope}' but no `kind`, so the "
-                    f"population it should cover is undecidable. Add one of "
-                    f"{list(VALID_KINDS)}."
+                    f"{name}: declares scope '{scope}' but no `evaluation_scope`, "
+                    f"so which cases it ran — and therefore the population it "
+                    f"should cover — is undecidable. Copy the field from the run "
+                    f"manifest; one of {list(VALID_EVAL_SCOPES)}."
                 )
-            elif kind not in VALID_KINDS:
+            elif evaluated not in VALID_EVAL_SCOPES:
                 failures.append(
-                    f"{name}: unknown kind {kind!r}; expected one of "
-                    f"{list(VALID_KINDS)}."
+                    f"{name}: unknown evaluation_scope {evaluated!r}; expected one "
+                    f"of {list(VALID_EVAL_SCOPES)}."
                 )
-            elif reported != population[(scope, kind)]:
+            elif reported != population[(scope, evaluated)]:
                 failures.append(
-                    f"{name}: declares scope '{scope}' and kind '{kind}' but "
-                    f"reports {reported} cases, and that population holds "
-                    f"{population[(scope, kind)]}. Either a label or the run is "
-                    f"wrong; the arithmetic does not permit both."
+                    f"{name}: declares split scope '{scope}' and evaluation_scope "
+                    f"'{evaluated}' but reports {reported} cases, and that "
+                    f"population holds {population[(scope, evaluated)]}. Either a "
+                    f"label or the run is wrong; the arithmetic does not permit "
+                    f"both."
                 )
 
         if scope in ("holdout", "full"):
