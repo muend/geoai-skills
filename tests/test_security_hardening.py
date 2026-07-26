@@ -52,15 +52,25 @@ def a_case(path: str = "outputs/report.md", media_type: str = "text/markdown") -
 
 
 def test_a_small_text_artifact_is_captured_whole(tmp_path: Path) -> None:
+    """`newline=""` is load-bearing, not tidiness.
+
+    `capture_artifacts` decodes the bytes on disk, which is the right choice —
+    a preview should show what the file contains. `Path.write_text` without an
+    explicit newline uses the platform default, so on Windows this fixture was
+    written as `\\r\\n` and compared against `\\n`. The test failed there and
+    passed in CI, which is Linux-only. Pinning the bytes makes the fixture mean
+    the same thing on every platform.
+    """
+    body = "# Review\nfindings"
     target = tmp_path / "outputs" / "report.md"
     target.parent.mkdir(parents=True)
-    target.write_text("# Review\nfindings", encoding="utf-8")
+    target.write_text(body, encoding="utf-8", newline="")
 
     artifact = capture_artifacts(a_case(), tmp_path)[0]
 
-    assert artifact["text_preview"] == "# Review\nfindings"
+    assert artifact["text_preview"] == body
     assert artifact["preview_truncated"] is False
-    assert artifact["size_bytes"] == len("# Review\nfindings")
+    assert artifact["size_bytes"] == len(body.encode("utf-8"))
 
 
 def test_a_long_text_artifact_is_truncated_at_the_preview_window(tmp_path: Path) -> None:
