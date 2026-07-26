@@ -58,6 +58,7 @@
     }
   },
   "kind": "routing",
+  "scope": "pre-split",
   "model": "claude-sonnet-5",
   "runtime": "claude-code-2.1.214",
   "schema_version": 1,

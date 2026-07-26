@@ -300,10 +300,10 @@ routing and behavior claims cannot be accidentally conflated.
 
 Behaviour and routing quality can only be measured by paid model runs, so CI
 cannot re-measure them on every pull request. `tools/check_regression_gates.py`
-blocks the two ways quality degrades silently between runs:
+blocks the three ways quality degrades silently between runs:
 
 ```bash
-python tools/check_regression_gates.py                  # run both gates
+python tools/check_regression_gates.py                  # run all three gates
 python tools/check_regression_gates.py --write-baseline  # seed/refresh Gate A
 ```
 
@@ -343,3 +343,60 @@ state `Suite state: current` or `Suite state: superseded` in its README, failing
 when the declaration disagrees with the computed truth. A superseded benchmark
 stays published — its evidence remains valid for the suite it was computed
 against — but it may not present itself as describing the current skills.
+
+**Gate C — held-out containment.** A held-out case stops measuring anything the
+moment someone tunes against it.
+
+The split lives in `evals/split.json`, keyed by `case_id` and stored outside the
+eval files so that revising it never changes the suite hash. It is generated, not
+hand-written:
+
+```bash
+python tools/build_split.py            # verify the committed split is current
+python tools/build_split.py --write    # regenerate it after adding cases
+```
+
+Two assignments are forced, and they are declared in `evals/split-inputs.json`:
+
+| Input | Assignment | Why |
+|---|---|---|
+| `analysed_before_split` | dev | Its criteria were read during quality work. It cannot test an improvement made while looking at it. |
+| `written_blind` | held-out | Authored against a sanitised brief by an author with no access to any result, and never inspected since. |
+
+Everything else is stratified by (skill, primary case type) under a fixed seed, so
+re-running produces a byte-identical file. Every skill is required to keep at
+least one held-out case; a skill whose every case was analysed is a hard error,
+because the repair is to write a blind case, not to promote a contaminated one.
+
+**This is a discipline commitment, not an information barrier.** The suite is a
+public repository: every held-out prompt and criterion is readable by anyone
+editing the skills. Nothing here prevents that. What is enforced is the reporting
+side — a benchmark must declare, in `metrics.json`, which population it measured:
+
+| `scope` | Meaning |
+|---|---|
+| `dev` | Measured the development half only. |
+| `holdout` | Measured the held-out half. Requires disclosure. |
+| `full` | Measured everything. Requires disclosure. |
+| `pre-split` | Finished before the split existed. Legal only on a superseded suite. |
+
+The gate then checks the declaration against arithmetic rather than intent: when
+the suite is current, `case_mix.total` must equal the declared population's size.
+A run labelled `dev` that reports every case has spent the held-out set and
+mislabelled it, and the numbers say so without needing per-case rows.
+
+Reporting held-out results is allowed — once — and has to be visible. A `holdout`
+or `full` benchmark must carry in its README:
+
+```
+- Held-out disclosure: <the assignment_sha256 from evals/split.json>
+```
+
+A disclosure naming a different assignment is rejected, so one disclosure cannot
+license every later run.
+
+The honest limit: cases held out *by choice* are a weaker check than cases
+*written blind*, because we could in principle have chosen them conveniently.
+`split.json` records the two groups separately so a reader can weigh them
+differently, and a test requires every skill to have at least one genuinely blind
+case.

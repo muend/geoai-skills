@@ -20,9 +20,18 @@ Gate B — benchmark currency.
     is `current` or `superseded` — and fails when that statement disagrees with
     the computed truth.
 
-Neither gate asserts that quality is good. They assert that a change cannot
-quietly remove a requirement or leave a stale number presenting itself as
-current.
+Gate C — held-out containment.
+    A held-out case is worthless the moment someone tunes against it. The suite
+    is public, so nothing can stop a person reading one; what can be stopped is
+    a benchmark quietly reporting held-out numbers as if they were routine. This
+    gate requires every benchmark to declare which population it measured, checks
+    that declaration against the arithmetic of the committed split, and makes
+    publishing held-out results a deliberate, reviewable act rather than a
+    default.
+
+None of the three gates asserts that quality is good. They assert that a change
+cannot quietly remove a requirement, leave a stale number presenting itself as
+current, or spend the held-out set without saying so.
 
 Usage:
     python tools/check_regression_gates.py
@@ -40,15 +49,22 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from tools.build_split import SplitError, build, load_cases, load_inputs
 from tools.eval_runner import load_suite
 
 ROOT = Path(__file__).resolve().parent.parent
 BASELINE_PATH = ROOT / "evals" / "rubric-baseline.json"
+SPLIT_PATH = ROOT / "evals" / "split.json"
 BENCHMARKS_DIR = ROOT / "benchmarks"
 
 SUITE_STATE_PATTERN = re.compile(
     r"^-?\s*Suite state:\s*`?(current|superseded)`?", re.IGNORECASE | re.MULTILINE
 )
+DISCLOSURE_PATTERN = re.compile(
+    r"^-?\s*Held-out disclosure:\s*`?([a-f0-9]{64})`?", re.IGNORECASE | re.MULTILINE
+)
+
+VALID_SCOPES = ("dev", "holdout", "full", "pre-split")
 
 
 class GateFailure(Exception):
@@ -196,6 +212,121 @@ def check_benchmark_currency() -> list[str]:
 
 
 # ---------------------------------------------------------------------------
+# Gate C — held-out containment
+# ---------------------------------------------------------------------------
+
+
+def check_holdout_containment() -> list[str]:
+    """Two questions: is the split current, and does any benchmark spend it?
+
+    The second cannot be answered from case ids, because `metrics.json` publishes
+    aggregates, not per-case rows. So it is answered from arithmetic instead: a
+    benchmark that says it measured the dev half must report the dev half's case
+    count. A number that does not add up is evidence; a promise is not.
+    """
+    failures: list[str] = []
+
+    if not SPLIT_PATH.exists():
+        return [
+            "evals/split.json is missing, so no benchmark can state which "
+            "population it measured. Generate it with "
+            "`python tools/build_split.py --write`."
+        ]
+
+    committed = json.loads(SPLIT_PATH.read_text(encoding="utf-8"))
+
+    try:
+        expected = build(load_cases(), *load_inputs())
+    except SplitError as error:
+        return [f"the split cannot be rebuilt, so it cannot be trusted: {error}"]
+
+    if committed.get("assignment_sha256") != expected["assignment_sha256"]:
+        failures.append(
+            "evals/split.json is stale: the current suite and inputs produce a "
+            f"different assignment ({expected['assignment_sha256'][:12]}… vs the "
+            f"committed {str(committed.get('assignment_sha256'))[:12]}…). Cases "
+            "were probably added without re-running "
+            "`python tools/build_split.py --write`. Until it is regenerated, "
+            "'held-out' does not name a definite set of cases."
+        )
+        # Keep going: the per-benchmark declarations are still worth checking,
+        # and reporting only the first problem hides the rest.
+
+    population = {
+        "dev": len(committed.get("dev", [])),
+        "holdout": len(committed.get("holdout", [])),
+        "full": len(committed.get("dev", [])) + len(committed.get("holdout", [])),
+    }
+    assignment = committed.get("assignment_sha256")
+
+    if not BENCHMARKS_DIR.exists():
+        return failures
+
+    _cases, current_suite_sha256, _skills = load_suite()
+
+    for metrics_path in sorted(BENCHMARKS_DIR.glob("*/metrics.json")):
+        directory = metrics_path.parent
+        name = directory.name
+        metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+        scope = metrics.get("scope")
+        suite_is_current = metrics.get("suite_sha256") == current_suite_sha256
+
+        if scope is None:
+            failures.append(
+                f"{name}: metrics.json does not declare a `scope`. Add one of "
+                f"{list(VALID_SCOPES)} — a benchmark that does not say which "
+                f"population it measured cannot be read honestly."
+            )
+            continue
+        if scope not in VALID_SCOPES:
+            failures.append(
+                f"{name}: unknown scope {scope!r}; expected one of {list(VALID_SCOPES)}."
+            )
+            continue
+
+        if scope == "pre-split":
+            if suite_is_current:
+                failures.append(
+                    f"{name}: scope is 'pre-split' but its suite hash is the "
+                    f"current one, so the split does apply to it. 'pre-split' is "
+                    f"only honest for a run finished before the split existed."
+                )
+            continue
+
+        if suite_is_current and metrics.get("case_mix", {}).get("total") is not None:
+            reported = metrics["case_mix"]["total"]
+            if reported != population[scope]:
+                failures.append(
+                    f"{name}: declares scope '{scope}' but reports "
+                    f"{reported} cases, and the {scope} population holds "
+                    f"{population[scope]}. Either the scope label or the run is "
+                    f"wrong; the arithmetic does not permit both."
+                )
+
+        if scope in ("holdout", "full"):
+            readme = directory / "README.md"
+            text = readme.read_text(encoding="utf-8") if readme.exists() else ""
+            match = DISCLOSURE_PATTERN.search(text)
+            if match is None:
+                failures.append(
+                    f"{name}: scope '{scope}' includes held-out cases, so its "
+                    f"README.md must carry a line reading\n"
+                    f"      Held-out disclosure: {assignment}\n"
+                    f"    Spending the held-out set is allowed once and has to be "
+                    f"visible in the diff that does it."
+                )
+            elif match.group(1).lower() != assignment:
+                failures.append(
+                    f"{name}: the held-out disclosure names assignment "
+                    f"{match.group(1)[:12]}… but the committed split is "
+                    f"{str(assignment)[:12]}…. The disclosure was made against a "
+                    f"different split, so it does not cover these cases."
+                )
+
+    return failures
+
+
+# ---------------------------------------------------------------------------
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -240,10 +371,12 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Gate A — rubric non-weakening: FAIL\n  {error}", file=sys.stderr)
         return 1
     benchmark_failures = check_benchmark_currency()
+    holdout_failures = check_holdout_containment()
 
     for title, failures in (
         ("Gate A — rubric non-weakening", rubric_failures),
         ("Gate B — benchmark currency", benchmark_failures),
+        ("Gate C — held-out containment", holdout_failures),
     ):
         if failures:
             print(f"{title}: FAIL", file=sys.stderr)
@@ -252,15 +385,21 @@ def main(argv: list[str] | None = None) -> int:
         else:
             print(f"{title}: pass")
 
-    if rubric_failures or benchmark_failures:
+    if rubric_failures or benchmark_failures or holdout_failures:
         print(
-            "\nThese gates do not measure quality; they prevent a requirement from "
-            "being removed and a stale benchmark from presenting itself as current.",
+            "\nThese gates do not measure quality. They prevent a requirement from "
+            "being removed, a stale benchmark from presenting itself as current, "
+            "and the held-out set from being spent without saying so.",
             file=sys.stderr,
         )
         return 1
 
-    print(f"\n{len(baseline['cases'])} pinned cases checked; no regression detected.")
+    split = json.loads(SPLIT_PATH.read_text(encoding="utf-8"))
+    print(
+        f"\n{len(baseline['cases'])} pinned cases checked; no regression detected.\n"
+        f"Split: dev {len(split['dev'])} / held-out {len(split['holdout'])}, "
+        f"assignment {split['assignment_sha256'][:12]}."
+    )
     return 0
 
 
