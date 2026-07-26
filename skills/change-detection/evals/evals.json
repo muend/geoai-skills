@@ -7,7 +7,9 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Quantify urban expansion between 2015 and 2025 from Landsat.",
-      "case_types": ["positive"],
+      "case_types": [
+        "positive"
+      ],
       "expected_behavior": [
         "Checks co-registration, same processing level, matched season, intersected cloud masks",
         "Builds a transition matrix and screens impossible transitions",
@@ -17,7 +19,10 @@
     {
       "id": "threshold-honesty",
       "prompt": "Difference these two NDVI images and map the change.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "expected_behavior": [
         "Chooses a defensible threshold (k·sigma or Otsu) shown on the histogram",
         "Reports sensitivity at k±0.5 and flags fragile detections"
@@ -28,7 +33,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Compare this May scene to this September scene to find deforestation.",
-      "case_types": ["positive", "ambiguous"],
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
       "critical": true,
       "expected_behavior": [
         "Flags the phenology impostor (detecting summer, not deforestation)",
@@ -38,7 +46,10 @@
     {
       "id": "change-accuracy-audit",
       "prompt": "Audit this two-date change map, its confusion matrices, reference sample, and reported hectares before publication.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "expected_behavior": [
         "Checks that the reference sample supports change-class accuracy and area estimation",
         "Recomputes error-adjusted areas and confidence intervals from the stratified sample",
@@ -50,7 +61,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "clarify_then_provisional",
       "prompt": "I have an irregular eight-year vegetation-index series and need to know when the landscape changed, but seasonal behavior is strong.",
-      "case_types": ["positive", "ambiguous"],
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
       "expected_behavior": [
         "Clarifies whether abrupt breaks, gradual trends, or class transitions define change",
         "Uses seasonal or time-series break methods rather than arbitrary two-date differencing",
@@ -60,9 +74,14 @@
     {
       "id": "single-date-classification",
       "prompt": "Classify land cover in one cloud-masked Sentinel-2 composite; there is no second date or temporal comparison.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["remote-sensing-analysis"],
+      "expected_route": [
+        "remote-sensing-analysis"
+      ],
       "expected_behavior": [
         "Routes to remote-sensing-analysis for a single-date classification workflow",
         "Does not invent a change-detection stage without a temporal comparison"
@@ -71,12 +90,64 @@
     {
       "id": "scene-correction-only",
       "prompt": "Atmospherically correct and cloud-mask this single Landsat scene so it is ready for later analysis.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["remote-sensing-analysis"],
+      "expected_route": [
+        "remote-sensing-analysis"
+      ],
       "expected_behavior": [
         "Routes to remote-sensing-analysis for single-scene preprocessing",
         "Does not activate change-detection when no change question is present"
+      ]
+    },
+    {
+      "id": "season-confounded-fire-attribution",
+      "prompt": "Map wildfire damage by subtracting a dry-season pre-fire image from a rainy-season post-fire image. Threshold the difference and label every changed pixel as burned area; we need hectares today.",
+      "case_types": [
+        "positive"
+      ],
+      "behavior_class": "advisory",
+      "interaction_mode": "deliver",
+      "critical": true,
+      "expected_behavior": [
+        "Refuses to attribute every spectral difference to wildfire damage.",
+        "Requires seasonally comparable observations or an explicit phenology control.",
+        "Requires compatible sensors and processing levels before differencing.",
+        "Masks clouds and shadows before compositing or calculating change."
+      ],
+      "forbidden_behavior": [
+        "Reports thresholded dry-to-rainy differences as confirmed burned hectares."
+      ]
+    },
+    {
+      "id": "transition-area-uncertainty-spec",
+      "prompt": "Write outputs/change-release-spec.json for reporting changed hectares from two independently validated land-cover maps. The specification must make the final area estimates suitable for a public statistical release.",
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
+      "behavior_class": "artifact-producing",
+      "interaction_mode": "deliver",
+      "critical": false,
+      "expected_behavior": [
+        "Requires transition-specific accuracy estimates before reporting changed hectares.",
+        "Requires error-adjusted transition areas with 95% confidence intervals.",
+        "Records the class definitions and acquisition windows for both dates.",
+        "Records the reference-sample design used for change validation."
+      ],
+      "forbidden_behavior": [
+        "Treats the raw changed-pixel count as an uncertainty-free area estimate."
+      ],
+      "tool_profile": "workspace-write",
+      "expected_artifacts": [
+        {
+          "path": "outputs/change-release-spec.json",
+          "media_type": "application/json",
+          "required": true
+        }
       ]
     }
   ]

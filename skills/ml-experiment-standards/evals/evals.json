@@ -5,7 +5,9 @@
     {
       "id": "simple-fit-request",
       "prompt": "Quickly fit a classifier on this geospatial feature table and tell me the accuracy.",
-      "case_types": ["positive"],
+      "case_types": [
+        "positive"
+      ],
       "expected_behavior": [
         "Runs EDA first (target balance, missingness) and justifies the metric (F1/AUC-PR if imbalanced)",
         "Uses a Pipeline so preprocessing fits on train only; documents the split rationale",
@@ -17,7 +19,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Cross-validate my land-price model where each row is a parcel with coordinates.",
-      "case_types": ["positive", "collision"],
+      "case_types": [
+        "positive",
+        "collision"
+      ],
       "expected_behavior": [
         "Applies references/spatial-cv-protocol.md: block IDs, GroupKFold, overlap verification",
         "Reports the blocked metric as THE metric"
@@ -28,7 +33,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "clarify",
       "prompt": "Model B beat model A by 0.4 points of F1. Write up that B is better.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "expected_behavior": [
         "Requests fold-level scores or uncertainty and compares the gap against across-fold standard deviation or a bootstrap confidence interval",
         "Refuses to claim B is better from the point estimate alone and reports no clear difference only if the gap is within uncertainty"
@@ -39,7 +47,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Audit this parcel-risk notebook: imputation and scaling run before the split, nearby parcels appear in train and test, and the best test fold was reported.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "critical": true,
       "expected_behavior": [
         "Finds preprocessing, spatial, and selective-reporting leakage",
@@ -52,7 +63,10 @@
     {
       "id": "unknown-spatial-dependence",
       "prompt": "Build a model from environmental samples that include coordinates, but I do not know the spatial correlation range or deployment geography.",
-      "case_types": ["positive", "ambiguous"],
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
       "expected_behavior": [
         "Clarifies the deployment domain and estimates spatial dependence before choosing blocks",
         "Compares honest spatial validation designs and documents the selected buffer or group logic",
@@ -62,9 +76,14 @@
     {
       "id": "unet-architecture-task",
       "prompt": "Design a U-Net training and sliding-window inference pipeline for building masks from aerial image chips.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["geo-deep-learning"],
+      "expected_route": [
+        "geo-deep-learning"
+      ],
       "expected_behavior": [
         "Routes to geo-deep-learning for architecture, chipping, loss, and inference details",
         "Does not let the cross-cutting experiment standard replace the specialist workflow"
@@ -73,12 +92,37 @@
     {
       "id": "moran-hotspot-task",
       "prompt": "Compute global Moran's I and FDR-corrected local clusters for district-level rates; no predictive model is requested.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["spatial-statistics"],
+      "expected_route": [
+        "spatial-statistics"
+      ],
       "expected_behavior": [
         "Routes to spatial-statistics for weights and permutation inference",
         "Does not impose an ML experiment workflow on a spatial inference task"
+      ]
+    },
+    {
+      "id": "test-set-shopping-significance",
+      "prompt": "We tried 80 model and hyperparameter combinations, selected the one with the highest test score, and got p=0.03 for its improvement using bootstrap samples from that same test set. Write the confirmatory claim.",
+      "case_types": [
+        "positive"
+      ],
+      "behavior_class": "advisory",
+      "interaction_mode": "deliver",
+      "critical": true,
+      "expected_behavior": [
+        "States that repeated model selection has compromised the reported test set.",
+        "Moves model selection inside nested spatial cross-validation.",
+        "Requires a new untouched geographic holdout for the confirmatory comparison.",
+        "Corrects for the model-comparison family or labels the result exploratory.",
+        "Reports the effect estimate with an uncertainty interval."
+      ],
+      "forbidden_behavior": [
+        "Reports the unadjusted p=0.03 as confirmatory evidence that the selected model is better."
       ]
     }
   ]

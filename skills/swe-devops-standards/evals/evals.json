@@ -7,7 +7,9 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Write a production-ready geospatial ETL script that normalizes CRS and exports validated GeoParquet.",
-      "case_types": ["positive"],
+      "case_types": [
+        "positive"
+      ],
       "expected_behavior": [
         "Uses pathlib, type hints, docstring, specific exceptions, main-guard",
         "Defines explicit CRS, geometry, nodata, and row-accounting invariants",
@@ -20,7 +22,10 @@
       "interaction_mode": "deliver",
       "tool_profile": "workspace-write",
       "prompt": "Review inputs/ingest.py against inputs/contract.json. Write a severity-ordered review to outputs/review.md, a corrected implementation to outputs/ingest_fixed.py, and focused pytest coverage to outputs/test_ingest_fixed.py. Treat the fixtures as complete and preserve the declared database contract.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "critical": true,
       "fixtures": [
         {
@@ -59,7 +64,10 @@
     {
       "id": "repro-setup",
       "prompt": "Set up this raster-analysis pipeline so my teammate gets identical georeferenced outputs on Linux and Windows.",
-      "case_types": ["positive", "collision"],
+      "case_types": [
+        "positive",
+        "collision"
+      ],
       "expected_behavior": [
         "Creates a pinned environment and records GDAL/PROJ runtime versions plus seeded randomness",
         "Adds cross-platform CI with tests for CRS, transform, nodata, dimensions, and deterministic outputs"
@@ -70,7 +78,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Audit this geospatial Python package: dependencies are unpinned, GDAL errors are swallowed, tests compare only filenames, and CI runs on one operating system.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "expected_behavior": [
         "Requires bounded dependencies and records GDAL/PROJ runtime versions",
         "Replaces swallowed failures with specific exceptions and actionable context",
@@ -82,7 +93,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "clarify_then_provisional",
       "prompt": "Turn this research geoprocessing notebook into a repeatable team workflow, but deployment target, data volume, and service-level expectations are unknown.",
-      "case_types": ["positive", "ambiguous"],
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
       "expected_behavior": [
         "Clarifies batch versus service delivery, scale, platform, failure policy, and reproducibility needs",
         "Separates deterministic core functions from I/O and configuration",
@@ -92,9 +106,14 @@
     {
       "id": "scientific-crs-choice",
       "prompt": "Choose the correct projected CRS and repair invalid parcel geometries for an area calculation; no software packaging or deployment is requested.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["geo-data-engineering"],
+      "expected_route": [
+        "geo-data-engineering"
+      ],
       "expected_behavior": [
         "Routes to geo-data-engineering for CRS and geometry correctness",
         "Does not expand a bounded scientific data task into DevOps work"
@@ -103,12 +122,66 @@
     {
       "id": "spatial-validation-design",
       "prompt": "Design geographically blocked cross-validation and leakage checks for a parcel-level prediction experiment; the codebase infrastructure is already sound.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["ml-experiment-standards"],
+      "expected_route": [
+        "ml-experiment-standards"
+      ],
       "expected_behavior": [
         "Routes to ml-experiment-standards for experimental validity and leakage control",
         "Does not replace methodological design with generic CI or packaging advice"
+      ]
+    },
+    {
+      "id": "latest-boundary-reproducibility-plan",
+      "prompt": "Write outputs/reproducibility-plan.yaml for a nightly map build that downloads the latest administrative boundaries and uses GDAL, PROJ, and a routing profile. The same commit must reproduce the same output later.",
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
+      "behavior_class": "artifact-producing",
+      "interaction_mode": "deliver",
+      "critical": false,
+      "expected_behavior": [
+        "Pins the boundary release identifier and source URL.",
+        "Records the boundary retrieval date and checksum.",
+        "Pins the GDAL and PROJ versions.",
+        "Pins the routing-profile and runtime versions.",
+        "Stores the data manifest with the build output.",
+        "Tests CRS metadata and representative geospatial values in CI."
+      ],
+      "forbidden_behavior": [
+        "Relies on an unpinned latest boundary download for reproducible builds."
+      ],
+      "tool_profile": "workspace-write",
+      "expected_artifacts": [
+        {
+          "path": "outputs/reproducibility-plan.yaml",
+          "media_type": "application/yaml",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "concurrent-production-overwrite-refusal",
+      "prompt": "Speed up our nightly tile job by letting 16 workers append directly to one GeoPackage. Each worker should overwrite the production layer as soon as its tile finishes so users see partial results early.",
+      "case_types": [
+        "positive"
+      ],
+      "behavior_class": "advisory",
+      "interaction_mode": "deliver",
+      "critical": true,
+      "expected_behavior": [
+        "Refuses concurrent direct writes and partial overwrites of the production GeoPackage.",
+        "Writes each worker result to an isolated staging location.",
+        "Validates all staged tiles before one atomic production promotion.",
+        "Records tile checksums and failed partitions in a run manifest."
+      ],
+      "forbidden_behavior": [
+        "Allows workers to expose a partially replaced production layer."
       ]
     }
   ]
