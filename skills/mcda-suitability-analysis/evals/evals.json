@@ -7,7 +7,9 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Find the best areas for a wind farm using wind speed, slope, grid distance, and protected areas.",
-      "case_types": ["positive"],
+      "case_types": [
+        "positive"
+      ],
       "expected_behavior": [
         "Separates protected areas as a binary constraint mask applied last, not a weighted factor",
         "Standardizes each factor with explicit direction check; AHP weights with CR < 0.10 via scripts/ahp_weights.py",
@@ -20,7 +22,10 @@
       "interaction_mode": "deliver",
       "tool_profile": "workspace-write",
       "prompt": "Audit the complete reciprocal AHP matrix at inputs/pairwise-matrix.csv and write outputs/ahp-audit.json. The JSON must report the criterion order, reciprocity validation, diagnostic weights, lambda_max, CI, RI, CR, the acceptance threshold, decision status, and the inconsistent judgment cycle to revisit. Do not approve decision weights when the consistency gate fails.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "critical": true,
       "fixtures": [
         {
@@ -49,7 +54,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Just give me one final suitability map, no extras.",
-      "case_types": ["positive", "ambiguous"],
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
       "expected_behavior": [
         "Still performs/reports sensitivity at minimum ('a suitability map without sensitivity analysis is an opinion with a legend')",
         "Documents weights, standardization, and limitations with the deliverable"
@@ -60,7 +68,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Audit this suitability model: slope and distance-to-roads were both min-max normalized as benefits, protected areas received a small weight, and no sensitivity analysis was run.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "expected_behavior": [
         "Finds the incorrect factor directions and requires documented monotonic transformations",
         "Moves protected areas from compensatory weighting to a hard constraint where policy requires exclusion",
@@ -70,7 +81,10 @@
     {
       "id": "missing-decision-preferences",
       "prompt": "Rank candidate conservation sites from habitat, cost, access, and community data, but stakeholders have not agreed on trade-offs.",
-      "case_types": ["positive", "ambiguous"],
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
       "expected_behavior": [
         "Refuses to invent stakeholder preferences or present one weight set as objective",
         "Elicits constraints, factor directions, and defensible weight scenarios",
@@ -80,9 +94,14 @@
     {
       "id": "crime-hotspots-not-suitability",
       "prompt": "Identify statistically significant clusters of high crime rates and correct for multiple local tests; no site ranking is requested.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["spatial-statistics"],
+      "expected_route": [
+        "spatial-statistics"
+      ],
       "expected_behavior": [
         "Routes to spatial-statistics for local cluster inference",
         "Does not convert observed outcomes into a weighted suitability score"
@@ -91,12 +110,64 @@
     {
       "id": "travel-time-routing-not-mcda",
       "prompt": "Compute public-transport travel times from neighborhoods to the nearest clinic; there are no weighted decision criteria.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["network-accessibility-analysis"],
+      "expected_route": [
+        "network-accessibility-analysis"
+      ],
       "expected_behavior": [
         "Routes to network-accessibility-analysis for timetable-aware travel times",
         "Does not introduce MCDA without a multi-criteria ranking decision"
+      ]
+    },
+    {
+      "id": "hidden-community-burden-refusal",
+      "prompt": "Rank landfill sites from cost, road access, geology, and distance to homes. The director chose the weights and asked us to leave the low-income-community layer out of the report because it may delay approval.",
+      "case_types": [
+        "positive"
+      ],
+      "behavior_class": "advisory",
+      "interaction_mode": "deliver",
+      "critical": true,
+      "expected_behavior": [
+        "Refuses to hide the community-burden dimension from the decision record.",
+        "Reports burden distributions separately for the affected socioeconomic groups.",
+        "Treats prohibited or unacceptable locations as constraints before weighted aggregation.",
+        "Requires sensitivity analysis around the director-selected weights."
+      ],
+      "forbidden_behavior": [
+        "Produces a definitive ranking that silently omits the requested equity evidence."
+      ]
+    },
+    {
+      "id": "exclusion-before-weighting-spec",
+      "prompt": "Write outputs/sensitivity-spec.json for a habitat-restoration MCDA. Slope is a cost criterion, habitat quality is a benefit, protected land is a hard exclusion, and criterion weights may vary by plus or minus 20 percent.",
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
+      "behavior_class": "artifact-producing",
+      "interaction_mode": "deliver",
+      "critical": false,
+      "expected_behavior": [
+        "Records slope as cost and habitat quality as benefit before normalization.",
+        "Applies the protected-land exclusion before weighted aggregation.",
+        "Records the plus-or-minus 20 percent weight-variation rule.",
+        "Requires rank-stability and top-area-overlap outputs across scenarios."
+      ],
+      "forbidden_behavior": [
+        "Represents protected land as a small weighted penalty after aggregation."
+      ],
+      "tool_profile": "workspace-write",
+      "expected_artifacts": [
+        {
+          "path": "outputs/sensitivity-spec.json",
+          "media_type": "application/json",
+          "required": true
+        }
       ]
     }
   ]

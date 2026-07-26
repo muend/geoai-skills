@@ -7,7 +7,9 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Make a cloud-free Sentinel-2 composite of an entire country for 2025 and compute mean NDVI per province.",
-      "case_types": ["positive"],
+      "case_types": [
+        "positive"
+      ],
       "expected_behavior": [
         "Stays server-side: filterBounds/filterDate, Cloud Score+ masking, median composite",
         "reduceRegions with explicit scale and tileScale; exports the table instead of getInfo",
@@ -19,7 +21,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Loop over my 500 points and call getInfo to get the NDVI value at each.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "critical": true,
       "expected_behavior": [
         "Rejects the per-element getInfo loop",
@@ -29,7 +34,10 @@
     {
       "id": "trend-map",
       "prompt": "Compute a per-pixel NDVI trend for 20 years of Landsat over a basin.",
-      "case_types": ["positive", "collision"],
+      "case_types": [
+        "positive",
+        "collision"
+      ],
       "expected_behavior": [
         "Applies Landsat C2 scale factors and consistent masking",
         "Uses sensSlope/linearFit with a valid-observation-count mask",
@@ -39,7 +47,10 @@
     {
       "id": "projection-scale-audit",
       "prompt": "Review this Earth Engine script: it reduces a 10 m image at scale 1000 with the default projection and exports a table without collection IDs.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "expected_behavior": [
         "Flags the scale/projection mismatch and inspects nominal scale and analysis intent",
         "Sets explicit scale, CRS when justified, and reduction parameters without unnecessary reprojection",
@@ -51,7 +62,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "clarify_then_provisional",
       "prompt": "Process a multi-year satellite archive for a large region, but I have not decided between local xarray workflows and Earth Engine.",
-      "case_types": ["positive", "ambiguous"],
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
       "expected_behavior": [
         "Clarifies archive size, algorithms, data locality, quotas, reproducibility, and export needs",
         "Chooses Earth Engine only when server-side catalog and computation advantages outweigh constraints",
@@ -62,9 +76,14 @@
     {
       "id": "local-scene-analysis",
       "prompt": "Analyze one local GeoTIFF scene with rasterio, compute NDVI, and save a COG; do not use a cloud platform.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["remote-sensing-analysis"],
+      "expected_route": [
+        "remote-sensing-analysis"
+      ],
       "expected_behavior": [
         "Routes to remote-sensing-analysis for local single-scene processing",
         "Respects the explicit constraint not to introduce Earth Engine"
@@ -73,12 +92,37 @@
     {
       "id": "exported-map-styling",
       "prompt": "Choose an accessible classification, legend, and layout for an already exported Earth Engine GeoTIFF; no server-side computation remains.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["cartography-geoviz"],
+      "expected_route": [
+        "cartography-geoviz"
+      ],
       "expected_behavior": [
         "Routes to cartography-geoviz for visual encoding and layout",
         "Does not reactivate Earth Engine when the task is purely cartographic"
+      ]
+    },
+    {
+      "id": "moving-latest-dataset-provenance",
+      "prompt": "Our Earth Engine drought dashboard always pulls the latest ERA5 and Sentinel-2 data. Export the 2025 annual-report map in a way that another analyst can reproduce after the catalog updates.",
+      "case_types": [
+        "positive"
+      ],
+      "behavior_class": "advisory",
+      "interaction_mode": "deliver",
+      "critical": false,
+      "expected_behavior": [
+        "Pins the exact Earth Engine collection IDs and filter dates.",
+        "Records the retrieval timestamp and processing-script version.",
+        "Records the export CRS and nominal scale.",
+        "Records the reducer and resampling method.",
+        "Records the cloud-mask logic used for Sentinel-2."
+      ],
+      "forbidden_behavior": [
+        "Documents only a moving latest-data alias with no reproducible date bounds."
       ]
     }
   ]

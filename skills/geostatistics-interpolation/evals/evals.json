@@ -7,7 +7,9 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Interpolate annual rainfall from 60 stations into a raster.",
-      "case_types": ["positive"],
+      "case_types": [
+        "positive"
+      ],
       "expected_behavior": [
         "Explores first: duplicates, skew (log transform if needed), trend check",
         "Models the variogram deliberately (nugget/sill/range reported, anisotropy checked)",
@@ -17,7 +19,10 @@
     {
       "id": "idw-only",
       "prompt": "Quick IDW heatmap of these sensor readings please.",
-      "case_types": ["positive", "ambiguous"],
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
       "expected_behavior": [
         "Delivers IDW but states it has no error model and bullseyes extremes",
         "Reports the power parameter and works in a projected CRS"
@@ -28,7 +33,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "deliver",
       "prompt": "Extend the interpolated surface to the whole province even where we have no stations.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "critical": true,
       "expected_behavior": [
         "Masks or flags cells beyond the variogram range from nearest samples",
@@ -38,7 +46,10 @@
     {
       "id": "variogram-audit",
       "prompt": "Audit this kriging result: the fitted variogram has zero nugget, a range larger than the study area, and no uncertainty raster or cross-validation table.",
-      "case_types": ["positive", "artifact-correctness"],
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
       "expected_behavior": [
         "Challenges the unsupported variogram fit using empirical bins, sample geometry, and alternative models",
         "Requires LOOCV plus spatial block CV and reports bias and RMSE",
@@ -50,7 +61,10 @@
       "behavior_class": "advisory",
       "interaction_mode": "clarify_then_provisional",
       "prompt": "I have twelve unevenly distributed soil samples and need a continuous surface; I do not know whether kriging is defensible.",
-      "case_types": ["positive", "ambiguous"],
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
       "expected_behavior": [
         "Inspects sample spacing, clustering, trend, and support before promising a surface",
         "Compares a transparent baseline with a variogram-based method only if the empirical structure is estimable",
@@ -60,9 +74,14 @@
     {
       "id": "hotspot-inference-not-surface",
       "prompt": "Test whether high disease rates form statistically significant spatial clusters; do not interpolate values between regions.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["spatial-statistics"],
+      "expected_route": [
+        "spatial-statistics"
+      ],
       "expected_behavior": [
         "Routes to spatial-statistics for local cluster inference and multiple-testing control",
         "Does not replace hotspot inference with an interpolated heatmap"
@@ -71,12 +90,67 @@
     {
       "id": "dem-hole-repair",
       "prompt": "Hydrologically condition this DEM and repair small nodata holes before watershed delineation; no sampled point variable is involved.",
-      "case_types": ["negative", "collision"],
+      "case_types": [
+        "negative",
+        "collision"
+      ],
       "should_trigger": false,
-      "expected_route": ["terrain-hydrology"],
+      "expected_route": [
+        "terrain-hydrology"
+      ],
       "expected_behavior": [
         "Routes to terrain-hydrology for DEM conditioning and drainage-safe repair",
         "Does not treat raster nodata repair as geostatistical interpolation by default"
+      ]
+    },
+    {
+      "id": "pfas-safe-zone-refusal",
+      "prompt": "Interpolate PFAS from 18 unevenly spaced wells across the county and publish a crisp safe-versus-unsafe zoning map. Detection limits differ by laboratory, and I have not supplied the regulatory threshold.",
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
+      "behavior_class": "advisory",
+      "interaction_mode": "clarify_then_provisional",
+      "critical": true,
+      "expected_behavior": [
+        "Refuses to label areas safe or unsafe without a declared regulatory threshold.",
+        "Requests laboratory detection limits before modelling censored measurements.",
+        "Requires prediction uncertainty alongside any interpolated concentration surface.",
+        "Marks unsupported extrapolation beyond the sampled domain."
+      ],
+      "forbidden_behavior": [
+        "Publishes a deterministic safety boundary from default kriging choices."
+      ]
+    },
+    {
+      "id": "kriging-parameter-manifest",
+      "prompt": "Write outputs/kriging-metadata.json for a temperature surface in EPSG:3035 using 120 stations, 1,000 metre cells, and five-fold spatial-block cross-validation. Do not perform the interpolation.",
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
+      "behavior_class": "artifact-producing",
+      "interaction_mode": "deliver",
+      "critical": false,
+      "expected_behavior": [
+        "Records EPSG:3035 and the 1,000 metre cell size.",
+        "Records the variogram family and nugget fields.",
+        "Records the variogram sill and range fields.",
+        "Records the search-neighbourhood parameters and transformation choice.",
+        "Requires both a prediction raster and a prediction-standard-error raster.",
+        "Records five-fold spatial-block cross-validation metrics."
+      ],
+      "forbidden_behavior": [
+        "Leaves variogram or search-neighbourhood parameters implicit."
+      ],
+      "tool_profile": "workspace-write",
+      "expected_artifacts": [
+        {
+          "path": "outputs/kriging-metadata.json",
+          "media_type": "application/json",
+          "required": true
+        }
       ]
     }
   ]
