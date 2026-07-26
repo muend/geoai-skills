@@ -13,6 +13,18 @@ in the repository [benchmark card](../../BENCHMARK.md).
 - Suite SHA-256: `d45ad2c8263584f21dd500bcd6c4e8cdeeb38ed9cd18205f66a4570224ff8801`
 - Behavior judgments: none; behavior status is `not_evaluated`
 - Retry policy: primary records retained; no error was replaced by a retry
+- Split scope: `pre-split`
+
+### What `pre-split` means here
+
+This run finished before the repository had a dev / held-out split, so it covered
+every case that existed at the time and no containment claim can honestly be made
+about it. The `scope: "pre-split"` field was added to `metrics.json` after the
+fact, for Gate C to read. **No measured value was altered** — only that one label
+was added, and this paragraph exists so nobody has to take that on trust.
+
+Runs after this one declare `dev`, `holdout` or `full`, and Gate C checks the
+declaration against the case counts in `evals/split.json`.
 
 ### What `superseded` means here
 
