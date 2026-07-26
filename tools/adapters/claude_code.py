@@ -257,7 +257,8 @@ def expand_long_path(path: Path) -> Path:
     import ctypes
     from ctypes import wintypes
 
-    get_long_path_name = ctypes.windll.kernel32.GetLongPathNameW  # type: ignore[attr-defined]  # Windows-only branch
+    ctypes_module: Any = ctypes  # `windll` is platform-dependent in typeshed.
+    get_long_path_name = ctypes_module.windll.kernel32.GetLongPathNameW
     get_long_path_name.argtypes = [wintypes.LPCWSTR, wintypes.LPWSTR, wintypes.DWORD]
     get_long_path_name.restype = wintypes.DWORD
 

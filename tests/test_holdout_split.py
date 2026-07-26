@@ -204,6 +204,16 @@ def gate_c(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, committed: dict):
     _cases, suite_sha256, _skills = gates.load_suite()
 
     def run(metrics: dict, readme: str | None = None) -> list[str]:
+        # Fill in the hash the declared population would have today, unless the
+        # test set one deliberately. Without this every fixture published the
+        # full-suite hash while declaring a narrow scope, so Gate C read them as
+        # superseded and skipped the arithmetic — and the tests that were meant
+        # to exercise it passed for no reason at all.
+        if "suite_sha256" not in metrics:
+            metrics = dict(
+                metrics,
+                suite_sha256=gates.expected_population_sha256(metrics, suite_sha256),
+            )
         _benchmark(tmp_path, metrics, readme)
         return gates.check_holdout_containment()
 
@@ -233,7 +243,6 @@ def test_a_dev_scoped_run_reporting_the_full_suite_is_caught(gate_c) -> None:
     """
     failures = gate_c(
         {
-            "suite_sha256": gate_c.suite_sha256,
             "scope": "dev",
             "evaluation_scope": "all",
             "case_mix": {"total": gate_c.pop[("full", "all")]},
@@ -246,7 +255,6 @@ def test_a_dev_scoped_run_reporting_the_full_suite_is_caught(gate_c) -> None:
 def test_a_correctly_counted_dev_run_passes(gate_c) -> None:
     failures = gate_c(
         {
-            "suite_sha256": gate_c.suite_sha256,
             "scope": "dev",
             "evaluation_scope": "all",
             "case_mix": {"total": gate_c.pop[("dev", "all")]},
@@ -259,7 +267,6 @@ def test_a_correctly_counted_dev_run_passes(gate_c) -> None:
 def test_a_holdout_run_without_a_disclosure_is_refused(gate_c) -> None:
     failures = gate_c(
         {
-            "suite_sha256": gate_c.suite_sha256,
             "scope": "holdout",
             "evaluation_scope": "all",
             "case_mix": {"total": gate_c.pop[("holdout", "all")]},
@@ -273,7 +280,6 @@ def test_a_holdout_run_without_a_disclosure_is_refused(gate_c) -> None:
 def test_a_holdout_run_with_the_right_disclosure_passes(gate_c) -> None:
     failures = gate_c(
         {
-            "suite_sha256": gate_c.suite_sha256,
             "scope": "holdout",
             "evaluation_scope": "all",
             "case_mix": {"total": gate_c.pop[("holdout", "all")]},
@@ -288,7 +294,6 @@ def test_a_disclosure_for_a_different_split_is_refused(gate_c) -> None:
     """Otherwise one disclosure would license every future held-out run."""
     failures = gate_c(
         {
-            "suite_sha256": gate_c.suite_sha256,
             "scope": "holdout",
             "evaluation_scope": "all",
             "case_mix": {"total": gate_c.pop[("holdout", "all")]},
@@ -319,7 +324,6 @@ def test_a_routing_run_covers_the_whole_half_not_the_routing_only_subset(
     """
     passing = gate_c(
         {
-            "suite_sha256": gate_c.suite_sha256,
             "scope": "dev",
             "evaluation_scope": "routing",
             "case_mix": {"total": gate_c.pop[("dev", "all")]},
@@ -335,7 +339,6 @@ def test_a_routing_run_reporting_the_routing_only_subset_is_caught(gate_c) -> No
     """The shape my mistaken fix would have blessed."""
     failures = gate_c(
         {
-            "suite_sha256": gate_c.suite_sha256,
             "scope": "dev",
             "evaluation_scope": "routing",
             "case_mix": {"total": gate_c.pop[("dev", "routing-only-cases")]},
@@ -350,7 +353,6 @@ def test_a_behaviour_benchmark_is_measured_against_the_behaviour_population(
 ) -> None:
     failures = gate_c(
         {
-            "suite_sha256": gate_c.suite_sha256,
             "scope": "holdout",
             "evaluation_scope": "behavior",
             "case_mix": {"total": gate_c.pop[("holdout", "behavior")]},
@@ -373,7 +375,6 @@ def test_a_current_benchmark_without_an_evaluation_scope_is_refused(gate_c) -> N
     """Without it the expected population is undecidable, not merely unknown."""
     failures = gate_c(
         {
-            "suite_sha256": gate_c.suite_sha256,
             "scope": "dev",
             "case_mix": {"total": gate_c.pop[("dev", "routing")]},
         }
@@ -385,7 +386,6 @@ def test_a_current_benchmark_without_an_evaluation_scope_is_refused(gate_c) -> N
 def test_an_unknown_evaluation_scope_is_refused(gate_c) -> None:
     failures = gate_c(
         {
-            "suite_sha256": gate_c.suite_sha256,
             "scope": "dev",
             "evaluation_scope": "vibes",
             "case_mix": {"total": 1},
@@ -397,7 +397,7 @@ def test_an_unknown_evaluation_scope_is_refused(gate_c) -> None:
 
 def test_pre_split_is_refused_on_a_current_suite(gate_c) -> None:
     """The escape hatch must not become the default."""
-    failures = gate_c({"suite_sha256": gate_c.suite_sha256, "scope": "pre-split"})
+    failures = gate_c({"scope": "pre-split", "evaluation_scope": "all"})
 
     assert any("only honest for a run finished before" in f for f in failures)
 
@@ -443,6 +443,121 @@ def test_a_stale_split_file_fails_loudly(
     failures = gates.check_holdout_containment()
 
     assert any("is stale" in f for f in failures)
+
+
+# --- Gate B: currency is judged against the population that ran -----------
+
+
+def _currency(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    from tools import check_regression_gates as gates
+
+    monkeypatch.setattr(gates, "BENCHMARKS_DIR", tmp_path / "benchmarks")
+
+    def run(metrics: dict, declared: str) -> list[str]:
+        directory = tmp_path / "benchmarks" / "run"
+        directory.mkdir(parents=True, exist_ok=True)
+        (directory / "metrics.json").write_text(
+            json.dumps(metrics), encoding="utf-8", newline=""
+        )
+        (directory / "README.md").write_text(
+            f"# run\n\n- Suite state: `{declared}`\n", encoding="utf-8", newline=""
+        )
+        return gates.check_benchmark_currency()
+
+    return run, gates
+
+
+def test_a_narrow_scope_benchmark_can_be_current(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The measured gap this closes.
+
+    A narrow run records the hash of the cases it covered — `--scope behavior` is
+    documented as producing its own suite hash. Gate B compared every benchmark
+    against the full-suite hash, so a behaviour benchmark computed today was
+    forced to declare `superseded`. That is false in the opposite direction: the
+    84-case behaviour population still exists and the numbers do describe the
+    current skills. The label was wrong whichever way it was set, so the
+    comparison had to learn which population ran.
+    """
+    run, gates = _currency(tmp_path, monkeypatch)
+    metrics = {
+        "scope": "dev",
+        "evaluation_scope": "behavior",
+        "suite_sha256": gates.population_sha256("dev", "behavior"),
+        "case_mix": {"total": 53},
+    }
+
+    assert run(metrics, "current") == []
+    assert any("computed state is 'current'" in f for f in run(metrics, "superseded"))
+
+
+def test_a_narrow_run_publishing_the_full_suite_hash_is_superseded(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The permissive failure mode: don't accept any hash for a narrow scope."""
+    run, gates = _currency(tmp_path, monkeypatch)
+    _cases, full, _skills = gates.load_suite()
+    metrics = {
+        "scope": "dev",
+        "evaluation_scope": "routing",
+        "suite_sha256": full,
+        "case_mix": {"total": 96},
+    }
+
+    assert any("computed state is 'superseded'" in f for f in run(metrics, "current"))
+
+
+def test_a_pre_split_benchmark_is_still_judged_against_the_full_suite(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Backwards compatibility: no scope means the old comparison still holds."""
+    run, _gates = _currency(tmp_path, monkeypatch)
+    metrics = {
+        "scope": "pre-split",
+        "kind": "routing",
+        "suite_sha256": "0" * 64,
+        "case_mix": {"total": 120},
+    }
+
+    assert run(metrics, "superseded") == []
+    assert any("computed state is 'superseded'" in f for f in run(metrics, "current"))
+
+
+def test_the_population_hash_matches_what_prepare_would_build() -> None:
+    """One definition of the population, or the gates drift from the harness.
+
+    If `prepare` and the gates each filtered cases their own way, a benchmark
+    could be honest about the population it ran and still fail, or be dishonest
+    and pass. The hash is the cheapest way to assert they agree.
+    """
+    import tempfile
+
+    from tools.check_regression_gates import population_sha256
+    from tools.eval_runner import prepare_run
+
+    for scope, evaluation_scope, split in (
+        ("dev", "routing", "dev"),
+        ("dev", "behavior", "dev"),
+        ("holdout", "behavior", "holdout"),
+        ("full", "all", "all"),
+    ):
+        with tempfile.TemporaryDirectory() as tmp:
+            run_dir = prepare_run(
+                runtime="rt",
+                model="m",
+                condition="skills-enabled",
+                evaluation_scope=evaluation_scope,
+                split=split,
+                runs_dir=Path(tmp),
+            )
+            manifest = json.loads(
+                (run_dir / "manifest.json").read_text(encoding="utf-8")
+            )
+
+        assert manifest["suite_sha256"] == population_sha256(scope, evaluation_scope), (
+            f"{scope}/{evaluation_scope}"
+        )
 
 
 def test_the_inputs_file_lists_only_real_cases() -> None:
