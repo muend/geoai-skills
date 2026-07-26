@@ -211,12 +211,14 @@ that the model judged each atom correctly; a candidate judge must still pass
 the precommitted calibration gate before its decisions support a behavior
 claim.
 
-Claude and Gemini resumable judge state is namespaced by provider, exact judge
-model, and prompt version, preventing a changed judge contract from silently
-resuming old partial decisions. Changing either the prompt instructions or the
-atomic-clause registry requires a new prompt version; never resume an existing
-namespace after either input changes. Model judgments remain reviewable
-evidence, not ground truth. Prefer a judge from a different model family than the executor.
+Claude, Gemini, and Codex resumable judge state is namespaced by provider,
+judge model, and prompt version, preventing a changed judge contract from
+silently resuming old partial decisions. The Codex namespace additionally
+includes CLI version and reasoning effort because both can change local runtime
+behavior. Changing either the prompt instructions or the atomic-clause registry
+requires a new prompt version; never resume an existing namespace after either
+input changes. Model judgments remain reviewable evidence, not ground truth.
+Prefer a judge from a different model family than the executor.
 Label same-family results preliminary, never use them as headline evidence, and
 disclose judge provider, model, family, prompt/schema version, retries, and
 missing/error cases. Manually review every critical case, every execution
@@ -257,6 +259,38 @@ Review Google's official
 [generateContent](https://ai.google.dev/api/generate-content), and
 [rate-limit](https://ai.google.dev/gemini-api/docs/rate-limits) documentation
 before choosing a model or quota cap.
+
+The optional Codex CLI judge offers another independent-family candidate when
+Codex is authenticated locally:
+
+```bash
+python tools/adapters/codex_cli.py judge \
+  --run-dir evals/runs/<run-id> \
+  --judge-model <requested-model-id> \
+  --reasoning-effort low \
+  --max-requests 2 \
+  --case-id <case-id-1> \
+  --case-id <case-id-2> \
+  --acknowledge-external-data-use
+```
+
+Run first with `--dry-run`, which makes no model call. Real calls require the
+external-data acknowledgement and a positive invocation cap. Each invocation
+uses an empty temporary working directory, `--sandbox read-only`,
+`--ephemeral`, `--ignore-user-config`, stdin prompt delivery, JSONL events, and
+a strict `--output-schema`. The adapter performs no automatic retries and
+fails closed if the judge uses shell, file-change, MCP, or web-search tools.
+It records the requested model, Codex CLI version, reasoning effort, complete
+event trace, and token usage. The documented Codex JSONL stream does not expose
+a resolved provider model version, so reports preserve
+`provider_reported_model: null` instead of presenting the requested model as a
+provider-observed identity. ChatGPT subscription runs do not expose per-call
+USD cost; metrics therefore record the billing mode and leave
+`provider_cost_usd` null. These limitations must be disclosed with any
+calibration result. Review OpenAI's official
+[non-interactive mode](https://learn.chatgpt.com/docs/non-interactive-mode)
+and [Codex authentication](https://learn.chatgpt.com/docs/authentication)
+documentation before running a pilot.
 
 ## 4. Score deterministically
 

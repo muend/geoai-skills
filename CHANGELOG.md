@@ -42,6 +42,10 @@ required before the first stable release.
   exact provider model-version capture, explicit external-data acknowledgement,
   bounded request/RPM controls, no automatic retries, ignored local traces, and
   resumable criterion-preserving checkpoints shared with the Claude judge.
+- OpenAI Codex CLI judge adapter with read-only ephemeral isolation, stdin-only
+  private prompts, strict structured output, tool-use rejection, bounded
+  non-retrying invocations, resumable traces, and explicit disclosure that
+  subscription cost and resolved provider model version are not observable.
 - Provider-neutral atomic-clause judging: exact registered criteria can be
   flattened into material clauses, model evidence is collected per atom, and
   parent `all`/`any` decisions are derived deterministically. Unregistered
