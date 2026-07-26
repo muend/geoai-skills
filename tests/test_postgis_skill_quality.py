@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parent.parent
 SKILL = ROOT / "skills" / "postgis-spatial-sql" / "SKILL.md"
 EVALS = ROOT / "skills" / "postgis-spatial-sql" / "evals" / "evals.json"

@@ -6,7 +6,6 @@ from pathlib import Path
 
 import numpy as np
 
-
 ROOT = Path(__file__).resolve().parent.parent
 SKILLS = ROOT / "skills"
 CRITICAL_CASES = {

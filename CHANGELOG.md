@@ -46,6 +46,16 @@ required before the first stable release.
   GitHub Actions CI, plugin marketplace manifest.
 
 ### Fixed
+- Model-assisted behavior judging now evaluates registered material clauses
+  independently and derives each parent criterion with a declared deterministic
+  `all`/`any` operator. Exact criterion text remains immutable, unregistered
+  criteria remain backwards-compatible single clauses, and the new prompt
+  namespace cannot resume earlier optimistic judgments.
+- Model-assisted behavior judging now treats explicit quantities, units,
+  multipliers, thresholds, CRS identifiers, paths, named methods, and ordering
+  constraints as exact conjunctive requirements. Conflicting artifact evidence
+  cannot be excused as a reasonable alternative, and prompt-version
+  namespacing preserves all earlier judge traces.
 - Claude Code fixture execution now pre-approves only the declared tool profile
   and stages temporary workspaces below ignored `evals/runs/`, avoiding Windows
   short-`TEMP` path permission mismatches while preserving enabled/disabled

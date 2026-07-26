@@ -95,6 +95,37 @@ python tools/eval_runner.py ingest \
 
 Ingestion requires exactly one valid response for every manifest case. It rejects missing, extra, duplicate, mismatched-runtime, and unknown-skill rows. The normalized batch is stored at `raw/responses.jsonl`; every case is also cached by its content hash under `cache/`.
 
+### Compose explicit retries before ingestion
+
+When an execution used a broader manifest than the scoring run, or selected
+cases were rerun, compose a canonical response batch before ingestion. The
+primary run must cover every target case. Each replacement run is explicit,
+must contain only target-scope cases, and may not overlap another replacement:
+
+```bash
+python tools/eval_runner.py compose \
+  --run-dir evals/runs/<behavior-target-run> \
+  --primary-run evals/runs/<primary-run> \
+  --replacement-run evals/runs/<retry-run> \
+  --replacement-case-id <case-id>
+
+python tools/eval_runner.py ingest \
+  --run-dir evals/runs/<behavior-target-run> \
+  --input evals/runs/<behavior-target-run>/adapter/composed.responses.jsonl
+```
+
+Omit `--replacement-case-id` only when every row in every replacement run is
+intended for the target scope. Repeat it to select multiple cases from
+mixed-scope retry batches; unselected rows are recorded as ignored rather than
+silently substituted.
+
+Composition validates runtime, model, condition, response schema, and each
+selected case's content hash. It writes `adapter/composed.responses.jsonl` in target
+manifest order and `adapter/composed.provenance.json` with source-file and
+selected-response SHA-256 hashes. Both files remain in the ignored local run
+directory. Never copy a retry row manually or silently replace failed
+evidence; the provenance record is part of the audit trail.
+
 ### Reproducible Claude Code adapter
 
 The optional `tools/adapters/claude_code.py` adapter uses Claude Code print mode and its documented JSON output. It is resumable, captures actual `Skill` tool-use events for routing, hashes raw traces, and requires both per-case and total cost caps. See Anthropic's official [CLI reference](https://docs.anthropic.com/en/docs/claude-code/cli-usage) and [authentication options](https://docs.anthropic.com/en/docs/claude-code/getting-started).
@@ -196,7 +227,25 @@ python tools/adapters/claude_code.py judge \
   --max-total-cost-usd <approved-judge-cap>
 ```
 
-The judge receives rubric text and the immutable interaction contract only after execution. Its structured output contains decisions and evidence by array position; the adapter restores exact manifest criterion text, so the model cannot rewrite the scoring standard. Claude and Gemini resumable judge state is namespaced by provider, exact judge model, and prompt version, preventing a changed judge contract from silently resuming old partial decisions. Model judgments remain reviewable evidence, not ground truth. Prefer a judge from a different model family than the executor. Label same-family results preliminary, never use them as headline evidence, and disclose judge provider, model, family, prompt/schema version, retries, and missing/error cases. Manually review every critical case, every execution error, and a stratified sample of at least 20% of the remainder before publishing metrics.
+The judge receives rubric text and the immutable interaction contract only after
+execution. `evals/judge-clauses.json` can decompose an exact manifest criterion
+into ordered material clauses and declare whether the parent uses `all` or
+`any`. The model returns evidence and a Boolean for every flattened atomic
+clause; it never returns the parent decision. The adapter restores the exact
+manifest criterion and computes the parent deterministically. Criteria absent
+from the registry remain one atomic clause, so coverage can be expanded without
+changing execution manifests or response hashes. This prevents a judge from
+passing a conjunctive criterion after noticing only some of its requirements.
+
+Claude and Gemini resumable judge state is namespaced by provider, exact judge
+model, and prompt version, preventing a changed judge contract from silently
+resuming old partial decisions. Model judgments remain reviewable evidence, not
+ground truth. Prefer a judge from a different model family than the executor.
+Label same-family results preliminary, never use them as headline evidence, and
+disclose judge provider, model, family, prompt/schema version, retries, and
+missing/error cases. Manually review every critical case, every execution
+error, and a stratified sample of at least 20% of the remainder before
+publishing metrics.
 
 For an independent-family judgment through the Google Gemini REST API, set the
 key in `GEMINI_API_KEY` and run a bounded pilot first:

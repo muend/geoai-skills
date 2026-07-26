@@ -7,7 +7,6 @@ import geopandas as gpd
 import pytest
 from shapely.geometry import Point
 
-
 SCRIPT = (
     Path(__file__).parents[1]
     / "skills"

@@ -8,6 +8,7 @@ import pytest
 from tools.eval_runner import (
     RUN_SCHEMA_PATH,
     EvalRunnerError,
+    compose_responses,
     contract_validator,
     ingest_responses,
     load_suite,
@@ -19,6 +20,7 @@ from tools.eval_runner import (
 
 
 def write_jsonl(path: Path, rows: list[dict]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         "".join(json.dumps(row, sort_keys=True) + "\n" for row in rows),
         encoding="utf-8",
@@ -244,6 +246,181 @@ def test_ingest_requires_exact_coverage_and_caches_each_case(tmp_path: Path) -> 
         manifest["cases"]
     )
     assert len(list((run_dir / "cache").glob("*.json"))) == len(manifest["cases"])
+
+
+def test_compose_filters_primary_and_substitutes_explicit_retry(
+    tmp_path: Path,
+) -> None:
+    runs_dir = tmp_path / "runs"
+    primary_run = prepare_run(
+        runtime="test-runtime",
+        model="test-model-v1",
+        condition="skills-enabled",
+        runs_dir=runs_dir,
+        run_id="primary",
+    )
+    replacement_run = prepare_run(
+        runtime="test-runtime",
+        model="test-model-v1",
+        condition="skills-enabled",
+        runs_dir=runs_dir,
+        run_id="replacement",
+    )
+    target_run = prepare_run(
+        runtime="test-runtime",
+        model="test-model-v1",
+        condition="skills-enabled",
+        evaluation_scope="behavior",
+        runs_dir=runs_dir,
+        run_id="target",
+    )
+    primary_manifest = json.loads(
+        (primary_run / "manifest.json").read_text(encoding="utf-8")
+    )
+    target_manifest = json.loads(
+        (target_run / "manifest.json").read_text(encoding="utf-8")
+    )
+    primary_rows = perfect_responses(primary_manifest)
+    replacement_id = target_manifest["cases"][0]["case_id"]
+    replacement_row = next(
+        row for row in perfect_responses(primary_manifest)
+        if row["case_id"] == replacement_id
+    )
+    replacement_row["response"] = "Explicit retry response."
+    response_relative_path = Path("adapter/claude-code.responses.jsonl")
+    write_jsonl(primary_run / response_relative_path, primary_rows)
+    write_jsonl(replacement_run / response_relative_path, [replacement_row])
+
+    output_path = compose_responses(
+        run_dir=target_run,
+        primary_run=primary_run,
+        replacement_runs=[replacement_run],
+    )
+    composed = [
+        json.loads(line)
+        for line in output_path.read_text(encoding="utf-8").splitlines()
+    ]
+    provenance = json.loads(
+        (target_run / "adapter/composed.provenance.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    assert [row["case_id"] for row in composed] == [
+        case["case_id"] for case in target_manifest["cases"]
+    ]
+    assert next(
+        row for row in composed if row["case_id"] == replacement_id
+    )["response"] == "Explicit retry response."
+    assert provenance["response_count"] == len(target_manifest["cases"])
+    assert provenance["sources"][1]["selected_case_ids"] == [replacement_id]
+
+
+def test_compose_rejects_stale_case_hash(tmp_path: Path) -> None:
+    runs_dir = tmp_path / "runs"
+    primary_run = prepare_run(
+        runtime="test-runtime",
+        model="test-model-v1",
+        condition="skills-enabled",
+        runs_dir=runs_dir,
+        run_id="primary",
+    )
+    target_run = prepare_run(
+        runtime="test-runtime",
+        model="test-model-v1",
+        condition="skills-enabled",
+        evaluation_scope="behavior",
+        runs_dir=runs_dir,
+        run_id="target",
+    )
+    primary_manifest = json.loads(
+        (primary_run / "manifest.json").read_text(encoding="utf-8")
+    )
+    write_jsonl(
+        primary_run / "adapter/claude-code.responses.jsonl",
+        perfect_responses(primary_manifest),
+    )
+    target_manifest_path = target_run / "manifest.json"
+    target_manifest = json.loads(target_manifest_path.read_text(encoding="utf-8"))
+    target_manifest["cases"][0]["case_sha256"] = "0" * 64
+    target_manifest_path.write_text(json.dumps(target_manifest), encoding="utf-8")
+
+    with pytest.raises(EvalRunnerError, match="case hash does not match"):
+        compose_responses(run_dir=target_run, primary_run=primary_run)
+
+
+def test_compose_rejects_replacement_outside_target_scope(tmp_path: Path) -> None:
+    runs_dir = tmp_path / "runs"
+    primary_run = prepare_run(
+        runtime="test-runtime",
+        model="test-model-v1",
+        condition="skills-enabled",
+        runs_dir=runs_dir,
+        run_id="primary",
+    )
+    replacement_run = prepare_run(
+        runtime="test-runtime",
+        model="test-model-v1",
+        condition="skills-enabled",
+        runs_dir=runs_dir,
+        run_id="replacement",
+    )
+    target_run = prepare_run(
+        runtime="test-runtime",
+        model="test-model-v1",
+        condition="skills-enabled",
+        evaluation_scope="behavior",
+        runs_dir=runs_dir,
+        run_id="target",
+    )
+    primary_manifest = json.loads(
+        (primary_run / "manifest.json").read_text(encoding="utf-8")
+    )
+    target_manifest = json.loads(
+        (target_run / "manifest.json").read_text(encoding="utf-8")
+    )
+    target_ids = {case["case_id"] for case in target_manifest["cases"]}
+    outside_row = next(
+        row for row in perfect_responses(primary_manifest)
+        if row["case_id"] not in target_ids
+    )
+    inside_row = next(
+        row for row in perfect_responses(primary_manifest)
+        if row["case_id"] in target_ids
+    )
+    inside_row["response"] = "Selected mixed-scope retry."
+    write_jsonl(
+        primary_run / "adapter/claude-code.responses.jsonl",
+        perfect_responses(primary_manifest),
+    )
+    write_jsonl(
+        replacement_run / "adapter/claude-code.responses.jsonl",
+        [outside_row, inside_row],
+    )
+
+    with pytest.raises(EvalRunnerError, match="outside target scope"):
+        compose_responses(
+            run_dir=target_run,
+            primary_run=primary_run,
+            replacement_runs=[replacement_run],
+        )
+
+    output_path = compose_responses(
+        run_dir=target_run,
+        primary_run=primary_run,
+        replacement_runs=[replacement_run],
+        replacement_case_ids=[inside_row["case_id"]],
+    )
+    provenance = json.loads(
+        (target_run / "adapter/composed.provenance.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    assert "Selected mixed-scope retry." in output_path.read_text(encoding="utf-8")
+    assert provenance["sources"][1]["ignored_case_ids"] == [
+        outside_row["case_id"]
+    ]
 
 
 def test_score_emits_perfect_machine_readable_metrics(tmp_path: Path) -> None:
