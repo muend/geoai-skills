@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare, ingest, and score reproducible GeoAI Skills evaluation runs."""
+"""Prepare, compose, ingest, and score reproducible GeoAI Skills evaluation runs."""
 
 from __future__ import annotations
 
@@ -8,8 +8,9 @@ import hashlib
 import json
 import re
 import sys
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 from jsonschema import Draft202012Validator
 
@@ -68,10 +69,21 @@ def normalize_fixture(
     if not source.is_file():
         raise EvalRunnerError(f"Missing fixture file: {source}")
     content = source.read_bytes()
+    digest = sha256_bytes(content)
+    declared = raw_fixture.get("sha256")
+    if declared is not None and declared != digest:
+        # The derived hash alone only detects drift within one process. A
+        # declared hash makes the fixture's content reviewable in the diff: a
+        # pull request that changes fixture bytes must also change this line,
+        # so the swap cannot pass as an unrelated edit.
+        raise EvalRunnerError(
+            f"Fixture content does not match the declared sha256 for "
+            f"{raw_fixture['source']}: declared {declared}, actual {digest}"
+        )
     return {
         "source_path": repository_relative(source, repository_root=repository_root),
         "workspace_path": raw_fixture["workspace_path"],
-        "sha256": sha256_bytes(content),
+        "sha256": digest,
         "size_bytes": len(content),
     }
 
@@ -378,7 +390,7 @@ def validate_response_context(
     responses: dict[str, dict[str, Any]],
 ) -> None:
     """Ensure cached responses still belong to the declared run and suite."""
-    known_skills = {case["skill"] for case in cases}
+    known_skills = set(manifest["available_skills"])
     for case in cases:
         row = responses[case["case_id"]]
         for field in ("runtime", "model", "condition"):
@@ -392,6 +404,216 @@ def validate_response_context(
             raise EvalRunnerError(
                 f"{case['case_id']}: unknown activated skills: {', '.join(unknown)}"
             )
+
+
+def resolve_run_response_path(run_dir: Path, relative_path: Path) -> Path:
+    """Resolve a response file below a run directory without allowing traversal."""
+    if relative_path.is_absolute():
+        raise EvalRunnerError("response-relative-path must be relative")
+    resolved_run = run_dir.resolve()
+    resolved_path = (resolved_run / relative_path).resolve()
+    try:
+        resolved_path.relative_to(resolved_run)
+    except ValueError as exc:
+        raise EvalRunnerError(
+            f"Response path escapes source run directory: {relative_path}"
+        ) from exc
+    return resolved_path
+
+
+def index_source_responses(
+    *,
+    source_run: Path,
+    response_relative_path: Path,
+    run_schema: dict[str, Any],
+) -> tuple[dict[str, Any], Path, dict[str, dict[str, Any]]]:
+    """Load and validate a possibly partial adapter response batch."""
+    manifest = load_manifest(source_run, run_schema)
+    response_path = resolve_run_response_path(source_run, response_relative_path)
+    rows = load_jsonl(response_path)
+    response_validator = contract_validator(run_schema, "response")
+    for index, row in enumerate(rows, start=1):
+        validate_instance(
+            response_validator,
+            row,
+            label=f"{source_run.name} response[{index}]",
+        )
+
+    indexed: dict[str, dict[str, Any]] = {}
+    duplicates: set[str] = set()
+    for row in rows:
+        case_id = row["case_id"]
+        if case_id in indexed:
+            duplicates.add(case_id)
+        else:
+            indexed[case_id] = row
+    if duplicates:
+        raise EvalRunnerError(
+            f"{source_run.name} contains duplicate case ids: "
+            f"{', '.join(sorted(duplicates))}"
+        )
+
+    source_cases = {case["case_id"]: case for case in manifest["cases"]}
+    unexpected = sorted(set(indexed) - set(source_cases))
+    if unexpected:
+        raise EvalRunnerError(
+            f"{source_run.name} contains responses outside its manifest: "
+            f"{', '.join(unexpected)}"
+        )
+    selected_cases = [source_cases[case_id] for case_id in indexed]
+    validate_response_context(
+        manifest=manifest,
+        cases=selected_cases,
+        responses=indexed,
+    )
+    return manifest, response_path, indexed
+
+
+def compose_responses(
+    *,
+    run_dir: Path,
+    primary_run: Path,
+    replacement_runs: list[Path] | None = None,
+    replacement_case_ids: list[str] | None = None,
+    response_relative_path: Path = Path("adapter/claude-code.responses.jsonl"),
+    force: bool = False,
+    run_schema_path: Path = RUN_SCHEMA_PATH,
+) -> Path:
+    """Compose a complete response batch from a primary run and explicit retries."""
+    run_schema = load_json(run_schema_path)
+    target_manifest = load_manifest(run_dir, run_schema)
+    target_cases = {
+        case["case_id"]: case for case in target_manifest["cases"]
+    }
+    target_ids = [case["case_id"] for case in target_manifest["cases"]]
+
+    sources = [("primary", primary_run)]
+    sources.extend(
+        ("replacement", replacement_run)
+        for replacement_run in (replacement_runs or [])
+    )
+    requested_replacements: set[str] | None = None
+    if replacement_case_ids is not None:
+        requested_replacements = set(replacement_case_ids)
+        if len(requested_replacements) != len(replacement_case_ids):
+            raise EvalRunnerError("replacement-case-id values must be unique")
+    composed: dict[str, dict[str, Any]] = {}
+    replacement_ids: set[str] = set()
+    provenance_sources: list[dict[str, Any]] = []
+
+    for role, source_run in sources:
+        source_manifest, response_path, indexed = index_source_responses(
+            source_run=source_run,
+            response_relative_path=response_relative_path,
+            run_schema=run_schema,
+        )
+        for field in ("runtime", "model", "condition"):
+            if source_manifest[field] != target_manifest[field]:
+                raise EvalRunnerError(
+                    f"{source_run.name}: source {field} "
+                    f"'{source_manifest[field]}' does not match target "
+                    f"'{target_manifest[field]}'"
+                )
+
+        source_cases = {
+            case["case_id"]: case for case in source_manifest["cases"]
+        }
+        if role == "primary":
+            selected_ids = [
+                case_id for case_id in target_ids if case_id in indexed
+            ]
+        elif requested_replacements is None:
+            selected_ids = list(indexed)
+        else:
+            selected_ids = [
+                case_id
+                for case_id in target_ids
+                if case_id in indexed and case_id in requested_replacements
+            ]
+        if role == "primary":
+            missing_primary = sorted(set(target_ids) - set(selected_ids))
+            if missing_primary:
+                raise EvalRunnerError(
+                    f"{source_run.name}: primary responses do not cover target cases: "
+                    f"{', '.join(missing_primary)}"
+                )
+        outside_target = sorted(set(selected_ids) - set(target_cases))
+        if outside_target:
+            raise EvalRunnerError(
+                f"{source_run.name}: replacement responses outside target scope: "
+                f"{', '.join(outside_target)}"
+            )
+        if role == "replacement":
+            overlap = sorted(replacement_ids & set(selected_ids))
+            if overlap:
+                raise EvalRunnerError(
+                    "Replacement runs overlap for case ids: "
+                    f"{', '.join(overlap)}"
+                )
+            replacement_ids.update(selected_ids)
+
+        for case_id in selected_ids:
+            source_case = source_cases[case_id]
+            target_case = target_cases[case_id]
+            if source_case["case_sha256"] != target_case["case_sha256"]:
+                raise EvalRunnerError(
+                    f"{case_id}: source case hash does not match target manifest"
+                )
+            composed[case_id] = indexed[case_id]
+
+        provenance_sources.append(
+            {
+                "role": role,
+                "run": source_run.resolve().as_posix(),
+                "response_path": response_relative_path.as_posix(),
+                "response_file_sha256": sha256_bytes(response_path.read_bytes()),
+                "selected_case_ids": selected_ids,
+                "ignored_case_ids": sorted(set(indexed) - set(selected_ids)),
+                "selected_response_sha256": {
+                    case_id: sha256_json(indexed[case_id])
+                    for case_id in selected_ids
+                },
+            }
+        )
+
+    if requested_replacements is not None:
+        missing_replacements = sorted(requested_replacements - replacement_ids)
+        if missing_replacements:
+            raise EvalRunnerError(
+                "Requested replacement case ids were not found exactly once: "
+                f"{', '.join(missing_replacements)}"
+            )
+    missing = sorted(set(target_ids) - set(composed))
+    if missing:
+        raise EvalRunnerError(
+            f"Primary and replacement runs do not cover target cases: "
+            f"{', '.join(missing)}"
+        )
+
+    ordered = [composed[case_id] for case_id in target_ids]
+    validate_response_context(
+        manifest=target_manifest,
+        cases=target_manifest["cases"],
+        responses=composed,
+    )
+    output_path = run_dir / "adapter" / "composed.responses.jsonl"
+    output_text = jsonl_text(ordered)
+    write_immutable(output_path, output_text, force=force)
+    provenance = {
+        "schema_version": 1,
+        "target_run": run_dir.resolve().as_posix(),
+        "target_suite_sha256": target_manifest["suite_sha256"],
+        "output_path": output_path.resolve().as_posix(),
+        "output_sha256": sha256_bytes(output_text.encode("utf-8")),
+        "response_count": len(ordered),
+        "sources": provenance_sources,
+    }
+    write_immutable(
+        run_dir / "adapter" / "composed.provenance.json",
+        pretty_json(provenance),
+        force=force,
+    )
+    return output_path
 
 
 def ingest_responses(
@@ -558,7 +780,7 @@ def score_run(
             interaction_metrics[interaction_mode]["passed_cases"] += int(
                 bool(behavior_pass)
             )
-        if case["critical"] and behavior_evaluated:
+        if case["critical"] and judgment is not None and behavior_evaluated:
             critical_evaluated += 1
             critical_failures += int(judgment["critical_failure"] or response_error)
 
@@ -655,7 +877,10 @@ def score_run(
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Prepare, ingest, and score deterministic GeoAI Skills evaluations."
+        description=(
+            "Prepare, compose, ingest, and score deterministic "
+            "GeoAI Skills evaluations."
+        )
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -675,6 +900,40 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("routing", "behavior", "all"),
         default="all",
         help="Select all routing cases, only behavior-evaluable cases, or the combined suite",
+    )
+
+    compose = subparsers.add_parser(
+        "compose",
+        help="Build a complete batch from a primary run and explicit retries",
+    )
+    compose.add_argument("--run-dir", type=Path, required=True)
+    compose.add_argument("--primary-run", type=Path, required=True)
+    compose.add_argument(
+        "--replacement-run",
+        type=Path,
+        action="append",
+        default=[],
+        dest="replacement_runs",
+        help="Run whose response rows explicitly replace primary rows; repeat as needed",
+    )
+    compose.add_argument(
+        "--replacement-case-id",
+        action="append",
+        default=None,
+        dest="replacement_case_ids",
+        help=(
+            "Select a case from the replacement runs; repeat for mixed-scope "
+            "retry batches. Without this option every replacement row is selected."
+        ),
+    )
+    compose.add_argument(
+        "--response-relative-path",
+        type=Path,
+        default=Path("adapter/claude-code.responses.jsonl"),
+        help="Response JSONL path relative to every source run",
+    )
+    compose.add_argument(
+        "--force", action="store_true", help="Replace different composed content"
     )
 
     ingest = subparsers.add_parser(
@@ -713,6 +972,15 @@ def main(argv: list[str] | None = None) -> int:
                 evaluation_scope=args.evaluation_scope,
                 runs_dir=args.runs_dir,
                 run_id=args.run_id,
+            )
+        elif args.command == "compose":
+            output = compose_responses(
+                run_dir=args.run_dir,
+                primary_run=args.primary_run,
+                replacement_runs=args.replacement_runs,
+                replacement_case_ids=args.replacement_case_ids,
+                response_relative_path=args.response_relative_path,
+                force=args.force,
             )
         elif args.command == "ingest":
             output = ingest_responses(

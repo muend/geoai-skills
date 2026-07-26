@@ -13,14 +13,21 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from tools.adapters.judge_contract import (  # noqa: E402
+    PROMPT_VERSION,
+    judgment_prompt,
+    judgment_schema,
+    restore_judgment,
+)
 from tools.eval_runner import (  # noqa: E402
     EvalRunnerError,
     canonical_json,
@@ -31,16 +38,15 @@ from tools.eval_runner import (  # noqa: E402
     pretty_json,
     validate_instance,
 )
-from tools.adapters.judge_contract import (  # noqa: E402
-    PROMPT_VERSION,
-    judgment_prompt,
-    judgment_schema,
-    restore_judgment,
-)
 
 RUN_SCHEMA_PATH = ROOT / "evals" / "run-schema.json"
 ADAPTER_VERSION = "3"
 MAX_ARTIFACT_PREVIEW_CHARS = 20_000
+# The model can write an artifact of any size. Beyond this the file is hashed
+# and recorded but never loaded, so a runaway write costs disk rather than the
+# adapter process.
+MAX_ARTIFACT_BYTES = 64 * 1024 * 1024
+MAX_UTF8_BYTES_PER_CHAR = 4
 SEMANTIC_VERSION_PATTERN = re.compile(r"(\d+\.\d+\.\d+)")
 
 
@@ -128,9 +134,11 @@ def parse_usage(result: dict[str, Any]) -> dict[str, int]:
         for entry in model_usage.values():
             if not isinstance(entry, dict):
                 continue
-            input_tokens += int(entry.get("inputTokens", entry.get("input_tokens", 0)))
+            input_tokens += int(
+                entry.get("inputTokens", entry.get("input_tokens", 0)) or 0
+            )
             output_tokens += int(
-                entry.get("outputTokens", entry.get("output_tokens", 0))
+                entry.get("outputTokens", entry.get("output_tokens", 0)) or 0
             )
         return {"input_tokens": input_tokens, "output_tokens": output_tokens}
     return {"input_tokens": 0, "output_tokens": 0}
@@ -249,7 +257,7 @@ def expand_long_path(path: Path) -> Path:
     import ctypes
     from ctypes import wintypes
 
-    get_long_path_name = ctypes.windll.kernel32.GetLongPathNameW
+    get_long_path_name = ctypes.windll.kernel32.GetLongPathNameW  # type: ignore[attr-defined]  # Windows-only branch
     get_long_path_name.argtypes = [wintypes.LPCWSTR, wintypes.LPWSTR, wintypes.DWORD]
     get_long_path_name.restype = wintypes.DWORD
 
@@ -348,25 +356,54 @@ def is_text_media_type(media_type: str) -> bool:
     }
 
 
+def hash_file(path: Path, *, chunk_bytes: int = 1024 * 1024) -> str:
+    """Hash a file without holding it in memory."""
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(chunk_bytes), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def capture_artifacts(case: dict[str, Any], workspace: Path) -> list[dict[str, Any]]:
+    """Record the artifacts a case declared, without trusting their size.
+
+    The model holds `Write` under the workspace-write profile, so the size of a
+    declared artifact is model-controlled. Reading it whole and then decoding
+    the whole thing to `str` meant an oversized or runaway write could exhaust
+    memory before any preview was truncated. Everything here is now bounded:
+    the hash streams, and only the preview window is ever read into a string.
+    """
     artifacts = []
     for expected in case.get("expected_artifacts", []):
         path = safe_workspace_path(workspace, expected["path"])
         if not path.is_file():
             continue
-        content = path.read_bytes()
+        size_bytes = path.stat().st_size
         media_type = expected.get("media_type") or mimetypes.guess_type(path.name)[0]
         media_type = media_type or "application/octet-stream"
-        artifact = {
+        artifact: dict[str, Any] = {
             "path": expected["path"],
             "media_type": media_type,
-            "size_bytes": len(content),
-            "sha256": hashlib.sha256(content).hexdigest(),
+            "size_bytes": size_bytes,
+            "sha256": hash_file(path),
         }
+        if size_bytes > MAX_ARTIFACT_BYTES:
+            # Recorded, not silently dropped: an oversized artifact is evidence
+            # about the run, and a missing row would look like a missing file.
+            artifact["oversized"] = True
+            artifact["size_limit_bytes"] = MAX_ARTIFACT_BYTES
+            artifacts.append(artifact)
+            continue
         if is_text_media_type(media_type):
-            text = content.decode("utf-8", errors="replace")
+            window = MAX_ARTIFACT_PREVIEW_CHARS * MAX_UTF8_BYTES_PER_CHAR
+            with path.open("rb") as handle:
+                head = handle.read(window + 1)
+            text = head.decode("utf-8", errors="replace")
             artifact["text_preview"] = text[:MAX_ARTIFACT_PREVIEW_CHARS]
-            artifact["preview_truncated"] = len(text) > MAX_ARTIFACT_PREVIEW_CHARS
+            artifact["preview_truncated"] = (
+                len(text) > MAX_ARTIFACT_PREVIEW_CHARS or len(head) > window
+            )
         artifacts.append(artifact)
     return artifacts
 
@@ -494,7 +531,7 @@ def judge_command(
 def auth_available(claude_command: str) -> bool:
     if os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN"):
         return True
-    process = subprocess.run(
+    process = subprocess.run(  # noqa: S603 - argument list, shell=False, no user string
         [claude_command, "auth", "status"],
         text=True,
         capture_output=True,
@@ -517,7 +554,7 @@ def detect_cli_version(claude_command: str) -> str:
     version named when the run directory was prepared. That corruption is
     unrecoverable after the fact: the rows look identical to genuine ones.
     """
-    process = subprocess.run(
+    process = subprocess.run(  # noqa: S603 - argument list, shell=False, no user string
         [claude_command, "--version"],
         text=True,
         capture_output=True,
@@ -566,7 +603,7 @@ def run_process(
     environment = os.environ.copy()
     environment["NO_COLOR"] = "1"
     try:
-        return subprocess.run(
+        return subprocess.run(  # noqa: S603 - argv built by execution_command, shell=False
             command,
             input=prompt,
             text=True,
