@@ -10,9 +10,12 @@ from tools.eval_runner import (
     EvalRunnerError,
     contract_validator,
     ingest_responses,
+    load_json,
+    load_jsonl,
     load_suite,
     prepare_run,
     score_run,
+    sha256_json,
     validate_instance,
     zero_failure_upper_bound_95,
 )
@@ -437,6 +440,47 @@ def test_score_emits_perfect_machine_readable_metrics(tmp_path: Path) -> None:
         legacy_metrics,
         label="legacy metrics",
     )
+
+
+def test_bom_and_plain_inputs_produce_identical_score_outputs(tmp_path: Path) -> None:
+    plain_run, plain_manifest = prepared_run(tmp_path / "plain")
+    bom_run, bom_manifest = prepared_run(tmp_path / "bom")
+    assert bom_manifest["suite_sha256"] == plain_manifest["suite_sha256"]
+
+    responses_text = "".join(
+        json.dumps(row, sort_keys=True) + "\n"
+        for row in perfect_responses(plain_manifest)
+    )
+    plain_responses = tmp_path / "plain-responses.jsonl"
+    bom_responses = tmp_path / "bom-responses.jsonl"
+    plain_responses.write_text(responses_text, encoding="utf-8")
+    bom_responses.write_text(responses_text, encoding="utf-8-sig")
+    assert load_jsonl(bom_responses) == load_jsonl(plain_responses)
+    ingest_responses(run_dir=plain_run, input_path=plain_responses)
+    ingest_responses(run_dir=bom_run, input_path=bom_responses)
+
+    judgments_text = json.dumps(perfect_judgments(plain_manifest), sort_keys=True)
+    plain_judgments = tmp_path / "plain-judgments.json"
+    bom_judgments = tmp_path / "bom-judgments.json"
+    plain_judgments.write_text(judgments_text, encoding="utf-8")
+    bom_judgments.write_text(judgments_text, encoding="utf-8-sig")
+    assert load_json(bom_judgments) == load_json(plain_judgments)
+    assert sha256_json(load_json(bom_judgments)) == sha256_json(
+        load_json(plain_judgments)
+    )
+
+    plain_metrics = score_run(
+        run_dir=plain_run,
+        judgments_path=plain_judgments,
+    )
+    bom_metrics = score_run(
+        run_dir=bom_run,
+        judgments_path=bom_judgments,
+    )
+    assert bom_metrics.read_bytes() == plain_metrics.read_bytes()
+    assert (bom_run / "results" / "cases.jsonl").read_bytes() == (
+        plain_run / "results" / "cases.jsonl"
+    ).read_bytes()
 
 
 def test_score_rejects_judgment_criterion_drift(tmp_path: Path) -> None:

@@ -215,7 +215,7 @@ def check_benchmark_currency() -> list[str]:
 
     for metrics_path in sorted(BENCHMARKS_DIR.glob("*/metrics.json")):
         directory = metrics_path.parent
-        metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+        metrics = json.loads(metrics_path.read_text(encoding="utf-8-sig"))
         published = metrics.get("suite_sha256")
         expected = expected_population_sha256(metrics, current_suite_sha256)
         is_current = published == expected
@@ -352,7 +352,7 @@ def check_holdout_containment() -> list[str]:
             "`python tools/build_split.py --write`."
         ]
 
-    committed = json.loads(SPLIT_PATH.read_text(encoding="utf-8"))
+    committed = json.loads(SPLIT_PATH.read_text(encoding="utf-8-sig"))
 
     try:
         expected = build(load_cases(), *load_inputs())
@@ -382,7 +382,7 @@ def check_holdout_containment() -> list[str]:
     for metrics_path in sorted(BENCHMARKS_DIR.glob("*/metrics.json")):
         directory = metrics_path.parent
         name = directory.name
-        metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+        metrics = json.loads(metrics_path.read_text(encoding="utf-8-sig"))
         scope = metrics.get("scope")
         # Currency is judged against the population the run declares, matching
         # Gate B. Using the full-suite hash here would treat every narrow-scope
@@ -475,7 +475,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.write_baseline:
         existing = (
-            json.loads(BASELINE_PATH.read_text(encoding="utf-8"))
+            json.loads(BASELINE_PATH.read_text(encoding="utf-8-sig"))
             if BASELINE_PATH.exists()
             else {}
         )
@@ -498,7 +498,7 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 1
 
-    baseline = json.loads(BASELINE_PATH.read_text(encoding="utf-8"))
+    baseline = json.loads(BASELINE_PATH.read_text(encoding="utf-8-sig"))
 
     try:
         rubric_failures = check_rubric_not_weakened(baseline)
@@ -529,7 +529,7 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 1
 
-    split = json.loads(SPLIT_PATH.read_text(encoding="utf-8"))
+    split = json.loads(SPLIT_PATH.read_text(encoding="utf-8-sig"))
     print(
         f"\n{len(baseline['cases'])} pinned cases checked; no regression detected.\n"
         f"Split: dev {len(split['dev'])} / held-out {len(split['holdout'])}, "

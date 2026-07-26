@@ -90,7 +90,7 @@ def normalize_fixture(
 
 def load_json(path: Path) -> Any:
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
+        return json.loads(path.read_text(encoding="utf-8-sig"))
     except FileNotFoundError as exc:
         raise EvalRunnerError(f"Missing file: {path}") from exc
     except json.JSONDecodeError as exc:
@@ -99,7 +99,7 @@ def load_json(path: Path) -> Any:
 
 def load_jsonl(path: Path) -> list[Any]:
     try:
-        lines = path.read_text(encoding="utf-8").splitlines()
+        lines = path.read_text(encoding="utf-8-sig").splitlines()
     except FileNotFoundError as exc:
         raise EvalRunnerError(f"Missing file: {path}") from exc
 

@@ -86,7 +86,7 @@ def load_cases(root: Path = ROOT) -> dict[str, dict[str, Any]]:
     """Read the minimum each case needs to be stratified — not its criteria."""
     cases: dict[str, dict[str, Any]] = {}
     for path in sorted(root.glob("skills/*/evals/evals.json")):
-        data = json.loads(path.read_text(encoding="utf-8"))
+        data = json.loads(path.read_text(encoding="utf-8-sig"))
         for entry in data["evals"]:
             case_id = f"{data['skill']}/{entry['id']}"
             if case_id in cases:
@@ -102,7 +102,7 @@ def load_cases(root: Path = ROOT) -> dict[str, dict[str, Any]]:
 
 
 def load_inputs(path: Path = INPUTS_PATH) -> tuple[set[str], set[str]]:
-    data = json.loads(path.read_text(encoding="utf-8"))
+    data = json.loads(path.read_text(encoding="utf-8-sig"))
     analysed = set(data["analysed_before_split"])
     blind = set(data["written_blind"])
     overlap = analysed & blind
@@ -289,7 +289,7 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 1
 
-    committed = json.loads(SPLIT_PATH.read_text(encoding="utf-8"))
+    committed = json.loads(SPLIT_PATH.read_text(encoding="utf-8-sig"))
     if committed.get("assignment_sha256") != payload["assignment_sha256"]:
         covered = len(committed.get("dev", [])) + len(committed.get("holdout", []))
         print(

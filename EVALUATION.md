@@ -264,6 +264,10 @@ The command writes:
 
 Scoring contains no model call, timestamps, random sampling, or hidden heuristic. Given the same manifest, raw responses, and judgments, it emits byte-identical results. Different existing content is refused unless `--force` is explicitly supplied.
 
+JSON and JSONL inputs accept UTF-8 with or without a byte-order mark, including
+PowerShell-generated files on Windows. The mark is removed during decoding;
+canonical hashes and normalized result bytes therefore remain identical.
+
 Behavior metrics are also partitioned by interaction mode; do not hide a weak mode inside a pooled pass rate. The critical gate passes only when at least one critical case was evaluated and zero critical failures were observed. When the observed count is zero, `zero_failure_upper_bound_95` reports the exact one-sided 95% Clopper-Pearson upper bound, `1 - 0.05^(1/n)`. This bound must be disclosed with `n`; zero observed failures is not evidence that the true failure rate is zero. No `<2%` critical-failure claim is permitted unless this upper bound is below 0.02, which requires at least 149 independent critical cases with zero observed failures.
 
 To publish an enabled run and its disabled-skills control without exposing raw

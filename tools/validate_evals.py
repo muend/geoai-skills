@@ -29,9 +29,9 @@ def relative(path: Path) -> str:
 
 
 def main() -> int:
-    schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
+    schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8-sig"))
     Draft202012Validator.check_schema(schema)
-    run_schema = json.loads(RUN_SCHEMA_PATH.read_text(encoding="utf-8"))
+    run_schema = json.loads(RUN_SCHEMA_PATH.read_text(encoding="utf-8-sig"))
     Draft202012Validator.check_schema(run_schema)
     validator = Draft202012Validator(schema)
     errors: list[str] = []
@@ -49,7 +49,7 @@ def main() -> int:
             errors.append(f"{folder.name}: missing {relative(eval_path)}")
             continue
         try:
-            data = json.loads(eval_path.read_text(encoding="utf-8"))
+            data = json.loads(eval_path.read_text(encoding="utf-8-sig"))
         except json.JSONDecodeError as exc:
             errors.append(f"{relative(eval_path)}: invalid JSON: {exc}")
             continue
