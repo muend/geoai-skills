@@ -281,7 +281,10 @@ uses an empty temporary working directory, `--sandbox read-only`,
 a strict `--output-schema`. The adapter performs no automatic retries and
 fails closed if the judge uses shell, file-change, MCP, or web-search tools.
 It records the requested model, Codex CLI version, reasoning effort, complete
-event trace, and token usage. The documented Codex JSONL stream does not expose
+event trace, and token usage. Subprocess stdout and stderr are decoded
+explicitly as UTF-8 with replacement for malformed bytes, rather than inheriting
+the host Windows code page; absent streams fail closed and still produce an
+attempt trace. The documented Codex JSONL stream does not expose
 a resolved provider model version, so reports preserve
 `provider_reported_model: null` instead of presenting the requested model as a
 provider-observed identity. ChatGPT subscription runs do not expose per-call

@@ -60,6 +60,8 @@ USAGE_KEYS = (
     "output_tokens",
     "reasoning_output_tokens",
 )
+SUBPROCESS_ENCODING = "utf-8"
+SUBPROCESS_ERRORS = "replace"
 ProcessRunner = Callable[..., subprocess.CompletedProcess[str]]
 CommandFinder = Callable[[str], str | None]
 
@@ -277,6 +279,15 @@ def redact_secrets(text: str) -> str:
     return text
 
 
+def normalize_stream(value: str | bytes | None) -> str:
+    """Return stable UTF-8 text even when subprocess supplies bytes or no stream."""
+    if value is None:
+        return ""
+    if isinstance(value, bytes):
+        return value.decode(SUBPROCESS_ENCODING, errors=SUBPROCESS_ERRORS)
+    return value
+
+
 def write_attempt_trace(
     trace_dir: Path, case_sha256: str, envelope: dict[str, Any]
 ) -> tuple[Path, str]:
@@ -299,12 +310,17 @@ def detect_cli_version(
             [codex_command, "--version"],
             capture_output=True,
             text=True,
+            encoding=SUBPROCESS_ENCODING,
+            errors=SUBPROCESS_ERRORS,
             timeout=20,
             check=False,
         )
     except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
         raise CodexAdapterError(f"Cannot execute Codex CLI: {exc}") from exc
-    detail = f"{process.stdout}\n{process.stderr}".strip()
+    detail = (
+        f"{normalize_stream(process.stdout)}\n"
+        f"{normalize_stream(process.stderr)}"
+    ).strip()
     if process.returncode != 0:
         raise CodexAdapterError(f"`{codex_command} --version` failed: {detail[:500]}")
     match = CLI_VERSION_PATTERN.search(detail)
@@ -321,6 +337,8 @@ def auth_available(
             [codex_command, "login", "status"],
             capture_output=True,
             text=True,
+            encoding=SUBPROCESS_ENCODING,
+            errors=SUBPROCESS_ERRORS,
             timeout=20,
             check=False,
         )
@@ -366,13 +384,15 @@ def judge_one(
                 input=prompt,
                 capture_output=True,
                 text=True,
+                encoding=SUBPROCESS_ENCODING,
+                errors=SUBPROCESS_ERRORS,
                 timeout=timeout_seconds,
                 check=False,
             )
         except subprocess.TimeoutExpired as exc:
             latency_ms = round((time.monotonic() - started) * 1000)
-            raw_stdout = str(exc.stdout or "")
-            raw_stderr = str(exc.stderr or "")
+            raw_stdout = normalize_stream(exc.stdout)
+            raw_stderr = normalize_stream(exc.stderr)
             write_attempt_trace(
                 trace_dir,
                 case["case_sha256"],
@@ -394,8 +414,8 @@ def judge_one(
             raise CodexAdapterError(f"Cannot execute Codex CLI: {exc}") from exc
 
         latency_ms = round((time.monotonic() - started) * 1000)
-        raw_stdout = process.stdout
-        raw_stderr = process.stderr
+        raw_stdout = normalize_stream(process.stdout)
+        raw_stderr = normalize_stream(process.stderr)
         try:
             if process.returncode != 0:
                 raise CodexAdapterError(
