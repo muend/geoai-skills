@@ -55,6 +55,10 @@ required before the first stable release.
   GitHub Actions CI, plugin marketplace manifest.
 
 ### Fixed
+- Codex CLI judge subprocess capture now decodes stdout and stderr explicitly as
+  UTF-8 instead of inheriting the Windows locale code page, and normalizes
+  missing streams so capture failures produce an auditable failed trace rather
+  than an unexpected exception.
 - Claude Code fixture execution now pre-approves only the declared tool profile
   and stages temporary workspaces below ignored `evals/runs/`, avoiding Windows
   short-`TEMP` path permission mismatches while preserving enabled/disabled

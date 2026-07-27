@@ -15,6 +15,7 @@ from tools.adapters.codex_cli import (
     detect_cli_version,
     judge_namespace,
     judge_one,
+    normalize_stream,
     parse_jsonl_trace,
     resolve_codex_command,
     validate_args,
@@ -143,6 +144,11 @@ def test_parse_jsonl_trace_preserves_usage_and_thread() -> None:
     }
 
 
+def test_normalize_stream_decodes_utf8_and_handles_missing_streams() -> None:
+    assert normalize_stream("ölçüm …".encode()) == "ölçüm …"
+    assert normalize_stream(None) == ""
+
+
 @pytest.mark.parametrize(
     "event",
     [
@@ -172,6 +178,8 @@ def test_judge_one_restores_criteria_and_records_auditable_trace(
     def runner(command: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
         captured["command"] = command
         captured["input"] = kwargs["input"]
+        captured["encoding"] = kwargs["encoding"]
+        captured["errors"] = kwargs["errors"]
         output_path = Path(command[command.index("--output-last-message") + 1])
         output_path.write_text(
             json.dumps(structured_judgment()), encoding="utf-8"
@@ -203,6 +211,8 @@ def test_judge_one_restores_criteria_and_records_auditable_trace(
     assert judgment["_usage"]["output_tokens"] == 40
     assert '"interaction_mode": "deliver"' in captured["input"]
     assert sample_case()["prompt"] not in " ".join(captured["command"])
+    assert captured["encoding"] == "utf-8"
+    assert captured["errors"] == "replace"
     trace_files = list((tmp_path / "traces").glob("*/*.json"))
     assert len(trace_files) == 1
     trace = json.loads(trace_files[0].read_text(encoding="utf-8"))
@@ -261,11 +271,45 @@ def test_judge_one_records_failed_tool_using_attempt(tmp_path: Path) -> None:
     assert "prohibited tools" in trace["adapter_error"]
 
 
+def test_judge_one_records_missing_subprocess_streams_instead_of_crashing(
+    tmp_path: Path,
+) -> None:
+    def runner(command: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
+        return subprocess.CompletedProcess(
+            args=command,
+            returncode=0,
+            stdout=None,  # type: ignore[arg-type]
+            stderr=None,  # type: ignore[arg-type]
+        )
+
+    with pytest.raises(CodexAdapterError, match="empty JSONL stream"):
+        judge_one(
+            case=sample_case(),
+            response=sample_response(),
+            model="gpt-5.6-sol",
+            runtime_version="0.145.0",
+            reasoning_effort="low",
+            codex_command="codex",
+            timeout_seconds=30,
+            trace_dir=tmp_path / "traces",
+            runner=runner,
+        )
+
+    trace_files = list((tmp_path / "traces").glob("*/*.json"))
+    assert len(trace_files) == 1
+    trace = json.loads(trace_files[0].read_text(encoding="utf-8"))
+    assert trace["ok"] is False
+    assert trace["stdout"] == ""
+    assert trace["stderr"] == ""
+
+
 def test_cli_version_and_auth_checks_use_non_model_commands() -> None:
     calls: list[list[str]] = []
+    runner_options: list[dict[str, Any]] = []
 
     def runner(command: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
         calls.append(command)
+        runner_options.append(kwargs)
         output = (
             "codex-cli 0.145.0"
             if command[-1] == "--version"
@@ -278,6 +322,8 @@ def test_cli_version_and_auth_checks_use_non_model_commands() -> None:
     assert detect_cli_version("codex", runner=runner) == "0.145.0"
     assert auth_available("codex", runner=runner) is True
     assert calls == [["codex", "--version"], ["codex", "login", "status"]]
+    assert all(options["encoding"] == "utf-8" for options in runner_options)
+    assert all(options["errors"] == "replace" for options in runner_options)
 
 
 def test_validate_args_rejects_unsafe_model_and_invalid_caps() -> None:
