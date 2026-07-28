@@ -292,7 +292,7 @@ USD cost; metrics therefore record the billing mode and leave
 `provider_cost_usd` null. These limitations must be disclosed with any
 calibration result. Review OpenAI's official
 [non-interactive mode](https://learn.chatgpt.com/docs/non-interactive-mode)
-and [Codex authentication](https://learn.chatgpt.com/docs/authentication)
+and [Codex authentication](https://learn.chatgpt.com/docs/auth)
 documentation before running a pilot.
 
 ## 4. Score deterministically

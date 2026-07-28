@@ -59,6 +59,9 @@ required before the first stable release.
   GitHub Actions CI, plugin marketplace manifest.
 
 ### Fixed
+- Replaced four retired documentation URLs with their current official Codex,
+  JRC, r5py, and ASPRS LAS targets after the external-link monitor identified
+  persistent 404 responses.
 - Codex CLI judge subprocess capture now decodes stdout and stderr explicitly as
   UTF-8 instead of inheriting the Windows locale code page, and normalizes
   missing streams so capture failures produce an auditable failed trace rather
