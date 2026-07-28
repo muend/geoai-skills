@@ -7,7 +7,7 @@
 ## Canonical sources
 
 - [PDAL documentation](https://pdal.io/en/stable/) — point-cloud readers, filters, pipelines, and writers.
-- [ASPRS LAS specification resources](https://www.asprs.org/divisions-committees/lidar-division/laser-las-file-format-exchange-activities) — primary LAS format definitions.
+- [ASPRS LAS specification](https://lasformat.org/) — current published LAS format definition maintained by the ASPRS LAS Working Group.
 - [USGS LiDAR Base Specification](https://www.usgs.gov/ngp-standards-and-specifications/lidar-base-specification-online) — quality, classification, and deliverable requirements.
 
 Record acquisition type, LAS version and point format, CRS and vertical datum, units, density, class conventions, PDAL version, and every filter parameter.
