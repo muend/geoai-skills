@@ -97,6 +97,26 @@ npx skills add muend/geoai-skills --skill remote-sensing-analysis -a claude-code
 
 Run `npx skills add muend/geoai-skills` without additional flags for the interactive agent and skill picker.
 
+### OpenAI Codex / ChatGPT plugin
+
+The repository is a skills-only OpenAI plugin: `.codex-plugin/plugin.json`
+loads all 18 directories under `skills/` without adding an MCP server,
+authentication flow, or hosted data service.
+
+Build the deterministic upload archive:
+
+```bash
+python tools/build_openai_plugin_bundle.py
+```
+
+The ignored `dist/` output contains the plugin manifest, public policy pages,
+and runtime skill files. Evaluation cases, benchmark runs, development tools,
+and repository automation are intentionally excluded from the upload archive.
+
+Until the public Plugin Directory listing is approved, Codex users can install
+the skills from the repository with any Agent Skills-compatible installer or
+copy selected directories from `skills/` into their local skills directory.
+
 ### Claude Code / Cowork plugin
 
 ```
@@ -166,6 +186,7 @@ geoai-skills/
 ├── evals/run-schema.json     # manifests, responses, judgments, and results
 ├── BENCHMARK.md              # current result card, definitions, and limitations
 ├── EVALUATION.md             # adapter-neutral benchmark protocol
+├── .codex-plugin/            # OpenAI skills-only plugin manifest
 ├── .claude-plugin/           # marketplace + plugin manifests
 └── CASE_STUDIES.md           # reproducible or clearly labeled failure cases
 ```
