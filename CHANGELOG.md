@@ -10,6 +10,9 @@ Pre-release candidate. Behavior benchmarks and clean-install verification are
 required before the first stable release.
 
 ### Added
+- A validated skills-only OpenAI plugin manifest, public privacy and terms
+  pages, and a deterministic upload-bundle builder that includes the 18 runtime
+  skill trees while excluding evals, benchmark evidence, and development files.
 - A read-only, weekly and manually dispatchable external HTTPS link monitor
   with immutable action/tool pins, bounded retries, and non-blocking reports.
 - Deterministic CI validation for repository-local Markdown paths, exact path
