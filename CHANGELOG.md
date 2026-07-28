@@ -10,6 +10,8 @@ Pre-release candidate. Behavior benchmarks and clean-install verification are
 required before the first stable release.
 
 ### Added
+- A read-only, weekly and manually dispatchable external HTTPS link monitor
+  with immutable action/tool pins, bounded retries, and non-blocking reports.
 - Deterministic CI validation for repository-local Markdown paths, exact path
   casing, repository boundaries, and heading anchors.
 - 12 core GeoAI skills: `geoai-orchestrator`, `geo-data-engineering`,

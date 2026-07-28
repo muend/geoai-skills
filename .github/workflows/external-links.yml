@@ -1,0 +1,56 @@
+name: external-links
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Weekly rather than per-PR: external services can rate-limit or fail
+    # transiently, so their availability must not gate unrelated contributions.
+    - cron: "17 6 * * 1"
+  push:
+    branches: [main]
+    paths:
+      - "**/*.md"
+  pull_request:
+    # Exercise changes to the monitor itself without running it for every PR.
+    paths:
+      - ".github/workflows/external-links.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: external-links-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - name: Check external HTTPS links
+        id: lychee
+        # Post-v2.8 upstream fix for nested release archives and RUNNER_TEMP installs.
+        uses: lycheeverse/lychee-action@6da1d14f3a43098a294b7696d93d938aa8d20fc0
+        with:
+          args: >-
+            --exclude-all-private
+            --require-https
+            --no-progress
+            --max-concurrency 8
+            --host-concurrency 2
+            --max-retries 2
+            --retry-wait-time 2
+            --timeout 30
+            --user-agent "geoai-skills-link-monitor/0.1 (+https://github.com/muend/geoai-skills)"
+            --scheme https
+            './**/*.md'
+          # Link failures remain visible in the job summary but do not block
+          # merges. Download/configuration failures still fail this step.
+          fail: false
+          failIfEmpty: true
+          format: markdown
+          jobSummary: true
+          lycheeVersion: v0.24.2
+          output: lychee/out.md
+          token: ${{ secrets.GITHUB_TOKEN }}
