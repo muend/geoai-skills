@@ -4,12 +4,17 @@ All notable changes to this repository are documented here.
 Versioning follows [SemVer](https://semver.org). Each skill also carries its
 own `metadata.version` in its frontmatter.
 
-## [0.1.0] — Unreleased
+## [0.2.0] — 2026-07-28
 
-Pre-release candidate. Behavior benchmarks and clean-install verification are
-required before the first stable release.
+Initial public plugin release. The OpenAI Plugins Directory release is live;
+the independent Claude Code marketplace package is ready for clean-install
+verification and community-directory review.
 
 ### Added
+- Claude Code marketplace and plugin discovery metadata, stable `geoai`
+  namespace documentation, terminal and interactive installation commands,
+  and contract tests that keep the Claude, OpenAI, and Python package versions
+  aligned.
 - A validated skills-only OpenAI plugin manifest, public privacy and terms
   pages, and a deterministic upload-bundle builder that includes the 18 runtime
   skill trees while excluding evals, benchmark evidence, and development files.

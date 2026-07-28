@@ -113,16 +113,30 @@ The ignored `dist/` output contains the plugin manifest, public policy pages,
 and runtime skill files. Evaluation cases, benchmark runs, development tools,
 and repository automation are intentionally excluded from the upload archive.
 
-Until the public Plugin Directory listing is approved, Codex users can install
-the skills from the repository with any Agent Skills-compatible installer or
-copy selected directories from `skills/` into their local skills directory.
+Version `0.2.0` is published in the OpenAI Plugins Directory as **GeoAI
+Skills**. Repository installers remain available for runtimes that consume
+Agent Skills directly.
 
 ### Claude Code / Cowork plugin
+
+From a terminal:
+
+```bash
+claude plugin marketplace add muend/geoai-skills
+claude plugin install geoai@geoai-skills
+```
+
+Or from an interactive Claude Code session:
 
 ```
 /plugin marketplace add muend/geoai-skills
 /plugin install geoai@geoai-skills
 ```
+
+Installed skills use the stable `geoai` namespace, for example
+`/geoai:remote-sensing-analysis`. The marketplace listing and plugin manifest
+are both versioned as `0.2.0`; update the marketplace before installing a newer
+release.
 
 **Claude.ai / Claude desktop:** upload any skill folder (or zip it as `.skill`) via *Settings → Capabilities → Skills*. Skills install independently — install all 18 for full routing, or cherry-pick. Real `arcgis-pro-automation` execution additionally requires Windows, licensed ArcGIS Pro, and a configured local `arcgis-mcp-bridge`.
 
