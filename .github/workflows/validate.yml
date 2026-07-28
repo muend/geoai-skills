@@ -33,6 +33,8 @@ jobs:
         # contribution into a typing exercise. Tighten once the suite settles.
         continue-on-error: true
         run: mypy tools/
+      - name: Check internal Markdown links
+        run: python tools/check_links.py
       - name: Validate all skills
         run: python tools/validate_skills.py
       - name: Validate evaluation suite
