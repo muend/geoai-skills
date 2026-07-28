@@ -1,8 +1,21 @@
 {
   "name": "geoai",
+  "displayName": "GeoAI Skills",
   "description": "18 Agent Skills covering the full geospatial data science lifecycle: data engineering, remote sensing, Earth Engine, deep learning, spatial statistics, geostatistics, terrain, networks, LiDAR, trajectories, change detection, MCDA, PostGIS, cartography, and guarded ArcGIS Pro automation.",
   "version": "0.2.0",
-  "author": { "name": "Muhammed Enes Duran" },
+  "author": {
+    "name": "Muhammed Enes Duran",
+    "url": "https://github.com/muend"
+  },
   "homepage": "https://github.com/muend/geoai-skills",
-  "license": "MIT"
+  "repository": "https://github.com/muend/geoai-skills",
+  "license": "MIT",
+  "keywords": [
+    "geoai",
+    "geospatial",
+    "remote-sensing",
+    "spatial-analysis",
+    "gis"
+  ],
+  "skills": "./skills/"
 }
