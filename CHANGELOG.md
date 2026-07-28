@@ -13,6 +13,8 @@ required before the first stable release.
 - A validated skills-only OpenAI plugin manifest, public privacy and terms
   pages, and a deterministic upload-bundle builder that includes the 18 runtime
   skill trees while excluding evals, benchmark evidence, and development files.
+- A square, small-size-safe GeoAI brand asset wired as both the OpenAI plugin
+  logo and composer icon, with package tests for PNG dimensions and inclusion.
 - A read-only, weekly and manually dispatchable external HTTPS link monitor
   with immutable action/tool pins, bounded retries, and non-blocking reports.
 - Deterministic CI validation for repository-local Markdown paths, exact path

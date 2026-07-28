@@ -10,6 +10,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 ROOT_FILES = (
     Path(".codex-plugin/plugin.json"),
+    Path("assets/geoai-skills-logo.png"),
     Path("LICENSE"),
     Path("PRIVACY.md"),
     Path("SECURITY.md"),

@@ -38,6 +38,8 @@
       "Audit this spatial analysis for CRS, leakage, and uncertainty failures.",
       "Plan a defensible remote-sensing change-detection workflow."
     ],
-    "brandColor": "#08B6D4"
+    "brandColor": "#08B6D4",
+    "composerIcon": "./assets/geoai-skills-logo.png",
+    "logo": "./assets/geoai-skills-logo.png"
   }
 }

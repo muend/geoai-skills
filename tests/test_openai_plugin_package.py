@@ -4,8 +4,11 @@ from __future__ import annotations
 
 import json
 import re
+import struct
 from pathlib import Path
 from zipfile import ZipFile
+
+import yaml
 
 from tools import build_openai_plugin_bundle as bundle
 
@@ -53,6 +56,8 @@ def test_interface_is_submission_ready() -> None:
         "privacyPolicyURL",
         "termsOfServiceURL",
         "defaultPrompt",
+        "composerIcon",
+        "logo",
     }
 
     assert required <= interface.keys()
@@ -64,6 +69,14 @@ def test_interface_is_submission_ready() -> None:
         interface[field].startswith("https://")
         for field in ("websiteURL", "privacyPolicyURL", "termsOfServiceURL")
     )
+    assert interface["composerIcon"] == interface["logo"]
+
+    logo_path = ROOT / interface["logo"].removeprefix("./")
+    logo_bytes = logo_path.read_bytes()
+    assert logo_bytes.startswith(b"\x89PNG\r\n\x1a\n")
+    width, height = struct.unpack(">II", logo_bytes[16:24])
+    assert width == height
+    assert width >= 512
 
 
 def test_public_policy_documents_exist_and_name_support_routes() -> None:
@@ -84,7 +97,16 @@ def test_all_eighteen_skills_have_openai_metadata() -> None:
     assert len(skill_roots) == 18
     for skill_root in skill_roots:
         assert (skill_root / "SKILL.md").is_file()
-        assert (skill_root / "agents" / "openai.yaml").is_file()
+        openai_yaml = skill_root / "agents" / "openai.yaml"
+        assert openai_yaml.is_file()
+        payload = yaml.safe_load(openai_yaml.read_text(encoding="utf-8"))
+        assert isinstance(payload, dict)
+        assert "metadata" not in payload
+        assert {
+            "display_name",
+            "short_description",
+            "default_prompt",
+        } <= payload["interface"].keys()
 
 
 def test_bundle_contains_runtime_files_but_not_evaluation_material(tmp_path: Path) -> None:
@@ -94,6 +116,7 @@ def test_bundle_contains_runtime_files_but_not_evaluation_material(tmp_path: Pat
         names = set(archive.namelist())
 
     assert ".codex-plugin/plugin.json" in names
+    assert "assets/geoai-skills-logo.png" in names
     assert "PRIVACY.md" in names
     assert "SECURITY.md" in names
     assert "TERMS.md" in names
