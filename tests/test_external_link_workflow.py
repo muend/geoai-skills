@@ -8,7 +8,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 WORKFLOW_PATH = ROOT / ".github" / "workflows" / "external-links.yml"
-LYCHEE_ACTION = "lycheeverse/lychee-action@8646ba30535128ac92d33dfc9133794bfdd9b411"
+LYCHEE_ACTION = "lycheeverse/lychee-action@6da1d14f3a43098a294b7696d93d938aa8d20fc0"
 
 
 def workflow() -> dict:
