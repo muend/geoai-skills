@@ -293,6 +293,40 @@ def test_stage_workspace_verifies_fixture_and_captures_text_artifact(
     ]
 
 
+def test_stage_workspace_resolves_stable_fixture_identity_after_eval_move(
+    tmp_path: Path,
+) -> None:
+    fixture = (
+        tmp_path
+        / "repo"
+        / "evals"
+        / "cases"
+        / "sample"
+        / "fixtures"
+        / "input.txt"
+    )
+    fixture.parent.mkdir(parents=True)
+    fixture.write_text("relocated fixture", encoding="utf-8")
+    content = fixture.read_bytes()
+    case = {
+        "fixtures": [
+            {
+                "source_path": "skills/sample/evals/fixtures/input.txt",
+                "workspace_path": "inputs/input.txt",
+                "sha256": __import__("hashlib").sha256(content).hexdigest(),
+                "size_bytes": len(content),
+            }
+        ]
+    }
+
+    workspace = tmp_path / "workspace"
+    stage_case_workspace(case, workspace, repository_root=tmp_path / "repo")
+
+    assert (workspace / "inputs" / "input.txt").read_text(
+        encoding="utf-8"
+    ) == "relocated fixture"
+
+
 def test_stage_workspace_rejects_hash_mismatch_and_path_escape(tmp_path: Path) -> None:
     fixture = tmp_path / "repo" / "fixture.txt"
     fixture.parent.mkdir()

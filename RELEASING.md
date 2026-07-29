@@ -15,6 +15,8 @@ GitHub Copilot.
 - Generated archives stay under ignored `dist/`; they are never committed.
 - Release packages contain runtime files and the MIT license, never evaluation
   runs, caches, credentials, development-only tools, or local planning files.
+- Runtime source directories below `skills/` contain no `evals/` folders;
+  repository installers recursively copy those directories into agent runtimes.
 - A release remains blocked until automated validation and every applicable
   clean-install row below pass.
 

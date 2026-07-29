@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SKILL = ROOT / "skills" / "postgis-spatial-sql" / "SKILL.md"
-EVALS = ROOT / "skills" / "postgis-spatial-sql" / "evals" / "evals.json"
+EVALS = ROOT / "evals" / "cases" / "postgis-spatial-sql" / "evals.json"
 
 
 def test_slow_join_guards_executable_sql_quality() -> None:

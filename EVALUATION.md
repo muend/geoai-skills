@@ -14,7 +14,10 @@ No benchmark claim should be published without the raw response cache, the exact
 
 ## Contract
 
-The canonical case definitions live beside each skill in `skills/<name>/evals/evals.json`. The shared contracts are:
+The canonical case definitions live outside the runtime skill trees in
+`evals/cases/<name>/evals.json`. Keeping development-only cases and fixtures
+outside `skills/<name>/` prevents repository installers from copying benchmark
+material into end-user runtime directories. The shared contracts are:
 
 - `evals/schema.json` — authoring schema for skill cases;
 - `evals/run-schema.json` — manifests, requests, runtime responses, judgments, case results, and aggregate metrics.
@@ -28,7 +31,14 @@ Behavior eligibility is separate from routing polarity. A case may declare:
 - `fixture-backed` — immutable files are declared under `fixtures` and staged by content hash;
 - `artifact-producing` — the runtime receives the `workspace-write` tool profile and must create declared `expected_artifacts`.
 
-Omitted `behavior_class` defaults to `routing-only`. This fail-closed default prevents an underspecified routing prompt from silently lowering or inflating behavior metrics. Fixture sources must live below the skill's `evals/fixtures/` directory, prompts must name their staged workspace paths, and fixture bytes participate in both case and suite hashes. Git normalizes `SKILL.md` files and text fixtures to LF at checkout through `.gitattributes`, so their byte-derived hashes are identical on Linux and Windows; binary fixtures remain unmodified. Artifact-producing prompts must name exact output paths; captured artifacts include media type, size, SHA-256, and a bounded text preview when applicable.
+Omitted `behavior_class` defaults to `routing-only`. This fail-closed default prevents an underspecified routing prompt from silently lowering or inflating behavior metrics. Fixture sources must live below the case set's `evals/cases/<name>/fixtures/` directory, prompts must name their staged workspace paths, and fixture bytes participate in both case and suite hashes. Git normalizes `SKILL.md` files and text fixtures to LF at checkout through `.gitattributes`, so their byte-derived hashes are identical on Linux and Windows; binary fixtures remain unmodified. Artifact-producing prompts must name exact output paths; captured artifacts include media type, size, SHA-256, and a bounded text preview when applicable.
+
+Normalized manifests retain `skills/<name>/evals/fixtures/...` as the stable
+logical `source_path` identity used by already-published suite hashes. That
+field is a compatibility identifier, not the current physical repository
+location. Runtime adapters resolve it to `evals/cases/<name>/fixtures/...`
+before verifying the declared size and SHA-256. Changing this logical identity
+would invalidate otherwise byte-identical benchmark populations.
 
 A case must remain `routing-only` when its rubric requires a tool or licensed runtime that the declared adapter does not expose. Such behavior belongs in a separately identified integration run with exact environment evidence; a textual promise or simulated tool call is not a substitute. The current generic Claude Code profile therefore does not behavior-score ArcGIS Pro bridge operations.
 

@@ -6,7 +6,8 @@ and real-world failure reports all count.
 ## Ground rules
 
 1. **One skill = one folder** under `skills/`, named in kebab-case, containing
-   `SKILL.md` and optionally `scripts/`, `references/`, `assets/`, `evals/`.
+   `SKILL.md` and optionally `scripts/`, `references/`, and `assets/`. Runtime
+   skill folders must not contain evaluation or development-only material.
 2. **Frontmatter** must pass `python tools/validate_skills.py`:
    `name` (kebab-case, identical to the folder name, ≤ 64 chars, no
    "claude"/"anthropic"), `description` (what it does AND when to trigger,
@@ -18,8 +19,10 @@ and real-world failure reports all count.
    cross-validation lives in
    `skills/ml-experiment-standards/references/spatial-cv-protocol.md`),
    link to it — do not restate it.
-5. **Evals required.** Every new or changed skill ships `evals/evals.json`
-   with ≥ 3 scenarios: a realistic prompt plus the expected behaviors.
+5. **Evals required.** Every new or changed skill ships
+   `evals/cases/<skill-name>/evals.json` with ≥ 3 scenarios: a realistic prompt
+   plus the expected behaviors. Fixtures live beside that file under
+   `evals/cases/<skill-name>/fixtures/`, never inside the runtime skill folder.
 6. **English, universal scope.** Locale-specific pitfalls are welcome as
    i18n notes, not as the skill's frame.
 7. **Verification culture.** Every skill ends with a verification protocol

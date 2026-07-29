@@ -15,7 +15,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SKILL = ROOT / "skills" / "geoai-orchestrator" / "SKILL.md"
-EVALS = ROOT / "skills" / "geoai-orchestrator" / "evals" / "evals.json"
+EVALS = ROOT / "evals" / "cases" / "geoai-orchestrator" / "evals.json"
 
 
 def _skill_text() -> str:

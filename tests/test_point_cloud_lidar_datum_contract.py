@@ -19,7 +19,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SKILL = ROOT / "skills" / "point-cloud-lidar" / "SKILL.md"
-EVALS = ROOT / "skills" / "point-cloud-lidar" / "evals" / "evals.json"
+EVALS = ROOT / "evals" / "cases" / "point-cloud-lidar" / "evals.json"
 
 
 def _skill_text() -> str:

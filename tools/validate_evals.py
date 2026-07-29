@@ -11,6 +11,7 @@ from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).resolve().parent.parent
 SKILLS = ROOT / "skills"
+EVAL_CASES_DIR = ROOT / "evals" / "cases"
 SCHEMA_PATH = ROOT / "evals" / "schema.json"
 RUN_SCHEMA_PATH = ROOT / "evals" / "run-schema.json"
 MIN_SUITE_CASES = 120
@@ -44,7 +45,7 @@ def main() -> int:
     skill_folders = sorted(path for path in SKILLS.iterdir() if path.is_dir())
     skill_names = {folder.name for folder in skill_folders}
     for folder in skill_folders:
-        eval_path = folder / "evals" / "evals.json"
+        eval_path = EVAL_CASES_DIR / folder.name / "evals.json"
         if not eval_path.exists():
             errors.append(f"{folder.name}: missing {relative(eval_path)}")
             continue

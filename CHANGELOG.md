@@ -81,6 +81,10 @@ verification and community-directory review.
   GitHub Actions CI, plugin marketplace manifest.
 
 ### Fixed
+- Moved all canonical evaluation definitions and fixtures from runtime skill
+  directories to `evals/cases/<skill>/`, preventing repository-based Skills
+  CLI installs from copying development-only rubric and fixture material into Claude,
+  Codex, Copilot, or other agent runtime directories.
 - Replaced four retired documentation URLs with their current official Codex,
   JRC, r5py, and ASPRS LAS targets after the external-link monitor identified
   persistent 404 responses.

@@ -85,7 +85,7 @@ def primary_type(case_types: list[str]) -> str:
 def load_cases(root: Path = ROOT) -> dict[str, dict[str, Any]]:
     """Read the minimum each case needs to be stratified — not its criteria."""
     cases: dict[str, dict[str, Any]] = {}
-    for path in sorted(root.glob("skills/*/evals/evals.json")):
+    for path in sorted(root.glob("evals/cases/*/evals.json")):
         data = json.loads(path.read_text(encoding="utf-8-sig"))
         for entry in data["evals"]:
             case_id = f"{data['skill']}/{entry['id']}"

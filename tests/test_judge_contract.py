@@ -150,7 +150,7 @@ def test_calibration_false_positives_cannot_pass_atomic_parent() -> None:
 def test_atomic_registry_criteria_match_live_rubric_text() -> None:
     root = Path(__file__).resolve().parents[1]
     live_criteria = set()
-    for path in (root / "skills").glob("*/evals/evals.json"):
+    for path in (root / "evals" / "cases").glob("*/evals.json"):
         payload = json.loads(path.read_text(encoding="utf-8"))
         for case in payload["evals"]:
             live_criteria.update(case["expected_behavior"])

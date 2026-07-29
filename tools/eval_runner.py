@@ -16,6 +16,7 @@ from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).resolve().parent.parent
 SKILLS = ROOT / "skills"
+EVAL_CASES_DIR = ROOT / "evals" / "cases"
 EVAL_SCHEMA_PATH = ROOT / "evals" / "schema.json"
 RUN_SCHEMA_PATH = ROOT / "evals" / "run-schema.json"
 DEFAULT_RUNS_DIR = ROOT / "evals" / "runs"
@@ -58,6 +59,7 @@ def normalize_fixture(
     raw_fixture: dict[str, Any],
     *,
     repository_root: Path = ROOT,
+    recorded_source_path: str | None = None,
 ) -> dict[str, Any]:
     source = (eval_dir / raw_fixture["source"]).resolve()
     try:
@@ -81,7 +83,8 @@ def normalize_fixture(
             f"{raw_fixture['source']}: declared {declared}, actual {digest}"
         )
     return {
-        "source_path": repository_relative(source, repository_root=repository_root),
+        "source_path": recorded_source_path
+        or repository_relative(source, repository_root=repository_root),
         "workspace_path": raw_fixture["workspace_path"],
         "sha256": digest,
         "size_bytes": len(content),
@@ -208,9 +211,12 @@ def validate_unique_exact_ids(
 def load_suite(
     *,
     skills_dir: Path = SKILLS,
+    eval_cases_dir: Path | None = None,
     eval_schema_path: Path = EVAL_SCHEMA_PATH,
 ) -> tuple[list[dict[str, Any]], str, list[str]]:
     """Load, normalize, validate, and hash the complete evaluation suite."""
+    if eval_cases_dir is None:
+        eval_cases_dir = skills_dir.parent / "evals" / "cases"
     eval_schema = load_json(eval_schema_path)
     Draft202012Validator.check_schema(eval_schema)
     validator = Draft202012Validator(eval_schema)
@@ -219,10 +225,11 @@ def load_suite(
 
     for skill_dir in sorted(path for path in skills_dir.iterdir() if path.is_dir()):
         skill_path = skill_dir / "SKILL.md"
-        eval_path = skill_dir / "evals" / "evals.json"
+        eval_path = eval_cases_dir / skill_dir.name / "evals.json"
         if not skill_path.exists() or not eval_path.exists():
             raise EvalRunnerError(
-                f"{skill_dir.name}: SKILL.md and evals/evals.json are required"
+                f"{skill_dir.name}: SKILL.md and evals/cases/"
+                f"{skill_dir.name}/evals.json are required"
             )
         data = load_json(eval_path)
         issues = sorted(
@@ -249,6 +256,16 @@ def load_suite(
                     eval_path.parent,
                     fixture,
                     repository_root=skills_dir.parent,
+                    # Keep the published manifest identity stable while the
+                    # physical benchmark sources live outside runtime skill
+                    # directories. Existing runs and hashes record this
+                    # logical path, and adapters resolve it to evals/cases.
+                    recorded_source_path=(
+                        Path("skills")
+                        / skill_dir.name
+                        / "evals"
+                        / fixture["source"]
+                    ).as_posix(),
                 )
                 for fixture in raw_case.get("fixtures", [])
             ]

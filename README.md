@@ -236,13 +236,14 @@ geoai-skills/
 │   ├── SKILL.md            # the skill (agent-facing)
 │   ├── scripts/            # runnable code, loaded on demand
 │   ├── references/         # deep material, loaded on demand
-│   └── evals/evals.json    # ≥7 typed routing + behavior scenarios
+│   └── ...                 # runtime-only skill resources
 ├── tools/validate_skills.py  # spec linter (runs in CI)
 ├── tools/validate_evals.py   # strict, versioned eval schema validation
 ├── tools/eval_runner.py      # deterministic prepare → ingest → score harness
 ├── tools/publish_routing_benchmark.py # sanitized, recomputable public evidence
 ├── tools/adapters/           # optional runtime and judge adapters
 ├── benchmarks/               # immutable runtime/model evidence packages
+├── evals/cases/<skill>/      # development-only cases and fixtures
 ├── evals/schema.json         # shared JSON Schema for all skill evals
 ├── evals/run-schema.json     # manifests, responses, judgments, and results
 ├── BENCHMARK.md              # current result card, definitions, and limitations

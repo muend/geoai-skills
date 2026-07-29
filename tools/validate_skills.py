@@ -20,7 +20,7 @@ Checks per skill:
   E12 authoritative source registry is linked and includes freshness metadata
   W1  description > 700 chars (session token overhead — consider trimming)
   W2  SKILL.md body > 500 lines (move material to references/)
-  W3  no evals/evals.json (repo standard: 3+ scenarios per skill)
+  W3  no evals/cases/<skill>/evals.json (repo standard: 3+ scenarios per skill)
   W4  authoritative source registry is older than 400 days
 """
 from __future__ import annotations
@@ -35,6 +35,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 SKILLS = ROOT / "skills"
+EVAL_CASES_DIR = ROOT / "evals" / "cases"
 KEBAB = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 REL_REF = re.compile(r"(?:^|[\s(`])((?:scripts|references|assets)/[\w\-./]+)")
 
@@ -131,16 +132,16 @@ def check_skill(folder: Path) -> None:
             continue
         err(name, "E8", f"referenced file does not exist: {rel}")
 
-    ev = folder / "evals" / "evals.json"
+    ev = EVAL_CASES_DIR / name / "evals.json"
     if not ev.exists():
-        warn(name, "W3", "no evals/evals.json")
+        warn(name, "W3", f"no evals/cases/{name}/evals.json")
     else:
         try:
             data = json.loads(ev.read_text(encoding="utf-8-sig"))
             if len(data.get("evals", [])) < 3:
                 warn(name, "W3", "fewer than 3 eval scenarios")
         except json.JSONDecodeError:
-            err(name, "E8", "evals/evals.json is not valid JSON")
+            err(name, "E8", f"evals/cases/{name}/evals.json is not valid JSON")
 
     openai_yaml = folder / "agents" / "openai.yaml"
     if not openai_yaml.exists():

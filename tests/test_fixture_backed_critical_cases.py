@@ -8,7 +8,7 @@ import numpy as np
 
 
 ROOT = Path(__file__).resolve().parent.parent
-SKILLS = ROOT / "skills"
+EVAL_CASES = ROOT / "evals" / "cases"
 CRITICAL_CASES = {
     "cartography-geoviz": ("choropleth-request", "artifact-producing"),
     "mcda-suitability-analysis": ("inconsistent-ahp", "artifact-producing"),
@@ -20,7 +20,7 @@ CRITICAL_CASES = {
 
 
 def load_case(skill: str, case_id: str) -> dict[str, object]:
-    eval_path = SKILLS / skill / "evals" / "evals.json"
+    eval_path = EVAL_CASES / skill / "evals.json"
     suite = json.loads(eval_path.read_text(encoding="utf-8"))
     return next(case for case in suite["evals"] if case["id"] == case_id)
 
@@ -28,7 +28,7 @@ def load_case(skill: str, case_id: str) -> dict[str, object]:
 def test_six_uncovered_skills_have_self_contained_critical_behavior() -> None:
     for skill, (case_id, behavior_class) in CRITICAL_CASES.items():
         case = load_case(skill, case_id)
-        fixture_root = SKILLS / skill / "evals"
+        fixture_root = EVAL_CASES / skill
 
         assert case["critical"] is True
         assert case["behavior_class"] == behavior_class
@@ -52,9 +52,8 @@ def test_six_uncovered_skills_have_self_contained_critical_behavior() -> None:
 
 def test_choropleth_fixture_requires_rate_and_nodata_handling() -> None:
     fixture = (
-        SKILLS
+        EVAL_CASES
         / "cartography-geoviz"
-        / "evals"
         / "fixtures"
         / "choropleth-request"
         / "covid.csv"
@@ -73,9 +72,8 @@ def test_choropleth_fixture_requires_rate_and_nodata_handling() -> None:
 
 def test_ahp_fixture_is_reciprocal_but_inconsistent() -> None:
     fixture = (
-        SKILLS
+        EVAL_CASES
         / "mcda-suitability-analysis"
-        / "evals"
         / "fixtures"
         / "inconsistent-ahp"
         / "pairwise-matrix.csv"
@@ -93,9 +91,8 @@ def test_ahp_fixture_is_reciprocal_but_inconsistent() -> None:
 def test_network_and_spatial_fixtures_force_the_intended_decisions() -> None:
     network = json.loads(
         (
-            SKILLS
+            EVAL_CASES
             / "network-accessibility-analysis"
-            / "evals"
             / "fixtures"
             / "euclidean-catch"
             / "coverage-request.json"
@@ -103,9 +100,8 @@ def test_network_and_spatial_fixtures_force_the_intended_decisions() -> None:
     )
     diagnostics = json.loads(
         (
-            SKILLS
+            EVAL_CASES
             / "spatial-statistics"
-            / "evals"
             / "fixtures"
             / "ols-on-spatial"
             / "diagnostics.json"
@@ -122,18 +118,16 @@ def test_network_and_spatial_fixtures_force_the_intended_decisions() -> None:
 
 def test_code_review_and_slope_fixtures_preserve_critical_traps() -> None:
     vulnerable_code = (
-        SKILLS
+        EVAL_CASES
         / "swe-devops-standards"
-        / "evals"
         / "fixtures"
         / "review-mode"
         / "ingest_source.txt"
     ).read_text(encoding="utf-8")
     contract = json.loads(
         (
-            SKILLS
+            EVAL_CASES
             / "swe-devops-standards"
-            / "evals"
             / "fixtures"
             / "review-mode"
             / "contract.json"
@@ -141,9 +135,8 @@ def test_code_review_and_slope_fixtures_preserve_critical_traps() -> None:
     )
     dem = json.loads(
         (
-            SKILLS
+            EVAL_CASES
             / "terrain-hydrology"
-            / "evals"
             / "fixtures"
             / "slope-4326-catch"
             / "dem-metadata.json"
