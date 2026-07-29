@@ -1,83 +1,167 @@
 # GeoAI Skills
 
-![GeoAI Skills — Reliable geospatial intelligence for AI agents](assets/social-preview.jpg)
+![GeoAI Skills — reliable geospatial intelligence for AI agents](assets/social-preview.jpg)
 
-**Turn your AI agent into a senior geospatial data scientist.**
+## The correctness layer for geospatial AI agents
 
-18 [Agent Skills](https://agentskills.io) covering the full geospatial data science lifecycle — from STAC search and PostGIS to kriging uncertainty, U-Net inference, and guarded ArcGIS Pro automation — designed around documented silent failure modes in spatial computing.
+**Stop silent CRS, spatial-leakage, validity, unit, and uncertainty failures before
+they ship.**
+
+GeoAI Skills is a vendor-neutral collection of 18
+[Agent Skills](https://agentskills.io) that turns a general-purpose AI agent into a
+more defensible geospatial collaborator. It covers the full workflow—from STAC
+search and PostGIS to spatial statistics, Earth observation, LiDAR, cartography,
+and guarded ArcGIS Pro automation—while making verification and limitations part
+of the deliverable.
 
 [![validate-skills](https://github.com/muend/geoai-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/muend/geoai-skills/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Skills](https://img.shields.io/badge/skills-18-brightgreen.svg)](#whats-inside)
+[![Skills](https://img.shields.io/badge/skills-18-brightgreen.svg)](#the-18-skill-stack)
+[![Evaluation corpus](https://img.shields.io/badge/evaluation-158_native_%2B_5_external_cases-2ea44f.svg)](#evidence-with-boundaries)
 [![Browse on skills.sh](https://img.shields.io/badge/skills.sh-browse-111111.svg)](https://www.skills.sh/muend/geoai-skills)
-[![Routing benchmark: 100% precision, 92.9% recall (17-skill suite)](https://img.shields.io/badge/routing_(17--skill_suite)-100%25_precision_%7C_92.9%25_recall-2ea44f.svg)](BENCHMARK.md)
 [![Spec](https://img.shields.io/badge/agentskills.io-compliant-orange.svg)](https://agentskills.io)
 
----
+<p align="center">
+  <img
+    src="assets/demo/geoai-guardrail-demo.gif"
+    alt="Animated GeoAI Skills demo: a season-mismatched Sentinel-2 request is intercepted before an unsupported changed-hectares claim is reported"
+    width="960"
+  />
+</p>
+
+<p align="center">
+  <strong>A plausible shortcut is not a defensible result.</strong><br />
+  <a href="assets/demo/geoai-guardrail-demo.mp4">Watch the short MP4</a>
+  ·
+  <a href="assets/demo/geoai-guardrail-demo-poster.png">View the static verdict</a>
+  ·
+  <a href="#quick-start">Install</a>
+  ·
+  <a href="#evidence-with-boundaries">Inspect the evidence</a>
+</p>
+
+The demo uses a public, synthetic prompt. It shows the intended guardrail behavior,
+not a claim that every model or runtime will produce identical wording.
+
+## Quick start
+
+Install the complete suite for Codex:
+
+```bash
+npx skills add muend/geoai-skills --skill '*' -a codex
+```
+
+Or install one specialist for Claude Code:
+
+```bash
+npx skills add muend/geoai-skills \
+  --skill remote-sensing-analysis \
+  -a claude-code
+```
+
+Then ask naturally:
+
+> Can May 2024 and September 2025 Sentinel-2 scenes support a defensible
+> changed-hectares claim?
+
+The relevant skills should activate automatically. Instead of blindly subtracting
+two rasters, the agent is instructed to test comparability, identify the
+phenological mismatch, withhold an unsupported area claim, and specify the evidence
+needed to proceed.
+
+## What changes when the skills are present
+
+| A plausible shortcut | GeoAI Skills guardrail |
+|---|---|
+| Measure area in EPSG:4326 because the operation returns a number. | Select and record an appropriate projected CRS; verify units before reporting area or distance. |
+| Randomly split spatial samples and report a high validation score. | Audit spatial and group leakage; use blocked validation and show geographic error structure. |
+| Count changed pixels from two convenient dates. | Check season, sensor, processing level, registration, mutual masks, threshold sensitivity, and error-adjusted area uncertainty. |
+| Sum overlapping spatial intersections. | Dissolve or deduplicate overlap before measurement and preserve an auditable accounting path. |
+| Render a map and assume it communicates honestly. | Check projection, classification, palette accessibility, legend semantics, uncertainty, and export metadata. |
+| Run a destructive local GIS mutation immediately. | Inspect first, plan the mutation, require an explicit gate, verify outputs, and retain recovery evidence. |
+
+These skills complement MCP servers, GIS libraries, and hosted tools. They are the
+method and verification layer that tells an agent **when not to trust an apparently
+successful operation**.
 
 ## Why this exists
 
-Spatial bugs are **silent**. A buffer computed in degrees still returns numbers. A random train/test split on spatial data still produces a beautiful learning curve — a fraudulent one. An unprojected choropleth still renders. Web Mercator still shows Greenland bigger than Africa.
+Spatial bugs are unusually quiet:
 
-General-purpose LLMs know the APIs but routinely commit every one of these errors, because nothing in the output *looks* wrong.
+- a buffer computed in degrees still returns numbers;
+- a random spatial train/test split still produces a beautiful learning curve;
+- a misregistered change map still shows crisp-looking boundaries;
+- overlapping polygons can silently inflate an area total;
+- an attractive choropleth can still encode the wrong class semantics.
 
-These skills encode the discipline that separates a practitioner from an API caller:
+General-purpose models often know the APIs. The harder problem is knowing which
+preconditions, controls, and refusal conditions make a geospatial claim defensible.
+GeoAI Skills encodes that discipline:
 
-- **CRS is explicit, always** — never compute area/distance in a geographic CRS
-- **Spatial leakage is the default enemy** — every ML-adjacent skill enforces spatial blocking
-- **Every stage ends with a verification check** — visual + numeric, row-count accounting, error maps
-- **Uncertainty is a deliverable** — kriging SD rasters, sensitivity analyses, error-adjusted area estimates with CIs, FDR-corrected cluster maps
+- **CRS and units are explicit.**
+- **Spatial leakage is treated as a default risk.**
+- **Every stage ends with numeric and visual verification.**
+- **Uncertainty and sensitivity are outputs, not optional footnotes.**
+- **Missing evidence narrows or blocks the claim instead of being guessed.**
 
-## What's inside
+## Evidence with boundaries
 
-```
-                       ┌─────────────────────┐
-                       │  geoai-orchestrator │  ← entry point, pipeline design,
-                       └──────────┬──────────┘    module-wide invariants
-        ┌──────────┬─────────────┼─────────────┬───────────────┐
-    ACQUIRE      SENSE         MODEL         ANALYZE         DELIVER
-        │           │             │             │               │
-  geo-data-    remote-       geo-deep-     spatial-        cartography-
-  engineering  sensing-      learning      statistics      geoviz
-        │      analysis          │             │
-  postgis-         │        change-       geostatistics-
-  spatial-sql      │        detection     interpolation
-        │      google-           │             │
-  point-cloud- earth-       terrain-      mcda-suitability-
-  lidar        engine       hydrology     analysis
-        │                        │             │
-        └── movement-trajectory ─┴── network-accessibility-analysis
+The current source tree contains two deliberately separate evaluation layers:
 
-  cross-cutting: ml-experiment-standards · swe-devops-standards
-  proprietary execution: arcgis-pro-automation (guarded local ArcPy)
-```
+| Evidence layer | Current coverage | What it supports |
+|---|---:|---|
+| Native skill suite | **158 cases** across 18 skills; 96 development and 62 held-out | Routing boundaries, negative activation, collisions, interaction modes, and artifact requirements |
+| GeoAnalystBench-derived external subset | **5 executable cases** with deterministic synthetic fixtures and artifact validators | Transfer checks for network analysis, facility coverage, vegetation change, urban heat/kriging, and spatial regression |
+| Platform verification | Windows, macOS, and Linux CI; clean installs for Codex, Claude, Skills CLI, and GitHub Copilot | Packaging, portability, runtime-file isolation, and deterministic archives |
 
-| # | Skill | Covers |
-|---|-------|--------|
-| 1 | [`geoai-orchestrator`](skills/geoai-orchestrator/SKILL.md) | Routing, pipeline design, 8 module-wide invariants (CRS, validity, leakage, units…) |
-| 2 | [`geo-data-engineering`](skills/geo-data-engineering/SKILL.md) | Formats (GeoParquet/COG/Zarr), OSM/Overture/STAC acquisition, CRS engineering, cleaning, scale strategies |
-| 3 | [`remote-sensing-analysis`](skills/remote-sensing-analysis/SKILL.md) | STAC search, L1/L2 discipline, cloud masking, spectral indices, classification, SAR |
-| 4 | [`google-earth-engine`](skills/google-earth-engine/SKILL.md) | GEE Python API: filtering/compositing at planetary scale, reducers, exports, geemap, quota-aware patterns |
-| 5 | [`geo-deep-learning`](skills/geo-deep-learning/SKILL.md) | U-Net/detection on EO imagery, chipping, spatial split policy, imbalanced losses, sliding-window inference |
-| 6 | [`spatial-statistics`](skills/spatial-statistics/SKILL.md) | Weights design, Moran/LISA/Gi*, point patterns, SAR/SEM/GWR decision path, MAUP/FDR honesty |
-| 7 | [`mcda-suitability-analysis`](skills/mcda-suitability-analysis/SKILL.md) | AHP + consistency ratio, standardization, WLC/OWA, mandatory sensitivity analysis |
-| 8 | [`geostatistics-interpolation`](skills/geostatistics-interpolation/SKILL.md) | Variogram modeling, kriging + uncertainty rasters, LOOCV/block CV |
-| 9 | [`terrain-hydrology`](skills/terrain-hydrology/SKILL.md) | DEM hygiene, slope/aspect/curvature, hydrological conditioning, watersheds, viewshed |
-| 10 | [`point-cloud-lidar`](skills/point-cloud-lidar/SKILL.md) | PDAL pipelines, ground classification, DTM/DSM/CHM generation, forestry & building metrics |
-| 11 | [`network-accessibility-analysis`](skills/network-accessibility-analysis/SKILL.md) | OSMnx/r5py routing, isochrones, OD matrices, 2SFCA, location-allocation, GTFS |
-| 12 | [`movement-trajectory`](skills/movement-trajectory/SKILL.md) | GPS trajectory cleaning, stop/trip detection, map matching, movement metrics (MovingPandas) |
-| 13 | [`change-detection`](skills/change-detection/SKILL.md) | Co-registration, differencing/CVA/PCC, time-series breaks, Olofsson-style area estimation |
-| 14 | [`cartography-geoviz`](skills/cartography-geoviz/SKILL.md) | Map type/classification/color selection, projection honesty, static + interactive delivery |
-| 15 | [`postgis-spatial-sql`](skills/postgis-spatial-sql/SKILL.md) | Spatial schema/indexing, predicate correctness, performance playbook, DuckDB Spatial |
-| 16 | [`ml-experiment-standards`](skills/ml-experiment-standards/SKILL.md) | Leakage audits, metric justification, reproducibility skeleton, canonical [spatial CV protocol](skills/ml-experiment-standards/references/spatial-cv-protocol.md) |
-| 17 | [`swe-devops-standards`](skills/swe-devops-standards/SKILL.md) | Production-grade Python defaults, testing, dependency pinning, git/CI practices |
-| 18 | [`arcgis-pro-automation`](skills/arcgis-pro-automation/SKILL.md) | Guarded local ArcGIS Pro/ArcPy execution through [`arcgis-mcp-bridge`](https://github.com/muend/arcgis-mcp-bridge): `.aprx`, `.gdb`, geoprocessing, raster/network/stats, layouts, mutation gates |
+The external subset is independently authored and reported separately. It does not
+copy upstream datasets, prompts, or reference implementations, and its outcomes must
+not be pooled with native routing metrics. See
+[the external-suite boundary](evals/external/geoanalystbench/README.md).
+
+An archived 17-skill, 120-case Claude Code run recorded 100% routing precision,
+92.86% routing recall, and 92.5% full-route accuracy. That run is reproducible but
+**superseded**: it does not describe the current 18-skill source tree. No current
+headline routing number will be published until a fresh enabled/disabled pair is
+completed. Behavior quality also remains unclaimed until independent-family judging
+and the manual-review protocol are complete.
+
+Read [BENCHMARK.md](BENCHMARK.md) for the archived result card and
+[EVALUATION.md](EVALUATION.md) for the provider-neutral protocol, suite hashes,
+split rules, judge boundaries, and publication gates.
+
+## The 18-skill stack
+
+| Stage | Skills | What they protect |
+|---|---|---|
+| Route and acquire | [`geoai-orchestrator`](skills/geoai-orchestrator/SKILL.md), [`geo-data-engineering`](skills/geo-data-engineering/SKILL.md), [`google-earth-engine`](skills/google-earth-engine/SKILL.md) | Problem decomposition, provenance, formats, CRS, scale, and server-side execution |
+| Sense and prepare | [`remote-sensing-analysis`](skills/remote-sensing-analysis/SKILL.md), [`point-cloud-lidar`](skills/point-cloud-lidar/SKILL.md), [`terrain-hydrology`](skills/terrain-hydrology/SKILL.md), [`movement-trajectory`](skills/movement-trajectory/SKILL.md) | Sensor/processing-level comparability, masks, elevation surfaces, point-cloud semantics, and trajectory cleaning |
+| Model and detect | [`geo-deep-learning`](skills/geo-deep-learning/SKILL.md), [`change-detection`](skills/change-detection/SKILL.md), [`ml-experiment-standards`](skills/ml-experiment-standards/SKILL.md) | Leakage, chipping, imbalance, registration, threshold sensitivity, spatial validation, and reproducibility |
+| Analyze and decide | [`spatial-statistics`](skills/spatial-statistics/SKILL.md), [`geostatistics-interpolation`](skills/geostatistics-interpolation/SKILL.md), [`mcda-suitability-analysis`](skills/mcda-suitability-analysis/SKILL.md), [`network-accessibility-analysis`](skills/network-accessibility-analysis/SKILL.md), [`postgis-spatial-sql`](skills/postgis-spatial-sql/SKILL.md) | Weights, inference, multiple testing, kriging uncertainty, AHP consistency, routing barriers, overlap, SQL correctness, and performance |
+| Deliver and operate | [`cartography-geoviz`](skills/cartography-geoviz/SKILL.md), [`swe-devops-standards`](skills/swe-devops-standards/SKILL.md), [`arcgis-pro-automation`](skills/arcgis-pro-automation/SKILL.md) | Honest visual encoding, production code, test/transaction discipline, and gated local ArcGIS mutations |
+
+Install the full suite for cross-skill routing, or cherry-pick a specialist. Every
+skill must remain safe and useful alone; sibling references are advisory and
+critical safeguards have local fallbacks.
 
 ## Installation
 
-### Skills CLI / skills.sh
+Choose the surface you already use.
 
-Browse the complete collection on [skills.sh](https://www.skills.sh/muend/geoai-skills), or inspect the repository from the CLI without installing:
+| Surface | Recommended path |
+|---|---|
+| OpenAI Codex | `npx skills add muend/geoai-skills --skill '*' -a codex` |
+| Claude Code | `claude plugin marketplace add muend/geoai-skills` then `claude plugin install geoai@geoai-skills` |
+| GitHub Copilot | `gh skill install muend/geoai-skills remote-sensing-analysis` |
+| Skills CLI / compatible agents | `npx skills add muend/geoai-skills` |
+| ChatGPT | Install **GeoAI Skills** from the OpenAI Plugins Directory |
+| Claude.ai / Claude desktop | Upload one or more release ZIP files from the latest GitHub Release |
+
+<details>
+<summary><strong>Skills CLI and skills.sh</strong></summary>
+
+Browse the collection on [skills.sh](https://www.skills.sh/muend/geoai-skills)
+or inspect it without installing:
 
 ```bash
 npx skills add muend/geoai-skills --list
@@ -95,41 +179,17 @@ Install all 18 skills for Codex:
 npx skills add muend/geoai-skills --skill '*' -a codex
 ```
 
-Install one specialist skill:
+Run `npx skills add muend/geoai-skills` without flags for the interactive agent
+and skill picker.
 
-```bash
-npx skills add muend/geoai-skills --skill remote-sensing-analysis -a claude-code
-```
+</details>
 
-Run `npx skills add muend/geoai-skills` without additional flags for the interactive agent and skill picker.
+<details>
+<summary><strong>OpenAI Codex / ChatGPT plugin</strong></summary>
 
-### GitHub Copilot
-
-GitHub Copilot can load project skills from `.github/skills`,
-`.claude/skills`, or `.agents/skills`. With GitHub CLI 2.90.0 or later,
-preview a skill before installing it:
-
-```bash
-gh skill preview muend/geoai-skills remote-sensing-analysis
-gh skill install muend/geoai-skills remote-sensing-analysis
-```
-
-The Skills CLI provides an alternative explicit Copilot target:
-
-```bash
-npx skills add muend/geoai-skills \
-  --skill remote-sensing-analysis \
-  -a github-copilot
-```
-
-See GitHub's [agent skills documentation](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/add-skills)
-for supported locations, provenance, pinning, and security guidance.
-
-### OpenAI Codex / ChatGPT plugin
-
-The repository is a skills-only OpenAI plugin: `.codex-plugin/plugin.json`
-loads all 18 directories under `skills/` without adding an MCP server,
-authentication flow, or hosted data service.
+Version `0.2.0` is published in the OpenAI Plugins Directory as **GeoAI Skills**.
+The repository is a skills-only plugin: it adds no hosted service, authentication
+flow, or MCP server.
 
 Build the deterministic upload archive:
 
@@ -137,15 +197,14 @@ Build the deterministic upload archive:
 python tools/build_openai_plugin_bundle.py
 ```
 
-The ignored `dist/` output contains the plugin manifest, public policy pages,
-and runtime skill files. Evaluation cases, benchmark runs, development tools,
-and repository automation are intentionally excluded from the upload archive.
+The ignored `dist/` output contains only the plugin manifest, public policy pages,
+logo, and runtime skill files. Evaluation cases, benchmark traces, repository
+automation, and private development material are excluded.
 
-Version `0.2.0` is published in the OpenAI Plugins Directory as **GeoAI
-Skills**. Repository installers remain available for runtimes that consume
-Agent Skills directly.
+</details>
 
-### Claude Code / Cowork plugin
+<details>
+<summary><strong>Claude Code and Claude Cowork</strong></summary>
 
 From a terminal:
 
@@ -154,109 +213,166 @@ claude plugin marketplace add muend/geoai-skills
 claude plugin install geoai@geoai-skills
 ```
 
-Or from an interactive Claude Code session:
+From an interactive Claude Code session:
 
-```
+```text
 /plugin marketplace add muend/geoai-skills
 /plugin install geoai@geoai-skills
 ```
 
-Installed skills use the stable `geoai` namespace, for example
-`/geoai:remote-sensing-analysis`. The marketplace listing and plugin manifest
-are both versioned as `0.2.0`; update the marketplace before installing a newer
-release.
+Installed skills use the stable `geoai` namespace, for example:
 
-**Claude.ai / Claude desktop:** upload an individual skill as a ZIP file via
-*Customize → Skills → Create skill → Upload a skill*. Build all 18
-individually installable archives and their checksum manifest with:
+```text
+/geoai:remote-sensing-analysis
+```
+
+</details>
+
+### GitHub Copilot
+
+GitHub Copilot can load project skills from `.github/skills`, `.claude/skills`,
+or `.agents/skills`. With GitHub CLI 2.90.0 or later, preview before installing:
+
+```bash
+gh skill preview muend/geoai-skills remote-sensing-analysis
+gh skill install muend/geoai-skills remote-sensing-analysis
+```
+
+The Skills CLI also provides an explicit Copilot target:
+
+```bash
+npx skills add muend/geoai-skills \
+  --skill remote-sensing-analysis \
+  -a github-copilot
+```
+
+See GitHub's
+[Agent Skills documentation](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/add-skills)
+for supported locations, pinning, provenance, and security guidance.
+
+<details>
+<summary><strong>Claude.ai ZIP files and generic Agent Skills runtimes</strong></summary>
+
+For Claude.ai or Claude desktop, download individual skill ZIP files and
+`SHA256SUMS` from the latest GitHub Release, then upload them through
+*Customize → Skills → Create skill → Upload a skill*.
+
+To build the same deterministic archives locally:
 
 ```bash
 python tools/build_skill_archives.py
 ```
 
-The ignored `dist/skills/` directory contains one ZIP per skill plus
-`SHA256SUMS`. Every ZIP has the required skill directory at its root and
-includes the repository's MIT license while excluding evaluation cases, caches,
-and private development material. Published GitHub releases build these files
-from the exact release tag and attach them without committing generated
-archives to the repository. Install all 18 for full routing, or cherry-pick.
-Real `arcgis-pro-automation` execution additionally requires Windows, licensed
-ArcGIS Pro, and a configured local `arcgis-mcp-bridge`.
+Any Agent-Skills-compatible runtime can instead copy directories from `skills/`
+into its skills directory. Real `arcgis-pro-automation` execution additionally
+requires Windows, licensed ArcGIS Pro, and a configured local
+[`arcgis-mcp-bridge`](https://github.com/muend/arcgis-mcp-bridge).
 
-**Any Agent-Skills-compatible runtime:** copy folders from `skills/` into your agent's skills directory. Each skill is self-contained; cross-references degrade gracefully when a referenced skill is absent.
+</details>
 
-### Installation profiles and dependencies
-
-- **Full suite (recommended):** install all skills so the orchestrator and
-  cross-cutting verification standards are available together.
-- **Core profile:** install `geoai-orchestrator`,
-  `ml-experiment-standards`, and `swe-devops-standards` alongside any
-  specialist skills used in multi-stage work.
-- **Cherry-picked skill:** it must remain safe and useful by itself. Sibling
-  skill references are advisory; critical safety rules require a local
-  fallback. CI will progressively enforce this contract.
-
-The open Agent Skills specification does not currently provide a portable
-dependency resolver. Installation documentation must therefore state required
-profiles explicitly rather than assuming sibling skills are present.
-
-Release maintainers should follow [RELEASING.md](RELEASING.md) for the
+Release maintainers should use [RELEASING.md](RELEASING.md) for the
 non-publishing candidate workflow, clean-install matrix, evidence requirements,
 publication gate, and rollback procedure.
 
-## Usage
+## Try these prompts
 
-You don't invoke these skills — they trigger on your task. Just ask naturally:
+### Reject an invalid change claim
 
-> *"I have parcel shapefiles and Sentinel-2 imagery for a region. Build a land suitability model for solar farms."*
+> Plan a defensible two-date Sentinel-2 forest-loss workflow. One scene is from
+> May 2024 and the other from September 2025. Decide whether this comparison can
+> support a changed-hectares claim.
 
-The orchestrator decomposes this into a pipeline (data engineering → remote sensing → terrain → MCDA → cartography), routes each stage to the specialist skill, and enforces the invariants at every step — you'll get CRS reports, row-count accounting, a consistency-checked AHP, a sensitivity analysis, and a colorblind-safe map, without asking for any of them.
+Expected intervention: identify the phenology mismatch; withhold the hectare
+claim; request matched-season imagery or a season-aware time series; require
+registration, mutual masks, sensitivity analysis, and error-adjusted area
+uncertainty.
 
-Other things that just work:
+### Make spatial SQL measurable and index-safe
 
-- *"Detect urban growth between these two years"* → co-registration checks, defensible thresholding, error-adjusted area estimates with confidence intervals
-- *"Interpolate these rainfall stations"* → variogram discipline, kriging **with** an uncertainty raster, spatially honest cross-validation
-- *"Train a U-Net to extract buildings"* → spatially blocked splits, imbalance-aware losses, georeferencing-preserving inference
-- *"Why is this spatial join so slow?"* → EXPLAIN-driven PostGIS playbook, `ST_Subdivide`, index-sargable predicates
+> Design production-safe PostGIS SQL to return flooded area in hectares per
+> parcel for two large EPSG:4326 polygon tables. Include invalid-geometry
+> handling and an EXPLAIN verification plan.
+
+Expected intervention: select a suitable projected measurement CRS, avoid
+transforming indexed columns inside predicates, repair derived working geometry,
+deduplicate overlaps, and verify the query plan.
+
+### Refuse inconsistent suitability weights
+
+> Use this AHP pairwise matrix to build a solar-suitability map. Its consistency
+> ratio is 0.19.
+
+Expected intervention: reject the weights before mapping, identify discordant
+judgments, require revision, and preserve sensitivity analysis as a deliverable.
+
+## How it works
+
+1. **Trigger narrowly.** Specialist descriptions identify the domain decision
+   that owns the task; negative and collision cases test over-triggering.
+2. **Load progressively.** The agent reads only the relevant `SKILL.md`, then
+   loads references or scripts when required.
+3. **Enforce invariants.** CRS, validity, leakage, units, uncertainty,
+   provenance, verification, and failure behavior travel across the workflow.
+4. **Route across specialists.** The orchestrator coordinates genuine
+   multi-stage work without replacing specialist judgment.
+5. **Fail loudly.** Missing inputs produce a narrower claim, provisional plan,
+   clarification, or refusal—not invented evidence.
 
 ## Design principles
 
-1. **Fail-loud spatial computing.** Every skill mandates accounting reports, verification protocols, and visual + numeric double checks.
-2. **Methodological honesty.** Permutation inference, FDR correction, sensitivity analysis, uncertainty rasters, and error-adjusted area estimates are deliverables, not extras.
-3. **Anti-leakage by default.** Spatial autocorrelation makes random splits fraudulent; one canonical [spatial CV protocol](skills/ml-experiment-standards/references/spatial-cv-protocol.md), referenced everywhere, restated nowhere.
-4. **Tool-pragmatic.** Open Python stack first (GeoPandas, rasterio, xarray, PySAL, PDAL, OSMnx, WhiteboxTools), with routes to PostGIS/DuckDB at scale, Earth Engine for planetary archives, and headless arcpy/PyQGIS for proprietary environments.
-5. **Progressive disclosure.** Descriptions are tuned for reliable triggering; bodies stay lean; long material lives in `references/` and `scripts/` at zero token cost until needed.
-6. **Measured, not assumed.** The current source suite contains 131 typed scenarios across 18 skills: 91 positive, 40 negative, 30 ambiguous, 46 collision, and 38 artifact-correctness candidates (types may overlap). The published [100% precision, 92.86% recall, and 92.5% route accuracy](BENCHMARK.md) remains tied to its frozen 17-skill, 120-case Claude Code 2.1.214 / Claude Sonnet 5 suite and disabled-skills control. `arcgis-pro-automation` is not included in that headline until a new exact enabled/disabled pair is published. Behavior quality remains explicitly unevaluated until an independent-family judge and manual review are complete.
+1. **Fail-loud spatial computing.** Successful execution is not proof of a valid
+   geographic result.
+2. **Methodological honesty.** Uncertainty, multiple-testing correction,
+   sensitivity, and error-adjusted estimates are first-class outputs.
+3. **Anti-leakage by default.** Spatial and grouped validation replace random
+   splits whenever geographic generalization is claimed.
+4. **Tool-pragmatic, vendor-neutral guidance.** Open Python, PostGIS/DuckDB,
+   Earth Engine, ArcGIS, and other backends are selected by evidence and scale.
+5. **Progressive disclosure.** Long references and scripts cost no context until
+   the task actually needs them.
+6. **Measured, not assumed.** Source cases, run evidence, suite hashes, errors,
+   costs, limitations, and superseded results are kept distinguishable.
 
-## Repository structure
+<details>
+<summary><strong>Repository structure</strong></summary>
 
-```
+```text
 geoai-skills/
 ├── skills/<skill-name>/
-│   ├── SKILL.md            # the skill (agent-facing)
-│   ├── scripts/            # runnable code, loaded on demand
-│   ├── references/         # deep material, loaded on demand
-│   └── ...                 # runtime-only skill resources
-├── tools/validate_skills.py  # spec linter (runs in CI)
-├── tools/validate_evals.py   # strict, versioned eval schema validation
-├── tools/eval_runner.py      # deterministic prepare → ingest → score harness
-├── tools/publish_routing_benchmark.py # sanitized, recomputable public evidence
-├── tools/adapters/           # optional runtime and judge adapters
-├── benchmarks/               # immutable runtime/model evidence packages
-├── evals/cases/<skill>/      # development-only cases and fixtures
-├── evals/schema.json         # shared JSON Schema for all skill evals
-├── evals/run-schema.json     # manifests, responses, judgments, and results
-├── BENCHMARK.md              # current result card, definitions, and limitations
-├── EVALUATION.md             # adapter-neutral benchmark protocol
-├── .codex-plugin/            # OpenAI skills-only plugin manifest
-├── .claude-plugin/           # marketplace + plugin manifests
-└── CASE_STUDIES.md           # reproducible or clearly labeled failure cases
+│   ├── SKILL.md
+│   ├── agents/openai.yaml
+│   ├── scripts/
+│   └── references/
+├── evals/cases/<skill>/       # native development-only cases
+├── evals/external/            # separately reported transfer suites
+├── tools/                     # validators, adapters, builders, and gates
+├── benchmarks/                # immutable published evidence packages
+├── .codex-plugin/             # OpenAI skills-only plugin manifest
+├── .claude-plugin/            # Claude marketplace and plugin manifests
+├── BENCHMARK.md               # published result card and limitations
+├── EVALUATION.md              # provider-neutral evaluation protocol
+├── CASE_STUDIES.md            # evidence policy and accepted cases
+└── RELEASING.md               # release and rollback runbook
 ```
+
+</details>
 
 ## Contributing
 
-PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). The bar: passes the linter, ships evals, doesn't duplicate a canonical rule, and ends with a verification protocol. Real-world catches belong in [CASE_STUDIES.md](CASE_STUDIES.md) only with reproducible, privacy-safe evidence.
+Contributions are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md).
+A skill change should:
+
+- pass the structural and link validators;
+- add or update evaluation cases;
+- avoid duplicating canonical cross-cutting rules;
+- define verification and failure behavior; and
+- keep runtime packages free of benchmark and private development material.
+
+Real-world catches belong in [CASE_STUDIES.md](CASE_STUDIES.md) only when they
+include a dated, privacy-safe reproducer, comparison evidence, verification
+method, and limitations.
 
 ## License
 
-[MIT](LICENSE) — use it, fork it, ship it. If this repo saved you from a silent spatial bug, a ⭐ helps others find it.
+[MIT](LICENSE) — use it, fork it, and ship it. If GeoAI Skills prevented a
+silent spatial failure, a ⭐ helps the next practitioner find it.

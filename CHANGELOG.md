@@ -4,6 +4,20 @@ All notable changes to this repository are documented here.
 Versioning follows [SemVer](https://semver.org). Each skill also carries its
 own `metadata.version` in its frontmatter.
 
+## [Unreleased]
+
+### Changed
+- Reframed the README around the repository's differentiator—guarding
+  geospatial claims against silent CRS, leakage, validity, unit, phenology,
+  overlap, and uncertainty failures—with the quick start and evidence boundary
+  moved ahead of the full catalog.
+- Added a lightweight deterministic GIF, MP4, and static frame demonstrating
+  how a season-mismatched Sentinel-2 request is intercepted before an
+  unsupported changed-hectares claim is reported.
+- Corrected the README's current evaluation inventory to 158 native cases plus
+  five separately reported executable GeoAnalystBench-derived transfer cases,
+  and clearly labeled the archived 17-skill routing result as superseded.
+
 ## [0.2.0] — 2026-07-28
 
 Initial public plugin release. The OpenAI Plugins Directory release is live;
