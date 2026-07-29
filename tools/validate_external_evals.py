@@ -9,6 +9,8 @@ from typing import Any
 
 from jsonschema import Draft202012Validator
 
+from build_external_eval_freeze import MANIFEST_NAME, validate_freeze_manifest
+
 ROOT = Path(__file__).resolve().parent.parent
 SUITE_ROOT = ROOT / "evals" / "external" / "geoanalystbench"
 CASE_ROOT = SUITE_ROOT / "cases"
@@ -88,6 +90,7 @@ def validate_suite() -> tuple[int, list[str]]:
         SUITE_ROOT / "LICENSE-APACHE-2.0",
         SUITE_ROOT / "provenance.json",
         SUITE_ROOT / "schema.json",
+        SUITE_ROOT / MANIFEST_NAME,
     ]
     for path in required:
         if not path.is_file():
@@ -125,6 +128,10 @@ def validate_suite() -> tuple[int, list[str]]:
         errors.append(
             "provenance.json: included_upstream_task_ids must exactly match case files"
         )
+    errors.extend(
+        f"{MANIFEST_NAME}: {error}"
+        for error in validate_freeze_manifest(SUITE_ROOT)
+    )
     return len(case_paths), errors
 
 

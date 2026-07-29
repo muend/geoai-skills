@@ -116,7 +116,8 @@ The current source tree contains two deliberately separate evaluation layers:
 
 The external subset is independently authored and reported separately. It does not
 copy upstream datasets, prompts, or reference implementations, and its outcomes must
-not be pooled with native routing metrics. See
+not be pooled with native routing metrics. Its five-case v1 source population is
+frozen under suite hash `c99563100cac…`. See
 [the external-suite boundary](evals/external/geoanalystbench/README.md).
 
 An archived 17-skill, 120-case Claude Code run recorded 100% routing precision,

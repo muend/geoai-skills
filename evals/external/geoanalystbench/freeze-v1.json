@@ -1,0 +1,123 @@
+{
+  "case_ids": [
+    "gab-01-urban-heat",
+    "gab-08-facility-coverage",
+    "gab-36-vegetation-change",
+    "gab-38-travel-time",
+    "gab-39-spatial-regression"
+  ],
+  "files": [
+    {
+      "path": "LICENSE-APACHE-2.0",
+      "sha256": "5c9817c129b98e7bb966bca028c43c19107102ef8e03fe799bffb4354f4ef015"
+    },
+    {
+      "path": "NOTICE",
+      "sha256": "b6a0c797d6138722a9cc8bde13d947ff3f08220492b92934c63e602dc9602353"
+    },
+    {
+      "path": "cases/gab-01-urban-heat/case.json",
+      "sha256": "7c0ffd635f32fdfe3650e15d40c145b1bcfce48ffb953999c95b25f94c5e9934"
+    },
+    {
+      "path": "cases/gab-01-urban-heat/generate_fixture.py",
+      "sha256": "ba2952bfd5fb25a65c82c0600b3fc9e9f5333b23fe243a7ab86e786821ab8543"
+    },
+    {
+      "path": "cases/gab-01-urban-heat/reference.py",
+      "sha256": "f25a82d0c091e747ccc08bb5575f9a4a0dd179b4e249d32d2dc7b8f6e9103110"
+    },
+    {
+      "path": "cases/gab-01-urban-heat/validate_artifacts.py",
+      "sha256": "0700f6c683dc63eb9e62a46db36e064a4c20ef62463469af4f5caf644eed6569"
+    },
+    {
+      "path": "cases/gab-08-facility-coverage/case.json",
+      "sha256": "6671c709786e930239a4a3a746c033810a158970acbe6c7e9999a5d22ff6fbcd"
+    },
+    {
+      "path": "cases/gab-08-facility-coverage/generate_fixture.py",
+      "sha256": "c96aac05f4c3bdf406b53011a2608bd2f89118082ffdd8421baa48365fa2fc03"
+    },
+    {
+      "path": "cases/gab-08-facility-coverage/reference.py",
+      "sha256": "a440a62a2b0646f3c78fa2afc67b9dfc9bb9ba06ca4ee2680d9c0ed8f3a4d54c"
+    },
+    {
+      "path": "cases/gab-08-facility-coverage/validate_artifacts.py",
+      "sha256": "9ac795133ef10e6e327f795c04ba537115da48c822fa335fa44510a6d293ea3f"
+    },
+    {
+      "path": "cases/gab-36-vegetation-change/case.json",
+      "sha256": "bc499fa848294e6b734fde349ab29cd17ef4b45370867abe70bc35e870ae2cbc"
+    },
+    {
+      "path": "cases/gab-36-vegetation-change/generate_fixture.py",
+      "sha256": "1e4eb284e2984c35e08edb918390ec172149156bceecca20de2f8fd0192622d2"
+    },
+    {
+      "path": "cases/gab-36-vegetation-change/reference.py",
+      "sha256": "b84186687a017eb2e910e00e2c05711b7a486cb1cb43303a6b52b24203ecaf1d"
+    },
+    {
+      "path": "cases/gab-36-vegetation-change/validate_artifacts.py",
+      "sha256": "c5d67bc1b0ea444f7b391f7b2e1dad4e6daa579e784f8340da78d2ab3e9a7bdb"
+    },
+    {
+      "path": "cases/gab-38-travel-time/case.json",
+      "sha256": "41633b66968ca1b025b85b4f1d181dfa55dd839f8c70a7a7ee27093eb711dc77"
+    },
+    {
+      "path": "cases/gab-38-travel-time/generate_fixture.py",
+      "sha256": "590693a1fa007a56dc7af0fc177f2125f04b331c12a21bfe7d64b573c2cd4055"
+    },
+    {
+      "path": "cases/gab-38-travel-time/reference.py",
+      "sha256": "7b10105ef4d6c21cc6af732471092eb47a2e5561b73413caa3df8cde06b58d90"
+    },
+    {
+      "path": "cases/gab-38-travel-time/validate_artifacts.py",
+      "sha256": "35801e374e32693cbc8873e572d01eb19d1a53deea192fea206b04a4247e6e8c"
+    },
+    {
+      "path": "cases/gab-39-spatial-regression/case.json",
+      "sha256": "f7c544bff19184fd9c32e42c35bda900709a022874f0f4bb07e4880387804d9b"
+    },
+    {
+      "path": "cases/gab-39-spatial-regression/generate_fixture.py",
+      "sha256": "e7ef22f7880e2905049ea4e824fa1be912252044faa26ba1e63768f532c86a15"
+    },
+    {
+      "path": "cases/gab-39-spatial-regression/reference.py",
+      "sha256": "001ff6fecf12a05d89789839aa73ce2a17cc43814bee5bb2e1ace760f52316c3"
+    },
+    {
+      "path": "cases/gab-39-spatial-regression/validate_artifacts.py",
+      "sha256": "8b82ccc180f720ab06a565470a355372b5a551eb269655a7812cbeb589863d26"
+    },
+    {
+      "path": "provenance.json",
+      "sha256": "dac61c163d56b6d3983f1003c75713f46d115f8fcd91a628d8b432b5d543a865"
+    },
+    {
+      "path": "schema.json",
+      "sha256": "a9bc4e7313ebb5b8d173c6740e53c8a2998ea5189f3bcf52e7322a5c2ca3e980"
+    }
+  ],
+  "freeze_id": "geoanalystbench-derived-v1",
+  "frozen_on": "2026-07-29",
+  "native_suite_included": false,
+  "reporting_scope": "external-transfer-only",
+  "results_included": false,
+  "schema_version": 1,
+  "status": "frozen",
+  "suite_sha256": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12",
+  "upstream_commit_sha": "b5d8c40a8d23639ec77e9acb11f79fd033c07338",
+  "upstream_task_ids": [
+    1,
+    8,
+    36,
+    38,
+    39
+  ]
+}
