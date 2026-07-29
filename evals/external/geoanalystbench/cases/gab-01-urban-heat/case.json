@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "case_id": "gab-01-urban-heat",
+  "upstream_task_id": 1,
+  "title": "Urban heat interpolation with uncertainty-aware vulnerability screening",
+  "skill": "geostatistics-interpolation",
+  "prompt": "Use fixtures/urban-heat.json to interpolate the projected temperature observations with ordinary kriging. Preserve the declared variogram model, produce outputs/temperature-surface.json and outputs/uncertainty-surface.json, summarize all twelve census zones in outputs/census-summary.csv using elderly population rates rather than counts, and select high-risk zones only when both heat and vulnerability thresholds pass and uncertainty is within the declared ceiling. Write outputs/urban-heat-map.svg as an accessible map, outputs/validation-report.json with empirical variogram diagnostics and four-fold spatial block cross-validation, and outputs/provenance.json with CRS, units, model, grid, and decision-rule provenance.",
+  "provenance": {
+    "adaptation": "independently-authored",
+    "fixture_origin": "deterministic-synthetic",
+    "upstream_task_url": "https://github.com/GeoDS/GeoAnalystBench/blob/b5d8c40a8d23639ec77e9acb11f79fd033c07338/README.md#tasks"
+  },
+  "fixture_generator": "generate_fixture.py",
+  "reference": "reference.py",
+  "validator": "validate_artifacts.py",
+  "input_paths": [
+    "fixtures/urban-heat.json"
+  ],
+  "expected_artifacts": [
+    "outputs/temperature-surface.json",
+    "outputs/uncertainty-surface.json",
+    "outputs/census-summary.csv",
+    "outputs/urban-heat-map.svg",
+    "outputs/validation-report.json",
+    "outputs/provenance.json"
+  ],
+  "invariants": [
+    "All interpolation distances and raster areas use projected EPSG:32636 metre units.",
+    "The empirical variogram and declared exponential model remain explicit and auditable.",
+    "Validation uses four spatial blocks rather than random-only observation splits.",
+    "Census vulnerability uses elderly population divided by total population, never raw counts.",
+    "High-risk selection requires temperature, elderly-rate, and maximum-uncertainty gates.",
+    "The map exposes units, manual temperature classes, uncertainty exclusions, and accessible text."
+  ]
+}
