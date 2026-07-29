@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "case_id": "gab-38-travel-time",
+  "upstream_task_id": 38,
+  "title": "Directed neighborhood travel time with a forbidden turn",
+  "skill": "network-accessibility-analysis",
+  "prompt": "Use fixtures/network.json to calculate the least travel time from origin A to every listed destination. Respect directed edges and every forbidden turn; optimize time_minutes rather than geometric distance. Write outputs/travel-times.csv, outputs/routes.geojson, and outputs/summary.json. Include unreachable destinations explicitly instead of dropping them. Route geometry and reported node paths must agree, and all outputs must retain the fixture's projected CRS and minute units.",
+  "provenance": {
+    "adaptation": "independently-authored",
+    "fixture_origin": "deterministic-synthetic",
+    "upstream_task_url": "https://github.com/GeoDS/GeoAnalystBench/blob/b5d8c40a8d23639ec77e9acb11f79fd033c07338/README.md#tasks"
+  },
+  "fixture_generator": "generate_fixture.py",
+  "reference": "reference.py",
+  "validator": "validate_artifacts.py",
+  "input_paths": [
+    "fixtures/network.json"
+  ],
+  "expected_artifacts": [
+    "outputs/routes.geojson",
+    "outputs/summary.json",
+    "outputs/travel-times.csv"
+  ],
+  "invariants": [
+    "Travel time, not Euclidean distance, determines the optimal route.",
+    "The directed forbidden turn A to B to E must never appear in a route.",
+    "Every destination is reported, including unreachable destination G.",
+    "Route coordinates follow the reported ordered node path exactly.",
+    "The projected EPSG:32636 CRS and minute units remain explicit."
+  ]
+}

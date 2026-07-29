@@ -1,0 +1,18 @@
+GeoAI Skills external GeoAnalystBench-derived subset
+
+This subset was independently authored with synthetic data and is inspired by
+task categories published in:
+
+  GeoDS/GeoAnalystBench
+  https://github.com/GeoDS/GeoAnalystBench
+  pinned source ref: b5d8c40a8d23639ec77e9acb11f79fd033c07338
+
+GeoAnalystBench is described by:
+
+  Zhang, Q., Gao, S., Wei, C., Zhao, Y., Nie, Y., Chen, Z., Chen, S.,
+  Su, Y., & Sun, H. (2025). GeoAnalystBench: A GeoAI benchmark for
+  assessing large language models for spatial analysis workflow and code
+  generation. Transactions in GIS, 29(7), e70135.
+
+No upstream dataset, reference implementation, or verbatim benchmark prompt is
+distributed in this directory.

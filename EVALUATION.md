@@ -52,6 +52,22 @@ The interaction contract participates in the case and suite hashes but remains a
 
 Generated local runs live under `evals/runs/` and are ignored by Git. Deliberately reviewed benchmark artifacts can later be copied into a versioned benchmark-results location.
 
+## External transfer suites
+
+External benchmark adaptations live below `evals/external/` and are validated
+separately from the canonical suite. They do not participate in the native
+case count, suite hash, routing metrics, split assignment, regression baseline,
+or published benchmark claims.
+
+The first such suite is a GeoAnalystBench-derived transfer subset. It uses
+independently authored prompts, deterministic synthetic fixtures, independent
+executable references, and artifact validators. It does not copy or download
+upstream datasets, reference implementations, or verbatim prompts. Its
+provenance pins the exact upstream commit and preserves the upstream license.
+Results must be reported under their external-suite identity and may not be
+pooled with native routing or behavior results. See
+`evals/external/geoanalystbench/README.md` for the reuse and reporting boundary.
+
 ## 1. Prepare blind requests
 
 ```bash
