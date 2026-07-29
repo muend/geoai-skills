@@ -56,6 +56,8 @@ jobs:
           for skill in skills/*; do
             skills-ref validate "$skill"
           done
+      - name: Build deterministic per-skill archives
+        run: python tools/build_skill_archives.py
       - name: Test bundled scripts
         run: python -m pytest
 

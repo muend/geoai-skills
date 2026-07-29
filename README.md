@@ -138,7 +138,22 @@ Installed skills use the stable `geoai` namespace, for example
 are both versioned as `0.2.0`; update the marketplace before installing a newer
 release.
 
-**Claude.ai / Claude desktop:** upload any skill folder (or zip it as `.skill`) via *Settings → Capabilities → Skills*. Skills install independently — install all 18 for full routing, or cherry-pick. Real `arcgis-pro-automation` execution additionally requires Windows, licensed ArcGIS Pro, and a configured local `arcgis-mcp-bridge`.
+**Claude.ai / Claude desktop:** upload an individual skill as a ZIP file via
+*Customize → Skills → Create skill → Upload a skill*. Build all 18
+individually installable archives and their checksum manifest with:
+
+```bash
+python tools/build_skill_archives.py
+```
+
+The ignored `dist/skills/` directory contains one ZIP per skill plus
+`SHA256SUMS`. Every ZIP has the required skill directory at its root and
+includes the repository's MIT license while excluding evaluation cases, caches,
+and private development material. Published GitHub releases build these files
+from the exact release tag and attach them without committing generated
+archives to the repository. Install all 18 for full routing, or cherry-pick.
+Real `arcgis-pro-automation` execution additionally requires Windows, licensed
+ArcGIS Pro, and a configured local `arcgis-mcp-bridge`.
 
 **Any Agent-Skills-compatible runtime:** copy folders from `skills/` into your agent's skills directory. Each skill is self-contained; cross-references degrade gracefully when a referenced skill is absent.
 

@@ -1,0 +1,44 @@
+name: release-skill-archives
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          ref: ${{ github.event.release.tag_name }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Build deterministic skill archives
+        env:
+          TAG: "${{ github.event.release.tag_name }}"
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${TAG#v}"
+          python tools/build_skill_archives.py \
+            --output-dir dist/skills \
+            --expected-version "$version"
+      - name: Verify generated checksums
+        working-directory: dist/skills
+        run: sha256sum --check SHA256SUMS
+      - name: Attach archives to the published release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: "${{ github.event.release.tag_name }}"
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release upload "$TAG" dist/skills/*.zip dist/skills/SHA256SUMS
