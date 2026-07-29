@@ -89,6 +89,12 @@ Install all 18 skills for Claude Code:
 npx skills add muend/geoai-skills --skill '*' -a claude-code
 ```
 
+Install all 18 skills for Codex:
+
+```bash
+npx skills add muend/geoai-skills --skill '*' -a codex
+```
+
 Install one specialist skill:
 
 ```bash
@@ -96,6 +102,28 @@ npx skills add muend/geoai-skills --skill remote-sensing-analysis -a claude-code
 ```
 
 Run `npx skills add muend/geoai-skills` without additional flags for the interactive agent and skill picker.
+
+### GitHub Copilot
+
+GitHub Copilot can load project skills from `.github/skills`,
+`.claude/skills`, or `.agents/skills`. With GitHub CLI 2.90.0 or later,
+preview a skill before installing it:
+
+```bash
+gh skill preview muend/geoai-skills remote-sensing-analysis
+gh skill install muend/geoai-skills remote-sensing-analysis
+```
+
+The Skills CLI provides an alternative explicit Copilot target:
+
+```bash
+npx skills add muend/geoai-skills \
+  --skill remote-sensing-analysis \
+  -a github-copilot
+```
+
+See GitHub's [agent skills documentation](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/add-skills)
+for supported locations, provenance, pinning, and security guidance.
 
 ### OpenAI Codex / ChatGPT plugin
 
@@ -171,6 +199,10 @@ ArcGIS Pro, and a configured local `arcgis-mcp-bridge`.
 The open Agent Skills specification does not currently provide a portable
 dependency resolver. Installation documentation must therefore state required
 profiles explicitly rather than assuming sibling skills are present.
+
+Release maintainers should follow [RELEASING.md](RELEASING.md) for the
+non-publishing candidate workflow, clean-install matrix, evidence requirements,
+publication gate, and rollback procedure.
 
 ## Usage
 

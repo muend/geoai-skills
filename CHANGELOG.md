@@ -11,6 +11,14 @@ the independent Claude Code marketplace package is ready for clean-install
 verification and community-directory review.
 
 ### Added
+- A non-publishing, manually dispatchable release-candidate workflow that
+  builds and checksum-verifies all 18 archives on a GitHub runner, retains the
+  result for seven days, and cannot create tags or release assets.
+- A public release runbook with clean-install evidence gates for Skills CLI,
+  Claude, Codex, OpenAI, GitHub Copilot, individual ZIP files, and generic
+  Agent Skills runtimes, plus explicit failure and rollback rules.
+- GitHub Copilot installation instructions using both the official `gh skill`
+  preview/install flow and the Skills CLI `github-copilot` target.
 - Deterministic, individually uploadable ZIP archives for all 18 skills, an
   ordered `SHA256SUMS` manifest, fail-closed runtime-file selection, and a
   release-only workflow that builds from the exact tag and attaches generated
