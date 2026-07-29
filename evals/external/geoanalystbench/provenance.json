@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "suite": "geoanalystbench-derived",
+  "upstream": {
+    "repository": "GeoDS/GeoAnalystBench",
+    "repository_url": "https://github.com/GeoDS/GeoAnalystBench",
+    "commit_sha": "b5d8c40a8d23639ec77e9acb11f79fd033c07338",
+    "license": "Apache-2.0",
+    "license_file": "LICENSE-APACHE-2.0",
+    "paper_doi": "10.1111/tgis.70135"
+  },
+  "reuse": {
+    "upstream_datasets_included": false,
+    "upstream_reference_code_included": false,
+    "upstream_prompts_copied_verbatim": false,
+    "fixture_origin": "deterministic-synthetic",
+    "implementation_origin": "independently-authored"
+  },
+  "included_upstream_task_ids": [
+    38
+  ]
+}

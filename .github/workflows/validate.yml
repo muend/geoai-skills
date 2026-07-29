@@ -39,6 +39,8 @@ jobs:
         run: python tools/validate_skills.py
       - name: Validate evaluation suite
         run: python tools/validate_evals.py
+      - name: Validate external evaluation suites
+        run: python tools/validate_external_evals.py
       - name: Check regression gates
         # Behaviour and routing quality can only be measured by paid model runs,
         # so CI cannot re-measure them here. These gates block the two ways
