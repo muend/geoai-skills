@@ -3,12 +3,50 @@ name: release-skill-archives
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Package version to verify without publishing (for example, 0.2.0)
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 jobs:
+  verify-release-candidate:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Build deterministic release-candidate archives
+        env:
+          VERSION: "${{ inputs.version }}"
+        run: >-
+          python tools/build_skill_archives.py
+          --output-dir dist/skills
+          --expected-version "$VERSION"
+      - name: Verify generated checksums
+        working-directory: dist/skills
+        run: sha256sum --check SHA256SUMS
+      - name: Upload private workflow artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: geoai-skills-${{ inputs.version }}-release-candidate
+          path: |
+            dist/skills/*.zip
+            dist/skills/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 7
+
   publish:
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
