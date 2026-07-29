@@ -36,6 +36,7 @@ transfer results**. Do not:
 
 | Case | Upstream task | Status | What it tests |
 | --- | ---: | --- | --- |
+| `gab-01-urban-heat` | 1 | executable | projected ordinary kriging, variogram diagnostics, spatial block validation, rate-based vulnerability, uncertainty gating, and accessible mapping |
 | `gab-08-facility-coverage` | 8 | executable | network-time coverage, weighted demand, overlap deduplication, barriers, and unreachable demand |
 | `gab-36-vegetation-change` | 36 | executable | scaled SAVI change, intersected quality masks, threshold sensitivity, pixel area, and provenance |
 | `gab-38-travel-time` | 38 | executable | directed travel time, forbidden turns, unreachable destinations, and route artifacts |
