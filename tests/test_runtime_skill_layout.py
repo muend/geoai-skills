@@ -9,6 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SKILLS = ROOT / "skills"
 EVAL_CASES = ROOT / "evals" / "cases"
+GIT_ATTRIBUTES = ROOT / ".gitattributes"
 
 
 def test_runtime_skill_directories_exclude_evaluation_material() -> None:
@@ -44,3 +45,15 @@ def test_external_eval_tree_matches_runtime_skill_set() -> None:
         eval_path = EVAL_CASES / skill_name / "evals.json"
         payload = json.loads(eval_path.read_text(encoding="utf-8-sig"))
         assert payload["skill"] == skill_name
+
+
+def test_eval_fixture_text_is_lf_normalized_across_platforms() -> None:
+    """Fixture bytes must produce identical suite hashes on every checkout OS."""
+    rules = {
+        line.strip()
+        for line in GIT_ATTRIBUTES.read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    }
+
+    assert "evals/cases/*/fixtures/** text=auto eol=lf" in rules
+    assert "skills/*/evals/fixtures/** text=auto eol=lf" not in rules
