@@ -11,6 +11,10 @@ the independent Claude Code marketplace package is ready for clean-install
 verification and community-directory review.
 
 ### Added
+- Deterministic, individually uploadable ZIP archives for all 18 skills, an
+  ordered `SHA256SUMS` manifest, fail-closed runtime-file selection, and a
+  release-only workflow that builds from the exact tag and attaches generated
+  files without committing them as source.
 - Claude Code marketplace and plugin discovery metadata, stable `geoai`
   namespace documentation, terminal and interactive installation commands,
   and contract tests that keep the Claude, OpenAI, and Python package versions
