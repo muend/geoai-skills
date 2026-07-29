@@ -18,6 +18,7 @@
   },
   "included_upstream_task_ids": [
     8,
+    36,
     38
   ]
 }

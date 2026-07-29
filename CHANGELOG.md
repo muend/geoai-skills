@@ -12,11 +12,12 @@ verification and community-directory review.
 
 ### Added
 - An isolated GeoAnalystBench-derived external transfer-suite scaffold and its
-  first two executable cases: deterministic synthetic directed travel-time
+  first three executable cases: deterministic synthetic directed travel-time
   routing with forbidden-turn validation, plus demand-weighted facility
   coverage with network barriers, overlap deduplication, and unreachable
-  demand. External results remain separate from native benchmark hashes and
-  claims.
+  demand, plus masked SAVI vegetation change with scale, threshold
+  sensitivity, pixel-area, phenology, registration, and provenance controls.
+  External results remain separate from native benchmark hashes and claims.
 - A non-publishing, manually dispatchable release-candidate workflow that
   builds and checksum-verifies all 18 archives on a GitHub runner, retains the
   result for seven days, and cannot create tags or release assets.

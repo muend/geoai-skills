@@ -37,6 +37,7 @@ transfer results**. Do not:
 | Case | Upstream task | Status | What it tests |
 | --- | ---: | --- | --- |
 | `gab-08-facility-coverage` | 8 | executable | network-time coverage, weighted demand, overlap deduplication, barriers, and unreachable demand |
+| `gab-36-vegetation-change` | 36 | executable | scaled SAVI change, intersected quality masks, threshold sensitivity, pixel area, and provenance |
 | `gab-38-travel-time` | 38 | executable | directed travel time, forbidden turns, unreachable destinations, and route artifacts |
 
 The planned subset has five tasks. Cases are added only when they have
