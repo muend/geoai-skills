@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "case_id": "gab-08-facility-coverage",
+  "upstream_task_id": 8,
+  "title": "Demand-weighted facility coverage on a constrained road network",
+  "skill": "network-accessibility-analysis",
+  "prompt": "Use fixtures/coverage-network.json to calculate 5-minute driving coverage from all facilities to every demand point. Use network time_minutes rather than Euclidean distance, assign each reachable demand to its least-cost facility with facility_id as the deterministic tie-break, retain every unreachable demand, and count population once even when multiple facilities cover it. Write outputs/demand-coverage.csv, outputs/service-gaps.geojson, and outputs/summary.json. Report the projected CRS, driving mode, cutoff, overlap population, unreachable demand, and demand-weighted coverage share explicitly.",
+  "provenance": {
+    "adaptation": "independently-authored",
+    "fixture_origin": "deterministic-synthetic",
+    "upstream_task_url": "https://github.com/GeoDS/GeoAnalystBench/blob/b5d8c40a8d23639ec77e9acb11f79fd033c07338/README.md#tasks"
+  },
+  "fixture_generator": "generate_fixture.py",
+  "reference": "reference.py",
+  "validator": "validate_artifacts.py",
+  "input_paths": [
+    "fixtures/coverage-network.json"
+  ],
+  "expected_artifacts": [
+    "outputs/demand-coverage.csv",
+    "outputs/service-gaps.geojson",
+    "outputs/summary.json"
+  ],
+  "invariants": [
+    "Driving-network time rather than Euclidean distance determines coverage.",
+    "Demand covered by multiple facilities contributes population only once.",
+    "The deterministic assignment tie-break selects the lexical facility ID.",
+    "Every demand is reported, including the disconnected demand D7.",
+    "The projected EPSG:32636 CRS, five-minute cutoff, and driving mode remain explicit."
+  ]
+}
