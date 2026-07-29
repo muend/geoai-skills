@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "case_id": "gab-39-spatial-regression",
+  "upstream_task_id": 39,
+  "title": "Spatial regression selection with blocked validation and coefficient uncertainty",
+  "skill": "spatial-statistics",
+  "prompt": "Use fixtures/spatial-regression.json to fit an OLS baseline before considering any local model. Diagnose residual spatial dependence with the declared row-standardized queen weights and rook sensitivity weights, exclude the collinear nuisance feature using explicit VIF evidence, and compare global OLS with the declared local weighted regression by four spatial block folds. Select the local model only if the predeclared residual-dependence and blocked-RMSE decision gate passes. Write outputs/model-comparison.json, outputs/spatial-validation.json, outputs/local-coefficients.geojson, outputs/coefficient-uncertainty.geojson, outputs/collinearity-extrapolation.json, and outputs/provenance.json. Apply BH-FDR to local coefficient tests and include coefficient scale, units, bandwidth, standard errors, effective sample sizes, and unstable-region warnings.",
+  "provenance": {
+    "adaptation": "independently-authored",
+    "fixture_origin": "deterministic-synthetic",
+    "upstream_task_url": "https://github.com/GeoDS/GeoAnalystBench/blob/b5d8c40a8d23639ec77e9acb11f79fd033c07338/README.md#tasks"
+  },
+  "fixture_generator": "generate_fixture.py",
+  "reference": "reference.py",
+  "validator": "validate_artifacts.py",
+  "input_paths": [
+    "fixtures/spatial-regression.json"
+  ],
+  "expected_artifacts": [
+    "outputs/model-comparison.json",
+    "outputs/spatial-validation.json",
+    "outputs/local-coefficients.geojson",
+    "outputs/coefficient-uncertainty.geojson",
+    "outputs/collinearity-extrapolation.json",
+    "outputs/provenance.json"
+  ],
+  "invariants": [
+    "The workflow fits and diagnoses an OLS baseline before any local-model decision.",
+    "Queen residual Moran inference uses 999 deterministic permutations and rook weights provide sensitivity evidence.",
+    "Four coherent spatial blocks rather than random observation folds define validation.",
+    "The nuisance proxy is excluded because its variance inflation factor exceeds the declared threshold.",
+    "Local coefficient tests expose standard errors and BH-FDR q-values rather than uncorrected significance.",
+    "Coefficient maps state scale, units, bandwidth, effective sample size, and unstable-region warnings.",
+    "The selected model remains exploratory and cannot support a causal claim."
+  ]
+}
