@@ -46,6 +46,29 @@ The planned subset has five tasks. Cases are added only when they have
 deterministic synthetic fixtures, an independent executable reference, and
 artifact-level validation.
 
+## Frozen v1 source boundary
+
+[`freeze-v1.json`](freeze-v1.json) fixes the exact five case IDs, upstream task
+IDs, upstream commit, reporting boundary, and SHA-256 digest of every governed
+suite source file. Its aggregate `suite_sha256` is
+`c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12`,
+computed from sorted
+`<file-sha256><two spaces><POSIX-path>` records, so it is stable across Windows,
+macOS, and Linux checkouts.
+
+The freeze covers provenance, schema, attribution/license files, and every file
+inside the five case directories. It contains no model outputs or benchmark
+results. Any byte change or new case-local file makes validation fail. Do not
+rewrite `freeze-v1.json`; create a new freeze version for a changed source
+population.
+
+Verify the boundary from the repository root:
+
+```bash
+python tools/build_external_eval_freeze.py --check
+python tools/validate_external_evals.py
+```
+
 ## Run the current case
 
 From the repository root:

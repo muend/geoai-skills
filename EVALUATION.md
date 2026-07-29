@@ -67,6 +67,11 @@ provenance pins the exact upstream commit and preserves the upstream license.
 Results must be reported under their external-suite identity and may not be
 pooled with native routing or behavior results. See
 `evals/external/geoanalystbench/README.md` for the reuse and reporting boundary.
+The initial five-case population is frozen by
+`evals/external/geoanalystbench/freeze-v1.json`; CI verifies its exact case
+membership and source-file hashes. This freeze is an input-integrity record,
+not a model result or performance claim. A changed case population must receive
+a new freeze version rather than rewriting v1.
 
 ## 1. Prepare blind requests
 

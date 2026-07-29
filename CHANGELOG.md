@@ -18,6 +18,12 @@ own `metadata.version` in its frontmatter.
   five separately reported executable GeoAnalystBench-derived transfer cases,
   and clearly labeled the archived 17-skill routing result as superseded.
 
+### Added
+- An immutable `geoanalystbench-derived-v1` source manifest that pins the five
+  external case IDs, upstream task IDs and commit, reporting boundary, and
+  SHA-256 digest of every governed suite source file, with fail-closed CI tests
+  for changed bytes and unregistered case-local files.
+
 ## [0.2.0] — 2026-07-28
 
 Initial public plugin release. The OpenAI Plugins Directory release is live;
