@@ -28,7 +28,7 @@ def _skill(name: str) -> str:
 
 
 def _case(skill: str, case_id: str) -> dict:
-    path = ROOT / "skills" / skill / "evals" / "evals.json"
+    path = ROOT / "evals" / "cases" / skill / "evals.json"
     suite = json.loads(path.read_text(encoding="utf-8"))
     return next(case for case in suite["evals"] if case["id"] == case_id)
 

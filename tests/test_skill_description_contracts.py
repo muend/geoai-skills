@@ -8,6 +8,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 SWE_SKILL = ROOT / "skills" / "swe-devops-standards"
+SWE_EVALS = ROOT / "evals" / "cases" / "swe-devops-standards" / "evals.json"
 
 
 def load_frontmatter(skill_file: Path) -> dict[str, object]:
@@ -33,7 +34,7 @@ def test_swe_description_front_loads_review_and_repair_intent() -> None:
 def test_swe_description_preserves_no_code_analysis_boundary() -> None:
     metadata = load_frontmatter(SWE_SKILL / "SKILL.md")
     description = str(metadata["description"])
-    suite = json.loads((SWE_SKILL / "evals" / "evals.json").read_text(encoding="utf-8"))
+    suite = json.loads(SWE_EVALS.read_text(encoding="utf-8"))
     cases = {case["id"]: case for case in suite["evals"]}
 
     assert "analysis requesting no code or repository artifact" in description

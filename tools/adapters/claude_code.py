@@ -304,6 +304,30 @@ def safe_workspace_path(workspace: Path, relative_path: str) -> Path:
     return target
 
 
+def resolve_fixture_source(repository_root: Path, source_path: str) -> Path:
+    """Resolve a stable manifest source identity to its physical eval source."""
+    root = repository_root.resolve()
+    logical = Path(source_path)
+    source = (root / logical).resolve()
+
+    if not source.is_file():
+        parts = logical.parts
+        if len(parts) >= 4 and parts[0] == "skills" and parts[2] == "evals":
+            source = (
+                root
+                / "evals"
+                / "cases"
+                / parts[1]
+                / Path(*parts[3:])
+            ).resolve()
+
+    try:
+        source.relative_to(root)
+    except ValueError as exc:
+        raise AdapterError(f"Fixture escapes repository root: {source_path}") from exc
+    return source
+
+
 def stage_case_workspace(
     case: dict[str, Any],
     workspace: Path,
@@ -312,13 +336,7 @@ def stage_case_workspace(
 ) -> None:
     workspace.mkdir(parents=True, exist_ok=False)
     for fixture in case.get("fixtures", []):
-        source = (repository_root / fixture["source_path"]).resolve()
-        try:
-            source.relative_to(repository_root.resolve())
-        except ValueError as exc:
-            raise AdapterError(
-                f"Fixture escapes repository root: {fixture['source_path']}"
-            ) from exc
+        source = resolve_fixture_source(repository_root, fixture["source_path"])
         if not source.is_file():
             raise AdapterError(f"Missing fixture: {fixture['source_path']}")
         content = source.read_bytes()

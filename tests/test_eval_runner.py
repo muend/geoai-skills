@@ -309,8 +309,9 @@ def test_prepare_behavior_scope_fails_closed_without_classified_cases(
 ) -> None:
     skills_dir = tmp_path / "skills"
     skill = skills_dir / "sample-skill"
-    eval_dir = skill / "evals"
+    eval_dir = tmp_path / "evals" / "cases" / "sample-skill"
     eval_dir.mkdir(parents=True)
+    skill.mkdir(parents=True)
     (skill / "SKILL.md").write_text(
         "---\nname: sample-skill\ndescription: Test.\n---\n",
         encoding="utf-8",
@@ -506,10 +507,11 @@ def test_load_suite_hashes_declared_fixtures_and_behavior_contract(
 ) -> None:
     skills_dir = tmp_path / "skills"
     skill = skills_dir / "sample-skill"
-    eval_dir = skill / "evals"
+    eval_dir = tmp_path / "evals" / "cases" / "sample-skill"
     fixture = eval_dir / "fixtures" / "input.csv"
     fixture.parent.mkdir(parents=True)
     fixture.write_text("x,y\n1,2\n", encoding="utf-8")
+    skill.mkdir(parents=True)
     (skill / "SKILL.md").write_text(
         "---\nname: sample-skill\ndescription: Test.\n---\n", encoding="utf-8"
     )
@@ -563,6 +565,10 @@ def test_load_suite_hashes_declared_fixtures_and_behavior_contract(
     declared = cases[0]
     assert declared["behavior_class"] == "fixture-backed"
     assert declared["interaction_mode"] == "deliver"
+    assert (
+        declared["fixtures"][0]["source_path"]
+        == "skills/sample-skill/evals/fixtures/input.csv"
+    )
     assert declared["fixtures"][0]["workspace_path"] == "inputs/input.csv"
     assert declared["fixtures"][0]["size_bytes"] == len(fixture.read_bytes())
     assert len(declared["fixtures"][0]["sha256"]) == 64
@@ -575,8 +581,9 @@ def test_load_suite_requires_interaction_mode_for_behavior_cases(
 ) -> None:
     skills_dir = tmp_path / "skills"
     skill = skills_dir / "sample-skill"
-    eval_dir = skill / "evals"
+    eval_dir = tmp_path / "evals" / "cases" / "sample-skill"
     eval_dir.mkdir(parents=True)
+    skill.mkdir(parents=True)
     (skill / "SKILL.md").write_text(
         "---\nname: sample-skill\ndescription: Test.\n---\n", encoding="utf-8"
     )
