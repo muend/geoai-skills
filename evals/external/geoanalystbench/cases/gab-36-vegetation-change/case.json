@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "case_id": "gab-36-vegetation-change",
+  "upstream_task_id": 36,
+  "title": "Masked SAVI vegetation change after a synthetic hailstorm",
+  "skill": "change-detection",
+  "prompt": "Use fixtures/hailstorm-scenes.json to compute pre-event SAVI, post-event SAVI, and post-minus-pre SAVI change from the scaled surface-reflectance grids. Intersect both quality masks before analysis, preserve invalid cells as null, and classify damage where delta_savi is less than or equal to -0.20. Write outputs/savi-change.json, outputs/damage-pixels.geojson, outputs/change-summary.csv, and outputs/provenance.json. Report changed area from the projected 10 m pixel dimensions, include sensitivity results for thresholds -0.15, -0.20, and -0.25, and preserve the CRS, scale factor, SAVI L parameter, product level, matched-phenology declaration, co-registration RMSE, and valid-overlap percentage.",
+  "provenance": {
+    "adaptation": "independently-authored",
+    "fixture_origin": "deterministic-synthetic",
+    "upstream_task_url": "https://github.com/GeoDS/GeoAnalystBench/blob/b5d8c40a8d23639ec77e9acb11f79fd033c07338/README.md#tasks"
+  },
+  "fixture_generator": "generate_fixture.py",
+  "reference": "reference.py",
+  "validator": "validate_artifacts.py",
+  "input_paths": [
+    "fixtures/hailstorm-scenes.json"
+  ],
+  "expected_artifacts": [
+    "outputs/change-summary.csv",
+    "outputs/damage-pixels.geojson",
+    "outputs/provenance.json",
+    "outputs/savi-change.json"
+  ],
+  "invariants": [
+    "SAVI is computed from scaled surface reflectance with L equal to 0.5.",
+    "Only the intersection of pre-event and post-event quality masks is analyzed.",
+    "Damage is post-minus-pre SAVI at the declared inclusive negative threshold.",
+    "Changed area uses projected ten-metre pixel dimensions and hectare conversion.",
+    "Sensitivity, phenology, registration, product level, CRS, and valid overlap remain explicit."
+  ]
+}
