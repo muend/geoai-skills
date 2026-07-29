@@ -12,13 +12,16 @@ verification and community-directory review.
 
 ### Added
 - An isolated GeoAnalystBench-derived external transfer-suite scaffold and its
-  first four executable cases: deterministic synthetic directed travel-time
+  five planned executable cases: deterministic synthetic directed travel-time
   routing with forbidden-turn validation, plus demand-weighted facility
   coverage with network barriers, overlap deduplication, and unreachable
   demand, plus masked SAVI vegetation change with scale, threshold
   sensitivity, pixel-area, phenology, registration, and provenance controls,
   plus projected ordinary kriging with variogram diagnostics, spatial-block
-  validation, uncertainty-gated vulnerability, and accessible map checks.
+  validation, uncertainty-gated vulnerability, and accessible map checks,
+  plus OLS-first spatial regression with residual Moran diagnostics, blocked
+  model selection, VIF exclusion, FDR uncertainty, and unstable-region
+  warnings.
   External results remain separate from native benchmark hashes and claims.
 - A non-publishing, manually dispatchable release-candidate workflow that
   builds and checksum-verifies all 18 archives on a GitHub runner, retains the

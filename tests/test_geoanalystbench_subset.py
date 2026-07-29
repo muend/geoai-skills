@@ -67,7 +67,7 @@ def test_external_suite_metadata_validates() -> None:
     """External cases must pass their separate schema and boundary validator."""
     result = run_script(SUITE_VALIDATOR)
     assert result.returncode == 0, result.stderr
-    assert "4 external cases checked — 0 errors" in result.stdout
+    assert "5 external cases checked — 0 errors" in result.stdout
 
 
 def test_fixture_generation_is_byte_deterministic(tmp_path: Path) -> None:
