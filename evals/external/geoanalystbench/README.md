@@ -68,6 +68,7 @@ Verify the boundary from the repository root:
 python tools/build_external_eval_freeze.py --check
 python tools/build_external_eval_freeze_v2.py --check
 python tools/build_external_producer_interface.py --check
+python tools/build_external_producer_interface_v2.py --check
 python tools/validate_external_evals.py
 ```
 
@@ -103,11 +104,26 @@ The interface includes only artifact paths, formats, required field names, and
 method-evidence requirements. It excludes reference outputs, expected
 analytical values, and validator source.
 
+[`producer-interfaces/v2/`](producer-interfaces/v2/) is a separately frozen,
+answer-safe successor for new runs. Its manifest,
+[`producer-interface-v2.json`](producer-interface-v2.json), pins aggregate hash
+`7ebfc789c10e99e9b3ec012b6e1e5323dd374be2a961ae3a645c976c684a5647`.
+V2 preserves the same source cases and strict artifact validators, but makes
+previously ambiguous method conventions, CSV/null/path serialization, mask
+semantics, UTF-8 output, and workspace-local execution explicit. These are
+producer instructions, not result values. V1 remains immutable for historical
+comparison.
+
 Render the exact prompt for one case without invoking a model:
 
 ```bash
 python tools/render_external_case_prompt.py \
   --case gab-38-travel-time \
+  --output /path/to/evidence/gab-38-travel-time/prompt.txt
+
+python tools/render_external_case_prompt.py \
+  --case gab-38-travel-time \
+  --interface-version 2 \
   --output /path/to/evidence/gab-38-travel-time/prompt.txt
 ```
 
@@ -132,7 +148,11 @@ only performs two offline operations:
    frozen artifact validator to outputs that already exist, hashes the prompt,
    response, and artifacts, and writes a machine-readable result. Artifact
    validation is attempted even when the runtime timed out or returned an
-   error. A runtime or validator failure remains in the five-case denominator.
+error. A runtime or validator failure remains in the five-case denominator.
+
+Use [`run-template-v2.json`](run-template-v2.json) for new v2-condition runs.
+The original [`run-template.json`](run-template.json) remains pinned to v1 so
+past evidence can be reproduced byte-for-byte.
 
 Run and result schema version 3 deliberately separates four questions:
 

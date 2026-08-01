@@ -1,0 +1,65 @@
+{
+  "schema_version": 2,
+  "interface_id": "geoanalystbench-producer-interface-v2/gab-01-urban-heat",
+  "case_id": "gab-01-urban-heat",
+  "base_freeze_id": "geoanalystbench-derived-v1",
+  "base_suite_sha256": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12",
+  "contract_freeze_id": "geoanalystbench-derived-contracts-v2",
+  "contract_suite_sha256": "86170ae144092f1ae0f34124d85505f0d3507a19f04f2b71f2081c89d10de418",
+  "disclosure_boundary": {
+    "includes": ["artifact paths", "field names", "formats", "method evidence", "serialization rules", "execution hints"],
+    "excludes": ["reference outputs", "expected analytical values", "validator source"]
+  },
+  "execution_hints": [
+    "Create one deterministic Python script in the current workspace root and run it once to produce and check all artifacts; do not place helper files under outputs.",
+    "Do not install dependencies or write to an operating-system temporary directory; the calculation is implementable with the Python standard library, while an already available numeric package may be used.",
+    "Write text artifacts explicitly as UTF-8; keep generated source ASCII-safe on Windows and emit non-ASCII SVG text with Unicode escapes when necessary.",
+    "If a direct file-edit operation fails, write the workspace-local script through the shell rather than changing directories or retrying outside the workspace."
+  ],
+  "method_contract": [
+    "Use the fixture exponential semivariogram: gamma(0)=0 and gamma(h)=nugget + partial_sill * (1 - exp(-h/range_m)) for h greater than zero; do not substitute a covariance model or multiply distance by an undocumented factor.",
+    "Solve the ordinary-kriging semivariance system with a Lagrange multiplier, predict from the solved weights, and report standard deviation as sqrt(max(sum(weight_i * gamma_i) + multiplier, 0)).",
+    "Predict at cell centers x=origin_x+(column+0.5)*cell_size_m and y=origin_y+(row+0.5)*cell_size_m; rows advance south-to-north.",
+    "Summarize a census zone using grid-cell centers inside its half-open bbox: min_x <= x < max_x and min_y <= y < max_y.",
+    "Set selection_status to selected only when heat and elderly-rate thresholds pass and uncertainty is within the ceiling; otherwise use uncertainty_excluded when heat and elderly-rate pass but uncertainty fails, and not_selected for all other zones.",
+    "Build empirical semivariogram bins from point pairs within max_lag_m and run the declared four spatial holdout folds without random-only validation."
+  ],
+  "artifacts": [
+    {
+      "path": "outputs/temperature-surface.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "variable", "units", "crs", "origin_x", "origin_y", "cell_size_m", "width", "height", "row_order", "values"],
+      "requirements": ["Use schema_version 1.", "Use variable ordinary_kriging_temperature_mean, units degrees Celsius, and row_order south-to-north.", "Build the grid from fixture prediction_grid and domain metadata and round calculated grid values to six decimal places."]
+    },
+    {
+      "path": "outputs/uncertainty-surface.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "variable", "units", "crs", "origin_x", "origin_y", "cell_size_m", "width", "height", "row_order", "values"],
+      "requirements": ["Use schema_version 1.", "Use variable ordinary_kriging_standard_deviation, units degrees Celsius, and the identical grid identity and six-decimal rounding as the temperature surface."]
+    },
+    {
+      "path": "outputs/census-summary.csv",
+      "format": "CSV",
+      "required_fields": ["census_id", "total_population", "elderly_population", "elderly_rate", "mean_temperature_c", "mean_uncertainty_c", "selection_status"],
+      "requirements": ["Use this exact column order and write one row for every census zone.", "Compute elderly_rate as elderly_population divided by total_population.", "Serialize the three calculated rate and mean fields to six decimal places and use only selected, uncertainty_excluded, or not_selected as selection_status."]
+    },
+    {
+      "path": "outputs/validation-report.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "validation_method", "random_only_validation", "empirical_variogram", "variogram_model", "spatial_block_cv", "diagnostics"],
+      "requirements": ["Use schema_version 1 and random_only_validation false.", "Report all four spatial folds plus aggregate error metrics and a training-mean baseline.", "Represent empirical_variogram as the ordered lag-bin records with pair_count, mean_lag_m, and semivariance and preserve the declared model fields."]
+    },
+    {
+      "path": "outputs/provenance.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "case_id", "fixture", "crs", "coordinate_units", "method", "variogram", "prediction_grid", "validation", "risk_rule", "map", "implementation"],
+      "requirements": ["Use schema_version 1 and case_id gab-01-urban-heat.", "Preserve fixture-declared variogram, prediction_grid, validation, risk-rule, CRS, and unit objects without changing their meaning.", "Record ordinary kriging, independently-authored implementation provenance, and no randomness."]
+    },
+    {
+      "path": "outputs/urban-heat-map.svg",
+      "format": "SVG",
+      "required_fields": ["role=img", "aria-labelledby=map-title map-desc", "title#map-title", "desc#map-desc", "temperature legend", "uncertainty exclusion legend", "projection label", "data-census-id"],
+      "requirements": ["Render all census zones and expose one data-census-id marker per zone.", "Include accessible title and description elements.", "Use visible or accessible text containing Mean temperature (°C), Excluded: uncertainty, manual fixed temperature classes, and the fixture CRS.", "Distinguish selected zones and uncertainty exclusions without relying on color alone."]
+    }
+  ]
+}

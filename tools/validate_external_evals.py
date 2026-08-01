@@ -18,6 +18,10 @@ from build_external_producer_interface import (
     MANIFEST_NAME as PRODUCER_MANIFEST_NAME,
     validate_producer_interface,
 )
+from build_external_producer_interface_v2 import (
+    MANIFEST_NAME as PRODUCER_V2_MANIFEST_NAME,
+    validate_producer_interface_v2,
+)
 
 ROOT = Path(__file__).resolve().parent.parent
 SUITE_ROOT = ROOT / "evals" / "external" / "geoanalystbench"
@@ -105,9 +109,11 @@ def validate_suite() -> tuple[int, list[str]]:
         SUITE_ROOT / MANIFEST_NAME,
         SUITE_ROOT / CONTRACT_MANIFEST_NAME,
         SUITE_ROOT / PRODUCER_MANIFEST_NAME,
+        SUITE_ROOT / PRODUCER_V2_MANIFEST_NAME,
         SUITE_ROOT / "run-schema.json",
         SUITE_ROOT / "result-schema.json",
         SUITE_ROOT / "run-template.json",
+        SUITE_ROOT / "run-template-v2.json",
         SUITE_ROOT / "RESULTS-TEMPLATE.md",
     ]
     for path in required:
@@ -122,6 +128,7 @@ def validate_suite() -> tuple[int, list[str]]:
         run_schema = read_json(SUITE_ROOT / "run-schema.json")
         result_schema = read_json(SUITE_ROOT / "result-schema.json")
         run_template = read_json(SUITE_ROOT / "run-template.json")
+        run_template_v2 = read_json(SUITE_ROOT / "run-template-v2.json")
     except (OSError, json.JSONDecodeError) as exc:
         return 0, [f"external-suite metadata is invalid: {exc}"]
 
@@ -163,16 +170,24 @@ def validate_suite() -> tuple[int, list[str]]:
         f"{PRODUCER_MANIFEST_NAME}: {error}"
         for error in validate_producer_interface(SUITE_ROOT)
     )
+    errors.extend(
+        f"{PRODUCER_V2_MANIFEST_NAME}: {error}"
+        for error in validate_producer_interface_v2(SUITE_ROOT)
+    )
     run_validator = Draft202012Validator(
         run_schema,
         format_checker=FormatChecker(),
     )
-    for error in sorted(
-        run_validator.iter_errors(run_template),
-        key=lambda item: list(item.path),
+    for template_name, template in (
+        ("run-template.json", run_template),
+        ("run-template-v2.json", run_template_v2),
     ):
-        location = ".".join(str(part) for part in error.path) or "<root>"
-        errors.append(f"run-template.json: {location}: {error.message}")
+        for error in sorted(
+            run_validator.iter_errors(template),
+            key=lambda item: list(item.path),
+        ):
+            location = ".".join(str(part) for part in error.path) or "<root>"
+            errors.append(f"{template_name}: {location}: {error.message}")
     if run_template.get("freeze_id") != EXPECTED_FREEZE_ID:
         errors.append("run-template.json: freeze_id must remain pinned to v1")
     if run_template.get("suite_sha256") != EXPECTED_SUITE_SHA256:
@@ -181,6 +196,17 @@ def validate_suite() -> tuple[int, list[str]]:
         errors.append("run-template.json: native suite pooling must remain false")
     if run_template.get("reporting_scope") != "external-transfer-only":
         errors.append("run-template.json: reporting scope must remain external-only")
+    if run_template_v2.get("producer_interface_id") != (
+        "geoanalystbench-producer-interface-v2"
+    ):
+        errors.append("run-template-v2.json: producer interface must remain pinned to v2")
+    if run_template_v2.get("producer_interface_sha256") != (
+        "7ebfc789c10e99e9b3ec012b6e1e5323dd374be2a961ae3a645c976c684a5647"
+    ):
+        errors.append("run-template-v2.json: producer interface hash must remain pinned")
+    for field in ("freeze_id", "suite_sha256", "reporting_scope"):
+        if run_template_v2.get(field) != run_template.get(field):
+            errors.append(f"run-template-v2.json: {field} must match the v1 template")
     return len(case_paths), errors
 
 

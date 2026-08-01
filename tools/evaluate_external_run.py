@@ -25,6 +25,11 @@ from build_external_producer_interface import (
     INTERFACE_ID,
     validate_producer_interface,
 )
+from build_external_producer_interface_v2 import (
+    EXPECTED_INTERFACE_SHA256 as EXPECTED_INTERFACE_V2_SHA256,
+    INTERFACE_ID as INTERFACE_V2_ID,
+    validate_producer_interface_v2,
+)
 from render_external_case_prompt import render_prompt
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -39,6 +44,20 @@ CLAIM_BOUNDARY = (
     "native 158-case suite and not the upstream 50-task benchmark."
 )
 PLACEHOLDER_PREFIX = "replace-before-run"
+INTERFACE_CONFIG = {
+    INTERFACE_ID: {
+        "sha256": EXPECTED_INTERFACE_SHA256,
+        "version": 1,
+        "manifest": "producer-interface-v1.json",
+        "validate": validate_producer_interface,
+    },
+    INTERFACE_V2_ID: {
+        "sha256": EXPECTED_INTERFACE_V2_SHA256,
+        "version": 2,
+        "manifest": "producer-interface-v2.json",
+        "validate": validate_producer_interface_v2,
+    },
+}
 
 
 class ProtocolError(ValueError):
@@ -95,18 +114,28 @@ def validate_manifest(payload: Any, manifest_path: Path) -> list[str]:
 
     freeze_errors = validate_freeze_manifest(SUITE_ROOT)
     errors.extend(f"freeze-v1.json: {error}" for error in freeze_errors)
-    interface_errors = validate_producer_interface(SUITE_ROOT)
-    errors.extend(
-        f"producer-interface-v1.json: {error}" for error in interface_errors
-    )
+    interface_id = payload.get("producer_interface_id")
+    interface_config = INTERFACE_CONFIG.get(interface_id)
+    if interface_config is None:
+        errors.append(
+            "producer_interface_id must identify a supported frozen interface"
+        )
+    else:
+        interface_errors = interface_config["validate"](SUITE_ROOT)
+        errors.extend(
+            f"{interface_config['manifest']}: {error}" for error in interface_errors
+        )
     if payload.get("freeze_id") != FREEZE_ID:
         errors.append(f"freeze_id must equal {FREEZE_ID}")
     if payload.get("suite_sha256") != EXPECTED_V1_SUITE_SHA256:
         errors.append("suite_sha256 does not match frozen v1")
-    if payload.get("producer_interface_id") != INTERFACE_ID:
-        errors.append(f"producer_interface_id must equal {INTERFACE_ID}")
-    if payload.get("producer_interface_sha256") != EXPECTED_INTERFACE_SHA256:
-        errors.append("producer_interface_sha256 does not match frozen interface v1")
+    if (
+        interface_config is not None
+        and payload.get("producer_interface_sha256") != interface_config["sha256"]
+    ):
+        errors.append(
+            "producer_interface_sha256 does not match the selected frozen interface"
+        )
 
     case_ids = [str(case.get("case_id")) for case in payload.get("cases", [])]
     if case_ids != EXPECTED_CASE_IDS:
@@ -186,13 +215,18 @@ def validate_manifest(payload: Any, manifest_path: Path) -> list[str]:
                 errors.append(f"{field} must be unique across cases: {value}")
             collection.add(resolved)
             if field == "prompt_path" and case_id in EXPECTED_CASE_IDS:
-                expected = render_prompt(case_id).encode("utf-8")
+                if interface_config is None:
+                    continue
+                expected = render_prompt(
+                    case_id,
+                    interface_version=int(interface_config["version"]),
+                ).encode("utf-8")
                 if not resolved.is_file():
                     errors.append(f"{case_id}: prompt file is missing: {value}")
                 elif resolved.read_bytes() != expected:
                     errors.append(
                         f"{case_id}: prompt bytes do not match the deterministic "
-                        f"{INTERFACE_ID} renderer"
+                        f"{interface_id} renderer"
                     )
     if prompt_paths & response_paths:
         errors.append("a prompt_path may not also be a response_path")
