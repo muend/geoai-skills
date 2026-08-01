@@ -18,6 +18,7 @@ TOOL = ROOT / "tools" / "evaluate_external_run.py"
 PROMPT_TOOL = ROOT / "tools" / "render_external_case_prompt.py"
 TEMPLATE = SUITE / "run-template.json"
 TEMPLATE_V2 = SUITE / "run-template-v2.json"
+TEMPLATE_V3 = SUITE / "run-template-v3.json"
 RUN_SCHEMA = SUITE / "run-schema.json"
 RESULT_SCHEMA = SUITE / "result-schema.json"
 MINIMAX_PROFILE = SUITE / "MINIMAX-CODE.md"
@@ -31,6 +32,10 @@ EXPECTED_CASE_IDS = [
 PRODUCER_V2_ID = "geoanalystbench-producer-interface-v2"
 PRODUCER_V2_SHA256 = (
     "7ebfc789c10e99e9b3ec012b6e1e5323dd374be2a961ae3a645c976c684a5647"
+)
+PRODUCER_V3_ID = "geoanalystbench-producer-interface-v3"
+PRODUCER_V3_SHA256 = (
+    "f52aadf2bfc3db74e2e004f647696f1b0c9631154823ee02fb433e2daff6b754"
 )
 
 
@@ -129,9 +134,11 @@ def populate_reference_evidence(base: Path, payload: dict[str, Any]) -> None:
 
 def populate_prompts(base: Path, payload: dict[str, Any]) -> None:
     """Render the exact answer-safe prompt recorded by the run protocol."""
-    interface_version = (
-        "2" if payload["producer_interface_id"] == PRODUCER_V2_ID else "1"
-    )
+    interface_versions = {
+        PRODUCER_V2_ID: "2",
+        PRODUCER_V3_ID: "3",
+    }
+    interface_version = interface_versions.get(payload["producer_interface_id"], "1")
     for entry in payload["cases"]:
         prompt_path = base / entry["prompt_path"]
         prompt_path.parent.mkdir(parents=True, exist_ok=True)
@@ -179,6 +186,15 @@ def test_public_schemas_and_template_are_valid() -> None:
     assert v2_errors == []
     assert read_json(TEMPLATE_V2)["producer_interface_id"] == PRODUCER_V2_ID
     assert read_json(TEMPLATE_V2)["producer_interface_sha256"] == PRODUCER_V2_SHA256
+    v3_errors = list(
+        Draft202012Validator(
+            run_schema,
+            format_checker=FormatChecker(),
+        ).iter_errors(read_json(TEMPLATE_V3))
+    )
+    assert v3_errors == []
+    assert read_json(TEMPLATE_V3)["producer_interface_id"] == PRODUCER_V3_ID
+    assert read_json(TEMPLATE_V3)["producer_interface_sha256"] == PRODUCER_V3_SHA256
 
 
 def test_template_fails_closed_until_operator_metadata_is_replaced(
@@ -221,6 +237,44 @@ def test_dry_run_accepts_the_paired_v2_interface_identity(tmp_path: Path) -> Non
     result = run_tool("--manifest", str(manifest), "--dry-run")
     assert result.returncode == 0, result.stderr
     assert "5 cases, 5 calls max" in result.stdout
+
+
+def test_dry_run_accepts_the_paired_v3_interface_identity(tmp_path: Path) -> None:
+    """A v3 run must bind its semantic interface ID, hash, and prompt bytes."""
+    manifest = tmp_path / "run-v3.json"
+    payload = valid_manifest()
+    payload["producer_interface_id"] = PRODUCER_V3_ID
+    payload["producer_interface_sha256"] = PRODUCER_V3_SHA256
+    populate_prompts(tmp_path, payload)
+    write_json(manifest, payload)
+    result = run_tool("--manifest", str(manifest), "--dry-run")
+    assert result.returncode == 0, result.stderr
+    assert "5 cases, 5 calls max" in result.stdout
+
+
+def test_v3_evaluator_uses_the_semantic_contract(tmp_path: Path) -> None:
+    """Reference evidence must pass through the immutable v3 validator dispatch."""
+    payload = valid_manifest()
+    payload["producer_interface_id"] = PRODUCER_V3_ID
+    payload["producer_interface_sha256"] = PRODUCER_V3_SHA256
+    populate_reference_evidence(tmp_path, payload)
+    manifest = tmp_path / "run-v3.json"
+    result_path = tmp_path / "result-v3.json"
+    write_json(manifest, payload)
+    completed = run_tool(
+        "--manifest",
+        str(manifest),
+        "--result",
+        str(result_path),
+    )
+    assert completed.returncode == 0, completed.stderr
+    result = read_json(result_path)
+    assert result["producer_interface_id"] == PRODUCER_V3_ID
+    assert result["summary"]["artifact_passed_cases"] == 5
+    assert all(
+        "artifact contract v3" in case["validator"]["stdout"]
+        for case in result["cases"]
+    )
 
 
 def test_preflight_rejects_cross_paired_interface_id_and_hash(tmp_path: Path) -> None:

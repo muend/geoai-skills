@@ -1,0 +1,101 @@
+{
+  "authorization": {
+    "approved_at": "2026-08-01T00:00:00Z",
+    "approved_by": "replace-before-run",
+    "data_classification": "public-synthetic-only",
+    "external_calls_approved": true,
+    "scope": "geoanalystbench-derived-v1-five-case-run"
+  },
+  "cases": [
+    {
+      "artifact_dir": "evidence/gab-01-urban-heat/outputs",
+      "attempt_count": 1,
+      "case_id": "gab-01-urban-heat",
+      "completion_status": "completed",
+      "elapsed_seconds": 0,
+      "prompt_path": "evidence/gab-01-urban-heat/prompt.txt",
+      "response_path": "evidence/gab-01-urban-heat/response.md",
+      "skill_activation": "not-observable",
+      "timed_out": false
+    },
+    {
+      "artifact_dir": "evidence/gab-08-facility-coverage/outputs",
+      "attempt_count": 1,
+      "case_id": "gab-08-facility-coverage",
+      "completion_status": "completed",
+      "elapsed_seconds": 0,
+      "prompt_path": "evidence/gab-08-facility-coverage/prompt.txt",
+      "response_path": "evidence/gab-08-facility-coverage/response.md",
+      "skill_activation": "not-observable",
+      "timed_out": false
+    },
+    {
+      "artifact_dir": "evidence/gab-36-vegetation-change/outputs",
+      "attempt_count": 1,
+      "case_id": "gab-36-vegetation-change",
+      "completion_status": "completed",
+      "elapsed_seconds": 0,
+      "prompt_path": "evidence/gab-36-vegetation-change/prompt.txt",
+      "response_path": "evidence/gab-36-vegetation-change/response.md",
+      "skill_activation": "not-observable",
+      "timed_out": false
+    },
+    {
+      "artifact_dir": "evidence/gab-38-travel-time/outputs",
+      "attempt_count": 1,
+      "case_id": "gab-38-travel-time",
+      "completion_status": "completed",
+      "elapsed_seconds": 0,
+      "prompt_path": "evidence/gab-38-travel-time/prompt.txt",
+      "response_path": "evidence/gab-38-travel-time/response.md",
+      "skill_activation": "not-observable",
+      "timed_out": false
+    },
+    {
+      "artifact_dir": "evidence/gab-39-spatial-regression/outputs",
+      "attempt_count": 1,
+      "case_id": "gab-39-spatial-regression",
+      "completion_status": "completed",
+      "elapsed_seconds": 0,
+      "prompt_path": "evidence/gab-39-spatial-regression/prompt.txt",
+      "response_path": "evidence/gab-39-spatial-regression/response.md",
+      "skill_activation": "not-observable",
+      "timed_out": false
+    }
+  ],
+  "condition": "skills-enabled",
+  "execution_policy": {
+    "automatic_retries": 0,
+    "connectors_enabled": false,
+    "max_calls": 5,
+    "max_calls_per_case": 1,
+    "max_cost_usd": 1.0,
+    "network_scope": "provider-only",
+    "retry_observability": "operator-controlled",
+    "termination_grace_seconds": 5,
+    "timeout_seconds_per_case": 300,
+    "web_access": false
+  },
+  "freeze_id": "geoanalystbench-derived-v1",
+  "native_suite_included": false,
+  "producer_interface_id": "geoanalystbench-producer-interface-v3",
+  "producer_interface_sha256": "f52aadf2bfc3db74e2e004f647696f1b0c9631154823ee02fb433e2daff6b754",
+  "reporting_scope": "external-transfer-only",
+  "run_id": "replace-before-run",
+  "runtime": {
+    "model": "replace-before-run",
+    "model_version": "replace-before-run",
+    "product": "replace-before-run",
+    "product_version": "replace-before-run",
+    "provider": "replace-before-run"
+  },
+  "schema_version": 3,
+  "skill_package": {
+    "archive_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "revision": "replace-before-run",
+    "source": "replace-before-run",
+    "version": "replace-before-run"
+  },
+  "suite": "geoanalystbench-derived",
+  "suite_sha256": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12"
+}

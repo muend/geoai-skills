@@ -41,13 +41,15 @@
     "producer_interface_id": {
       "enum": [
         "geoanalystbench-producer-interface-v1",
-        "geoanalystbench-producer-interface-v2"
+        "geoanalystbench-producer-interface-v2",
+        "geoanalystbench-producer-interface-v3"
       ]
     },
     "producer_interface_sha256": {
       "enum": [
         "8596ddfeac83679c9a7c0b5007e5c009a44559823d8e70903bf5c66fd4274962",
-        "7ebfc789c10e99e9b3ec012b6e1e5323dd374be2a961ae3a645c976c684a5647"
+        "7ebfc789c10e99e9b3ec012b6e1e5323dd374be2a961ae3a645c976c684a5647",
+        "f52aadf2bfc3db74e2e004f647696f1b0c9631154823ee02fb433e2daff6b754"
       ]
     },
     "reporting_scope": {
@@ -277,6 +279,12 @@
           "properties": {
             "producer_interface_id": {"const": "geoanalystbench-producer-interface-v2"},
             "producer_interface_sha256": {"const": "7ebfc789c10e99e9b3ec012b6e1e5323dd374be2a961ae3a645c976c684a5647"}
+          }
+        },
+        {
+          "properties": {
+            "producer_interface_id": {"const": "geoanalystbench-producer-interface-v3"},
+            "producer_interface_sha256": {"const": "f52aadf2bfc3db74e2e004f647696f1b0c9631154823ee02fb433e2daff6b754"}
           }
         }
       ]

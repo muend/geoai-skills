@@ -1,0 +1,67 @@
+{
+  "schema_version": 3,
+  "interface_id": "geoanalystbench-producer-interface-v3/gab-39-spatial-regression",
+  "case_id": "gab-39-spatial-regression",
+  "base_freeze_id": "geoanalystbench-derived-v1",
+  "base_suite_sha256": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12",
+  "contract_freeze_id": "geoanalystbench-derived-contracts-v3",
+  "contract_suite_sha256": "e17b9ee3f6d69ba99aacc90cab998339bf0f679c76ce25645e09a70e882ad3f2",
+  "disclosure_boundary": {
+    "includes": ["artifact paths", "nested field names", "formats", "method evidence", "serialization rules", "execution hints"],
+    "excludes": ["reference outputs", "expected analytical values", "validator source"]
+  },
+  "execution_hints": [
+    "Create one deterministic Python script in the current workspace root and run it once to produce and check all six artifacts; do not place helper files under outputs.",
+    "Do not install dependencies, probe optional spatial packages, use network access, or write to an operating-system temporary directory.",
+    "Use NumPy directly for dense linear algebra, vectorized distance and weight calculations, and permutation arrays; do not implement the 999-permutation loops with repeated process or file operations.",
+    "Write text artifacts explicitly as UTF-8 and keep generated source ASCII-safe on Windows by using Unicode escape sequences when needed."
+  ],
+  "method_contract": [
+    "Fit global OLS first with an intercept and final predictors green_share and income_index; evaluate green_share_proxy in the VIF set and exclude it under the declared VIF gate.",
+    "Build row-standardized queen primary and rook sensitivity lattice neighbors, calculate Moran's I on residuals, and use (exceedances+1)/(permutations+1) for two-sided permutation inference.",
+    "Use the fixture base seed for queen OLS, seed+1 for rook OLS, seed+2 for queen local, and seed+3 for rook local; each diagnostic uses exactly 999 permutations.",
+    "Use four contiguous 6-by-6 folds in deterministic order NE, NW, SE, SW; fit every model and preprocessing step on training areas only and score prediction minus observation.",
+    "Fit Gaussian local weighted regressions with weight exp(-0.5*(distance_m/bandwidth_m)^2), an intercept, and the same two final predictors; compute effective sample size as 1/sum(normalized_weight^2).",
+    "Compute weighted coefficient covariance from weighted SSE divided by max(sum(weights)-parameter_count,1), derive normal-approximation p-values with erfc, and adjust local green-share p-values with Benjamini-Hochberg.",
+    "Mark a local estimate stable only when effective sample size meets the fixture minimum and the one-norm condition number of X'WX is at most 100000.",
+    "Select the local model only when both fixture decision gates pass; otherwise select global OLS and label every coefficient map as exploratory spatial association with no causal support."
+  ],
+  "artifacts": [
+    {
+      "path": "outputs/model-comparison.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "analysis_units", "target", "target_units", "global_ols.fit_order", "global_ols.predictors", "global_ols.excluded_predictor", "global_ols.coefficients", "global_ols.standard_errors", "global_ols.r_squared", "global_ols.residual_moran_primary.weights", "global_ols.residual_moran_primary.transform", "global_ols.residual_moran_primary.moran_i", "global_ols.residual_moran_primary.expected_i", "global_ols.residual_moran_primary.permutations", "global_ols.residual_moran_primary.seed", "global_ols.residual_moran_primary.p_value_permutation_two_sided", "global_ols.residual_moran_primary.islands", "global_ols.residual_moran_sensitivity.weights", "global_ols.residual_moran_sensitivity.transform", "global_ols.residual_moran_sensitivity.moran_i", "global_ols.residual_moran_sensitivity.expected_i", "global_ols.residual_moran_sensitivity.permutations", "global_ols.residual_moran_sensitivity.seed", "global_ols.residual_moran_sensitivity.p_value_permutation_two_sided", "global_ols.residual_moran_sensitivity.islands", "local_model.name", "local_model.predictors", "local_model.bandwidth_m", "local_model.green_coefficient_min", "local_model.green_coefficient_max", "local_model.residual_moran_primary", "local_model.residual_moran_sensitivity", "decision.ols_fitted_before_local_model", "decision.prompt_named_model_forced", "decision.ols_residual_dependence_gate_passed", "decision.blocked_rmse_improvement_gate_passed", "decision.selected_model", "decision.causal_claim_allowed", "decision.interpretation", "decision.decision_rule"],
+      "requirements": ["Use exactly these nested keys without additional keys.", "Use schema_version 1 and round computed metrics to six decimals.", "Set analysis_units to 144 regular 1-km square polygons and preserve target units."]
+    },
+    {
+      "path": "outputs/spatial-validation.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "method", "assignment_unit", "random_only_validation", "folds[].fold", "folds[].train_observation_count", "folds[].test_observation_count", "folds[].test_block_count", "folds[].global_ols.count", "folds[].global_ols.mean_error_c", "folds[].global_ols.mae_c", "folds[].global_ols.rmse_c", "folds[].local_weighted.count", "folds[].local_weighted.mean_error_c", "folds[].local_weighted.mae_c", "folds[].local_weighted.rmse_c", "aggregate.global_ols", "aggregate.local_weighted", "aggregate.local_rmse_improvement_fraction", "leakage_audit.preprocessing_fit_scope", "leakage_audit.same_area_in_train_and_test", "leakage_audit.test_blocks"],
+      "requirements": ["Use exactly these nested keys without additional keys.", "Use schema_version 1, random_only_validation false, and folds in NE, NW, SE, SW order.", "Use assignment_unit contiguous 6-by-6 lattice block and preprocessing_fit_scope training fold only."]
+    },
+    {
+      "path": "outputs/collinearity-extrapolation.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "vif_threshold", "vif.green_share", "vif.green_share_proxy", "vif.income_index", "excluded_features", "final_predictors", "local_fit_support.minimum_effective_sample_size_required", "local_fit_support.condition_number_max_allowed", "local_fit_support.observed_effective_sample_size_min", "local_fit_support.observed_effective_sample_size_max", "local_fit_support.observed_condition_number_min", "local_fit_support.observed_condition_number_max", "local_fit_support.unstable_area_ids", "local_fit_support.warning"],
+      "requirements": ["Use exactly these nested keys without additional keys.", "Use schema_version 1, retain all assessed VIF values, and list unstable area IDs in analysis-area order.", "Use warning Coefficient maps must retain unstable-region warnings and must not be interpreted causally."]
+    },
+    {
+      "path": "outputs/local-coefficients.geojson",
+      "format": "GeoJSON",
+      "required_fields": ["type", "crs", "coordinate_units", "coefficient_units", "model_status", "causal_interpretation", "map", "features[].geometry", "features[].properties.area_id", "features[].properties.predictor", "features[].properties.coefficient", "features[].properties.coefficient_scale", "features[].properties.coefficient_units", "features[].properties.bandwidth_m", "features[].properties.effective_sample_size", "features[].properties.condition_number", "features[].properties.stable", "features[].properties.fdr_method", "features[].properties.q_value", "features[].properties.fdr_significant", "features[].properties.warning"],
+      "requirements": ["Use exactly these top-level and feature-property keys without additional keys and write features in fixture analysis-area order.", "Use a FeatureCollection in EPSG:32636 with bbox polygons, coordinate_units metres, map local green-share coefficient, and the declared coefficient units.", "State global OLS selected in model_status and state that causal interpretation is not supported."]
+    },
+    {
+      "path": "outputs/coefficient-uncertainty.geojson",
+      "format": "GeoJSON",
+      "required_fields": ["type", "crs", "coordinate_units", "coefficient_units", "model_status", "causal_interpretation", "map", "features[].geometry", "features[].properties.area_id", "features[].properties.predictor", "features[].properties.standard_error", "features[].properties.t_value", "features[].properties.p_value_normal_approximation", "features[].properties.q_value", "features[].properties.fdr_method", "features[].properties.fdr_significant", "features[].properties.bandwidth_m", "features[].properties.coefficient_scale", "features[].properties.coefficient_units", "features[].properties.effective_sample_size", "features[].properties.condition_number", "features[].properties.stable", "features[].properties.warning"],
+      "requirements": ["Use exactly these top-level and feature-property keys without additional keys and write features in fixture analysis-area order.", "Use a FeatureCollection in EPSG:32636 with bbox polygons, coordinate_units metres, map local green-share coefficient uncertainty, and the declared coefficient units.", "State global OLS selected in model_status and state that causal interpretation is not supported."]
+    },
+    {
+      "path": "outputs/provenance.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "case_id", "fixture", "crs", "coordinate_units", "weights.primary", "weights.sensitivity", "weights.transform", "weights.islands_expected", "inference.permutations", "inference.seed", "inference.fdr_method", "inference.fdr_alpha", "validation.method", "validation.block_rows", "validation.block_columns", "validation.metric", "decision_gate.ols_residual_moran_p_max", "decision_gate.local_block_rmse_improvement_min", "decision_gate.vif_exclusion_threshold", "local_model.name", "local_model.bandwidth_m", "local_model.minimum_effective_sample_size", "implementation.origin", "implementation.runtime", "implementation.randomness"],
+      "requirements": ["Use exactly these nested keys without additional keys.", "Use schema_version 1 and case_id gab-39-spatial-regression.", "Use implementation values independently-authored, Python standard library, and seeded Moran permutations only; NumPy may accelerate the implementation without changing this provenance contract."]
+    }
+  ]
+}

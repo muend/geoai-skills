@@ -10,9 +10,8 @@
 - Freeze: `geoanalystbench-derived-v1`
 - Suite SHA-256:
   `c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12`
-- Producer interface: `geoanalystbench-producer-interface-v1`
-- Producer-interface SHA-256:
-  `8596ddfeac83679c9a7c0b5007e5c009a44559823d8e70903bf5c66fd4274962`
+- Producer interface: `<producer_interface_id from result JSON>`
+- Producer-interface SHA-256: `<producer_interface_sha256 from result JSON>`
 - Result JSON SHA-256: `<sha256>`
 - Date: `<ISO-8601>`
 

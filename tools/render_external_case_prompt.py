@@ -20,6 +20,11 @@ from build_external_producer_interface_v2 import (
     INTERFACE_ROOT as INTERFACE_V2_ROOT,
     validate_producer_interface_v2,
 )
+from build_external_producer_interface_v3 import (
+    INTERFACE_ID as INTERFACE_V3_ID,
+    INTERFACE_ROOT as INTERFACE_V3_ROOT,
+    validate_producer_interface_v3,
+)
 
 STANDARD_ENVELOPE = (
     "You are executing one public/synthetic external transfer case in an isolated "
@@ -52,6 +57,8 @@ def _interface_config(
         return INTERFACE_ID, INTERFACE_ROOT, validate_producer_interface
     if interface_version == 2:
         return INTERFACE_V2_ID, INTERFACE_V2_ROOT, validate_producer_interface_v2
+    if interface_version == 3:
+        return INTERFACE_V3_ID, INTERFACE_V3_ROOT, validate_producer_interface_v3
     raise ValueError(f"unsupported producer-interface version: {interface_version}")
 
 
@@ -113,7 +120,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--interface-version",
         type=int,
-        choices=(1, 2),
+        choices=(1, 2, 3),
         default=1,
         help="frozen producer-interface version (default: 1)",
     )

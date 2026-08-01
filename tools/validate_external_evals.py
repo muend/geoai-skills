@@ -14,6 +14,10 @@ from build_external_eval_freeze_v2 import (
     MANIFEST_NAME as CONTRACT_MANIFEST_NAME,
     validate_contracts_v2,
 )
+from build_external_eval_freeze_v3 import (
+    MANIFEST_NAME as CONTRACT_V3_MANIFEST_NAME,
+    validate_contract_v3,
+)
 from build_external_producer_interface import (
     MANIFEST_NAME as PRODUCER_MANIFEST_NAME,
     validate_producer_interface,
@@ -21,6 +25,12 @@ from build_external_producer_interface import (
 from build_external_producer_interface_v2 import (
     MANIFEST_NAME as PRODUCER_V2_MANIFEST_NAME,
     validate_producer_interface_v2,
+)
+from build_external_producer_interface_v3 import (
+    EXPECTED_INTERFACE_SHA256 as EXPECTED_PRODUCER_V3_SHA256,
+    INTERFACE_ID as PRODUCER_V3_ID,
+    MANIFEST_NAME as PRODUCER_V3_MANIFEST_NAME,
+    validate_producer_interface_v3,
 )
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -108,12 +118,15 @@ def validate_suite() -> tuple[int, list[str]]:
         SUITE_ROOT / "schema.json",
         SUITE_ROOT / MANIFEST_NAME,
         SUITE_ROOT / CONTRACT_MANIFEST_NAME,
+        SUITE_ROOT / CONTRACT_V3_MANIFEST_NAME,
         SUITE_ROOT / PRODUCER_MANIFEST_NAME,
         SUITE_ROOT / PRODUCER_V2_MANIFEST_NAME,
+        SUITE_ROOT / PRODUCER_V3_MANIFEST_NAME,
         SUITE_ROOT / "run-schema.json",
         SUITE_ROOT / "result-schema.json",
         SUITE_ROOT / "run-template.json",
         SUITE_ROOT / "run-template-v2.json",
+        SUITE_ROOT / "run-template-v3.json",
         SUITE_ROOT / "RESULTS-TEMPLATE.md",
     ]
     for path in required:
@@ -129,6 +142,7 @@ def validate_suite() -> tuple[int, list[str]]:
         result_schema = read_json(SUITE_ROOT / "result-schema.json")
         run_template = read_json(SUITE_ROOT / "run-template.json")
         run_template_v2 = read_json(SUITE_ROOT / "run-template-v2.json")
+        run_template_v3 = read_json(SUITE_ROOT / "run-template-v3.json")
     except (OSError, json.JSONDecodeError) as exc:
         return 0, [f"external-suite metadata is invalid: {exc}"]
 
@@ -167,12 +181,20 @@ def validate_suite() -> tuple[int, list[str]]:
         for error in validate_contracts_v2(SUITE_ROOT)
     )
     errors.extend(
+        f"{CONTRACT_V3_MANIFEST_NAME}: {error}"
+        for error in validate_contract_v3(SUITE_ROOT)
+    )
+    errors.extend(
         f"{PRODUCER_MANIFEST_NAME}: {error}"
         for error in validate_producer_interface(SUITE_ROOT)
     )
     errors.extend(
         f"{PRODUCER_V2_MANIFEST_NAME}: {error}"
         for error in validate_producer_interface_v2(SUITE_ROOT)
+    )
+    errors.extend(
+        f"{PRODUCER_V3_MANIFEST_NAME}: {error}"
+        for error in validate_producer_interface_v3(SUITE_ROOT)
     )
     run_validator = Draft202012Validator(
         run_schema,
@@ -181,6 +203,7 @@ def validate_suite() -> tuple[int, list[str]]:
     for template_name, template in (
         ("run-template.json", run_template),
         ("run-template-v2.json", run_template_v2),
+        ("run-template-v3.json", run_template_v3),
     ):
         for error in sorted(
             run_validator.iter_errors(template),
@@ -207,6 +230,15 @@ def validate_suite() -> tuple[int, list[str]]:
     for field in ("freeze_id", "suite_sha256", "reporting_scope"):
         if run_template_v2.get(field) != run_template.get(field):
             errors.append(f"run-template-v2.json: {field} must match the v1 template")
+    if run_template_v3.get("producer_interface_id") != PRODUCER_V3_ID:
+        errors.append("run-template-v3.json: producer interface must remain pinned to v3")
+    if run_template_v3.get("producer_interface_sha256") != (
+        EXPECTED_PRODUCER_V3_SHA256
+    ):
+        errors.append("run-template-v3.json: producer interface hash must remain pinned")
+    for field in ("freeze_id", "suite_sha256", "reporting_scope"):
+        if run_template_v3.get(field) != run_template.get(field):
+            errors.append(f"run-template-v3.json: {field} must match the v1 template")
     return len(case_paths), errors
 
 

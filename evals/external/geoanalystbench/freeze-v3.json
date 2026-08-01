@@ -1,0 +1,33 @@
+{
+  "base_contract_freeze_id": "geoanalystbench-derived-contracts-v2",
+  "base_contract_suite_sha256": "86170ae144092f1ae0f34124d85505f0d3507a19f04f2b71f2081c89d10de418",
+  "base_suite_sha256": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12",
+  "case_ids": [
+    "gab-01-urban-heat",
+    "gab-08-facility-coverage",
+    "gab-36-vegetation-change",
+    "gab-38-travel-time",
+    "gab-39-spatial-regression"
+  ],
+  "contract_axes": [
+    "semantic",
+    "evidence",
+    "representation"
+  ],
+  "files": [
+    {
+      "path": "validators/v3/validate_artifacts.py",
+      "sha256": "5f9239cb4d886a43299aa48a9f87f425021f7586d454d168cc4753f3214d7182"
+    }
+  ],
+  "freeze_id": "geoanalystbench-derived-contracts-v3",
+  "frozen_on": "2026-08-01",
+  "native_suite_included": false,
+  "reporting_scope": "external-transfer-only",
+  "results_included": false,
+  "schema_version": 3,
+  "status": "frozen",
+  "strict_pass_rule": "all-required-semantic-criteria-and-exact-inventory",
+  "suite_sha256": "e17b9ee3f6d69ba99aacc90cab998339bf0f679c76ce25645e09a70e882ad3f2",
+  "supersedes": "geoanalystbench-derived-contracts-v2"
+}
