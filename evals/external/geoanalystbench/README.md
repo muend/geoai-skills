@@ -66,8 +66,30 @@ Verify the boundary from the repository root:
 
 ```bash
 python tools/build_external_eval_freeze.py --check
+python tools/build_external_eval_freeze_v2.py --check
 python tools/validate_external_evals.py
 ```
+
+## Frozen v2 artifact contracts
+
+[`contracts/v2/`](contracts/v2/) adds a machine-readable diagnostic layer over
+the unchanged v1 cases. [`freeze-v2.json`](freeze-v2.json) pins the schema and
+five case contracts under aggregate hash
+`86170ae144092f1ae0f34124d85505f0d3507a19f04f2b71f2081c89d10de418`.
+Each contract cross-pins the corresponding v1 `case.json` and strict-validator
+hash, then divides required criteria into:
+
+- **semantic** — whether the analytical decisions and values are correct;
+- **evidence** — whether provenance, method, units, QA, and validation evidence
+  are sufficient for the claim; and
+- **representation** — whether the exact files, field names, schemas, geometry
+  metadata, and accessibility requirements are satisfied.
+
+These axes are diagnostic and must be reported separately when used. They do
+not relax the strict gate: a case passes its artifact contract only when every
+required criterion and the exact frozen inventory pass the original v1
+validator. The v2 freeze contains no model outputs or results and does not
+change the denominator, upstream attribution, native benchmark, or v1 bytes.
 
 ## External run protocol
 

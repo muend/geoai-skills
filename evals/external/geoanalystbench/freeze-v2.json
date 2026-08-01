@@ -1,0 +1,51 @@
+{
+  "base_freeze_id": "geoanalystbench-derived-v1",
+  "base_suite_sha256": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12",
+  "case_ids": [
+    "gab-01-urban-heat",
+    "gab-08-facility-coverage",
+    "gab-36-vegetation-change",
+    "gab-38-travel-time",
+    "gab-39-spatial-regression"
+  ],
+  "contract_axes": [
+    "semantic",
+    "evidence",
+    "representation"
+  ],
+  "files": [
+    {
+      "path": "contracts/v2/gab-01-urban-heat.json",
+      "sha256": "39a798a37d1bea70fadcdb9aa8ef0366917044754f07676b11e2afb0d7741483"
+    },
+    {
+      "path": "contracts/v2/gab-08-facility-coverage.json",
+      "sha256": "00ee032fced65ca8f4fa261821b6defdb3e8dedb3c475890e215b6091fced0ff"
+    },
+    {
+      "path": "contracts/v2/gab-36-vegetation-change.json",
+      "sha256": "0b0a0e90ea29dcd07e6a2e4c92b28cbb306246fe5cd22fa912efa870c25e002d"
+    },
+    {
+      "path": "contracts/v2/gab-38-travel-time.json",
+      "sha256": "a54b78c79bb836434c02ab8ef3cd29b1ba0c71328cbd1417492652f4212397cc"
+    },
+    {
+      "path": "contracts/v2/gab-39-spatial-regression.json",
+      "sha256": "40fb7efea8635b526e6a09df479aa6685926d38f1ee77581a219da482b5a33c8"
+    },
+    {
+      "path": "contracts/v2/schema.json",
+      "sha256": "aaa676c261eb6c90baa563c05b0ad2c3ec3487a4a7dc01bc235c26fe71e01bb1"
+    }
+  ],
+  "freeze_id": "geoanalystbench-derived-contracts-v2",
+  "frozen_on": "2026-08-01",
+  "native_suite_included": false,
+  "reporting_scope": "external-transfer-only",
+  "results_included": false,
+  "schema_version": 2,
+  "status": "frozen",
+  "strict_pass_rule": "all-required-criteria-and-exact-inventory",
+  "suite_sha256": "86170ae144092f1ae0f34124d85505f0d3507a19f04f2b71f2081c89d10de418"
+}

@@ -1,0 +1,73 @@
+{
+  "schema_version": 2,
+  "contract_id": "geoanalystbench-derived-v2/gab-08-facility-coverage",
+  "case_id": "gab-08-facility-coverage",
+  "base_freeze_id": "geoanalystbench-derived-v1",
+  "base_suite_sha256": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12",
+  "base_case_sha256": "6671c709786e930239a4a3a746c033810a158970acbe6c7e9999a5d22ff6fbcd",
+  "strict_validator": {
+    "path": "cases/gab-08-facility-coverage/validate_artifacts.py",
+    "sha256": "9ac795133ef10e6e327f795c04ba537115da48c822fa335fa44510a6d293ea3f"
+  },
+  "artifact_inventory": [
+    {"path": "outputs/demand-coverage.csv", "media_type": "text/csv", "required": true},
+    {"path": "outputs/service-gaps.geojson", "media_type": "application/geo+json", "required": true},
+    {"path": "outputs/summary.json", "media_type": "application/json", "required": true}
+  ],
+  "criteria": [
+    {
+      "id": "population-weighted-coverage",
+      "axis": "semantic",
+      "description": "Coverage is population weighted and overlap is deduplicated before aggregation.",
+      "artifacts": ["outputs/summary.json"],
+      "required": true,
+      "expected": {"total_population": 800, "covered_population": 570, "coverage_share": 0.7125, "overlap_population": 450}
+    },
+    {
+      "id": "barriers-and-unreachable-demand",
+      "axis": "semantic",
+      "description": "Network barriers preserve uncovered and unreachable demand with the expected assignments.",
+      "artifacts": ["outputs/demand-coverage.csv", "outputs/service-gaps.geojson"],
+      "required": true,
+      "expected": {"service_gap_ids": ["D5", "D6", "D7"], "D6_minutes": 8.0, "D7_reachable": false}
+    },
+    {
+      "id": "network-cutoff-provenance",
+      "axis": "evidence",
+      "description": "The analysis reports driving-network time, its five-minute cutoff, cost units, and projected CRS.",
+      "artifacts": ["outputs/summary.json"],
+      "required": true,
+      "expected": {"mode": "driving", "coverage_cutoff_minutes": 5.0, "cost_units": "minutes", "crs": "EPSG:32636"}
+    },
+    {
+      "id": "demand-level-audit-trail",
+      "axis": "evidence",
+      "description": "Every demand record exposes reachability, assignment, travel time, facilities within cutoff, and path evidence.",
+      "artifacts": ["outputs/demand-coverage.csv"],
+      "required": true,
+      "expected": {"demand_count": 7, "uncovered_population": 230, "unreachable_demand_count": 1}
+    },
+    {
+      "id": "exact-artifact-inventory",
+      "axis": "representation",
+      "description": "Exactly the declared CSV, GeoJSON, and JSON outputs are present.",
+      "artifacts": ["outputs/demand-coverage.csv", "outputs/service-gaps.geojson", "outputs/summary.json"],
+      "required": true,
+      "expected": {"file_count": 3}
+    },
+    {
+      "id": "demand-and-gap-schema",
+      "axis": "representation",
+      "description": "Demand rows are unique and required field names, geometry metadata, and schema version are preserved.",
+      "artifacts": ["outputs/demand-coverage.csv", "outputs/service-gaps.geojson", "outputs/summary.json"],
+      "required": true,
+      "expected": {"demand_count": 7, "gap_feature_count": 3, "schema_version": 1}
+    }
+  ],
+  "outcome_rules": {
+    "semantic_pass": "all-required-semantic-criteria",
+    "evidence_pass": "all-required-evidence-criteria",
+    "representation_pass": "all-required-representation-criteria",
+    "strict_pass": "all-required-criteria-and-exact-inventory"
+  }
+}

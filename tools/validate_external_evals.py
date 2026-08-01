@@ -10,6 +10,10 @@ from typing import Any
 from jsonschema import Draft202012Validator, FormatChecker
 
 from build_external_eval_freeze import MANIFEST_NAME, validate_freeze_manifest
+from build_external_eval_freeze_v2 import (
+    MANIFEST_NAME as CONTRACT_MANIFEST_NAME,
+    validate_contracts_v2,
+)
 
 ROOT = Path(__file__).resolve().parent.parent
 SUITE_ROOT = ROOT / "evals" / "external" / "geoanalystbench"
@@ -95,6 +99,7 @@ def validate_suite() -> tuple[int, list[str]]:
         SUITE_ROOT / "provenance.json",
         SUITE_ROOT / "schema.json",
         SUITE_ROOT / MANIFEST_NAME,
+        SUITE_ROOT / CONTRACT_MANIFEST_NAME,
         SUITE_ROOT / "run-schema.json",
         SUITE_ROOT / "result-schema.json",
         SUITE_ROOT / "run-template.json",
@@ -144,6 +149,10 @@ def validate_suite() -> tuple[int, list[str]]:
     errors.extend(
         f"{MANIFEST_NAME}: {error}"
         for error in validate_freeze_manifest(SUITE_ROOT)
+    )
+    errors.extend(
+        f"{CONTRACT_MANIFEST_NAME}: {error}"
+        for error in validate_contracts_v2(SUITE_ROOT)
     )
     run_validator = Draft202012Validator(
         run_schema,

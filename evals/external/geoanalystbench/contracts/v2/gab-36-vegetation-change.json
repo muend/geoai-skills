@@ -1,0 +1,74 @@
+{
+  "schema_version": 2,
+  "contract_id": "geoanalystbench-derived-v2/gab-36-vegetation-change",
+  "case_id": "gab-36-vegetation-change",
+  "base_freeze_id": "geoanalystbench-derived-v1",
+  "base_suite_sha256": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12",
+  "base_case_sha256": "bc499fa848294e6b734fde349ab29cd17ef4b45370867abe70bc35e870ae2cbc",
+  "strict_validator": {
+    "path": "cases/gab-36-vegetation-change/validate_artifacts.py",
+    "sha256": "c5d67bc1b0ea444f7b391f7b2e1dad4e6daa579e784f8340da78d2ab3e9a7bdb"
+  },
+  "artifact_inventory": [
+    {"path": "outputs/change-summary.csv", "media_type": "text/csv", "required": true},
+    {"path": "outputs/damage-pixels.geojson", "media_type": "application/geo+json", "required": true},
+    {"path": "outputs/provenance.json", "media_type": "application/json", "required": true},
+    {"path": "outputs/savi-change.json", "media_type": "application/json", "required": true}
+  ],
+  "criteria": [
+    {
+      "id": "masked-savi-damage-result",
+      "axis": "semantic",
+      "description": "Scaled SAVI differencing applies the intersected validity mask before damage classification.",
+      "artifacts": ["outputs/savi-change.json", "outputs/change-summary.csv"],
+      "required": true,
+      "expected": {"primary_threshold": -0.2, "damaged_pixels": 7, "damaged_area_hectares": 0.07, "valid_pixels": 18}
+    },
+    {
+      "id": "threshold-sensitivity-results",
+      "axis": "semantic",
+      "description": "All required thresholds are evaluated and produce the expected area sensitivity.",
+      "artifacts": ["outputs/change-summary.csv"],
+      "required": true,
+      "expected": {"area_hectares_by_threshold": {"-0.15": 0.09, "-0.20": 0.07, "-0.25": 0.03}}
+    },
+    {
+      "id": "comparability-and-registration-evidence",
+      "axis": "evidence",
+      "description": "Provenance establishes matched phenology, surface reflectance, projected CRS, and sub-pixel registration.",
+      "artifacts": ["outputs/provenance.json"],
+      "required": true,
+      "expected": {"phenology": "matched", "product_level": "surface_reflectance", "crs": "EPSG:32636", "co_registration_rmse_pixels": 0.1}
+    },
+    {
+      "id": "scale-mask-and-pixel-area-evidence",
+      "axis": "evidence",
+      "description": "Reflectance scaling, SAVI L, valid overlap, and 10-m pixel dimensions are explicitly recorded.",
+      "artifacts": ["outputs/provenance.json", "outputs/savi-change.json"],
+      "required": true,
+      "expected": {"reflectance_scale_factor": 0.0001, "savi_l": 0.5, "valid_overlap_percent": 90.0, "pixel_area_m2": 100.0}
+    },
+    {
+      "id": "exact-artifact-inventory",
+      "axis": "representation",
+      "description": "Exactly the four declared change, damage, provenance, and sensitivity artifacts are present.",
+      "artifacts": ["outputs/change-summary.csv", "outputs/damage-pixels.geojson", "outputs/provenance.json", "outputs/savi-change.json"],
+      "required": true,
+      "expected": {"file_count": 4}
+    },
+    {
+      "id": "raster-vector-and-summary-schema",
+      "axis": "representation",
+      "description": "Null masks, damage features, summary columns, CRS, and schema-version fields use the frozen representation.",
+      "artifacts": ["outputs/change-summary.csv", "outputs/damage-pixels.geojson", "outputs/provenance.json", "outputs/savi-change.json"],
+      "required": true,
+      "expected": {"rows": 4, "columns": 5, "damage_feature_count": 7, "schema_version": 1}
+    }
+  ],
+  "outcome_rules": {
+    "semantic_pass": "all-required-semantic-criteria",
+    "evidence_pass": "all-required-evidence-criteria",
+    "representation_pass": "all-required-representation-criteria",
+    "strict_pass": "all-required-criteria-and-exact-inventory"
+  }
+}

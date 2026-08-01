@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/muend/geoai-skills/evals/external/geoanalystbench/contracts/v2/schema.json",
+  "title": "GeoAnalystBench-derived artifact contract v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "contract_id",
+    "case_id",
+    "base_freeze_id",
+    "base_suite_sha256",
+    "base_case_sha256",
+    "strict_validator",
+    "artifact_inventory",
+    "criteria",
+    "outcome_rules"
+  ],
+  "properties": {
+    "schema_version": {"const": 2},
+    "contract_id": {
+      "type": "string",
+      "pattern": "^geoanalystbench-derived-v2/[a-z0-9-]+$"
+    },
+    "case_id": {"type": "string", "pattern": "^gab-[0-9]{2}-[a-z0-9-]+$"},
+    "base_freeze_id": {"const": "geoanalystbench-derived-v1"},
+    "base_suite_sha256": {
+      "const": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12"
+    },
+    "base_case_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "strict_validator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^cases/[a-z0-9-]+/validate_artifacts\\.py$"},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "artifact_inventory": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "media_type", "required"],
+        "properties": {
+          "path": {"type": "string", "pattern": "^outputs/[A-Za-z0-9._-]+$"},
+          "media_type": {"type": "string", "minLength": 3},
+          "required": {"const": true}
+        }
+      }
+    },
+    "criteria": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "axis", "description", "artifacts", "required"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]+$"},
+          "axis": {"enum": ["semantic", "evidence", "representation"]},
+          "description": {"type": "string", "minLength": 12},
+          "artifacts": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"type": "string", "pattern": "^outputs/[A-Za-z0-9._-]+$"}
+          },
+          "required": {"const": true},
+          "expected": {"type": "object", "minProperties": 1}
+        }
+      }
+    },
+    "outcome_rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["semantic_pass", "evidence_pass", "representation_pass", "strict_pass"],
+      "properties": {
+        "semantic_pass": {"const": "all-required-semantic-criteria"},
+        "evidence_pass": {"const": "all-required-evidence-criteria"},
+        "representation_pass": {"const": "all-required-representation-criteria"},
+        "strict_pass": {"const": "all-required-criteria-and-exact-inventory"}
+      }
+    }
+  }
+}
