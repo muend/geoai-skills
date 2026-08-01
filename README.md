@@ -116,9 +116,10 @@ The current source tree contains two deliberately separate evaluation layers:
 
 The external subset is independently authored and reported separately. It does not
 copy upstream datasets, prompts, or reference implementations, and its outcomes must
-follow the [offline run and result protocol](evals/external/geoanalystbench/README.md#external-run-protocol).
 not be pooled with native routing metrics. Its five-case v1 source population is
-frozen under suite hash `c99563100cac…`. Results follow the
+frozen under suite hash `c99563100cac…`; a separate v2 contract freeze distinguishes
+semantic correctness, evidence sufficiency, and exact representation compliance
+without changing those cases. Results follow the
 [offline run and result protocol](evals/external/geoanalystbench/README.md#external-run-protocol),
 which reports skill activation, runtime completion, artifact-contract compliance,
 and overall success as separate measures.

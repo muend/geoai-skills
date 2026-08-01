@@ -1,0 +1,80 @@
+{
+  "schema_version": 2,
+  "contract_id": "geoanalystbench-derived-v2/gab-38-travel-time",
+  "case_id": "gab-38-travel-time",
+  "base_freeze_id": "geoanalystbench-derived-v1",
+  "base_suite_sha256": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12",
+  "base_case_sha256": "41633b66968ca1b025b85b4f1d181dfa55dd839f8c70a7a7ee27093eb711dc77",
+  "strict_validator": {
+    "path": "cases/gab-38-travel-time/validate_artifacts.py",
+    "sha256": "35801e374e32693cbc8873e572d01eb19d1a53deea192fea206b04a4247e6e8c"
+  },
+  "artifact_inventory": [
+    {"path": "outputs/routes.geojson", "media_type": "application/geo+json", "required": true},
+    {"path": "outputs/summary.json", "media_type": "application/json", "required": true},
+    {"path": "outputs/travel-times.csv", "media_type": "text/csv", "required": true}
+  ],
+  "criteria": [
+    {
+      "id": "directed-shortest-path-results",
+      "axis": "semantic",
+      "description": "Directed shortest paths honor edge costs and the forbidden turn.",
+      "artifacts": ["outputs/travel-times.csv"],
+      "required": true,
+      "expected": {
+        "travel_time_minutes": {"B": 2.0, "C": 4.0, "D": 3.0, "E": 5.0, "F": 6.0},
+        "paths": {"B": "A>B", "C": "A>B>C", "D": "A>D", "E": "A>D>E", "F": "A>B>C>F"}
+      }
+    },
+    {
+      "id": "unreachable-destination-preserved",
+      "axis": "semantic",
+      "description": "Destination G remains explicitly unreachable rather than being dropped.",
+      "artifacts": ["outputs/travel-times.csv", "outputs/summary.json"],
+      "required": true,
+      "expected": {"destination_id": "G", "reachable": false, "unreachable_count": 1}
+    },
+    {
+      "id": "route-geometry-matches-path",
+      "axis": "evidence",
+      "description": "Each reachable route geometry follows the node sequence reported by the solver.",
+      "artifacts": ["outputs/routes.geojson", "outputs/travel-times.csv"],
+      "required": true,
+      "expected": {"reachable_feature_count": 5, "crs": "EPSG:32636"}
+    },
+    {
+      "id": "network-method-provenance",
+      "axis": "evidence",
+      "description": "The summary identifies directed network-time analysis, its cost field, units, and projected CRS.",
+      "artifacts": ["outputs/summary.json"],
+      "required": true,
+      "expected": {"directed": true, "cost_field": "time_minutes", "cost_units": "minutes", "crs": "EPSG:32636"}
+    },
+    {
+      "id": "exact-artifact-inventory",
+      "axis": "representation",
+      "description": "Exactly the three declared output files are present with no substitutes or extras.",
+      "artifacts": ["outputs/routes.geojson", "outputs/summary.json", "outputs/travel-times.csv"],
+      "required": true,
+      "expected": {"file_count": 3}
+    },
+    {
+      "id": "destination-row-and-feature-schema",
+      "axis": "representation",
+      "description": "Every destination appears exactly once and required CSV and GeoJSON fields use the frozen names.",
+      "artifacts": ["outputs/routes.geojson", "outputs/travel-times.csv"],
+      "required": true,
+      "expected": {
+        "csv_columns": ["destination_id", "reachable", "travel_time_minutes", "path"],
+        "destination_count": 6,
+        "schema_version": 1
+      }
+    }
+  ],
+  "outcome_rules": {
+    "semantic_pass": "all-required-semantic-criteria",
+    "evidence_pass": "all-required-evidence-criteria",
+    "representation_pass": "all-required-representation-criteria",
+    "strict_pass": "all-required-criteria-and-exact-inventory"
+  }
+}

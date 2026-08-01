@@ -19,6 +19,12 @@ own `metadata.version` in its frontmatter.
   and clearly labeled the archived 17-skill routing result as superseded.
 
 ### Added
+- A separately frozen `geoanalystbench-derived-contracts-v2` artifact-contract
+  layer for the unchanged five-case v1 population. Each case now separates
+  semantic correctness, evidence sufficiency, and representation/schema
+  compliance while preserving the original strict validator and exact
+  inventory as the pass gate. Cross-hash validation prevents the v2 taxonomy
+  from drifting away from the immutable v1 case and validator bytes.
 - An immutable `geoanalystbench-derived-v1` source manifest that pins the five
   external case IDs, upstream task IDs and commit, reporting boundary, and
   SHA-256 digest of every governed suite source file, with fail-closed CI tests

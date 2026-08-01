@@ -1,0 +1,76 @@
+{
+  "schema_version": 2,
+  "contract_id": "geoanalystbench-derived-v2/gab-01-urban-heat",
+  "case_id": "gab-01-urban-heat",
+  "base_freeze_id": "geoanalystbench-derived-v1",
+  "base_suite_sha256": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12",
+  "base_case_sha256": "7c0ffd635f32fdfe3650e15d40c145b1bcfce48ffb953999c95b25f94c5e9934",
+  "strict_validator": {
+    "path": "cases/gab-01-urban-heat/validate_artifacts.py",
+    "sha256": "0700f6c683dc63eb9e62a46db36e064a4c20ef62463469af4f5caf644eed6569"
+  },
+  "artifact_inventory": [
+    {"path": "outputs/census-summary.csv", "media_type": "text/csv", "required": true},
+    {"path": "outputs/provenance.json", "media_type": "application/json", "required": true},
+    {"path": "outputs/temperature-surface.json", "media_type": "application/json", "required": true},
+    {"path": "outputs/uncertainty-surface.json", "media_type": "application/json", "required": true},
+    {"path": "outputs/urban-heat-map.svg", "media_type": "image/svg+xml", "required": true},
+    {"path": "outputs/validation-report.json", "media_type": "application/json", "required": true}
+  ],
+  "criteria": [
+    {
+      "id": "kriging-and-risk-result",
+      "axis": "semantic",
+      "description": "Ordinary-kriging predictions and uncertainty-gated rate-based risk select the expected census units.",
+      "artifacts": ["outputs/census-summary.csv", "outputs/temperature-surface.json", "outputs/uncertainty-surface.json"],
+      "required": true,
+      "expected": {"selected_units": ["C07", "C10"], "temperature_threshold_c": 31.0, "elderly_rate_threshold": 0.3, "max_mean_uncertainty_c": 1.15}
+    },
+    {
+      "id": "spatial-validation-result",
+      "axis": "semantic",
+      "description": "Four-fold spatial block validation reports the expected aggregate error without random-only leakage.",
+      "artifacts": ["outputs/validation-report.json"],
+      "required": true,
+      "expected": {"count": 36, "rmse_c": 0.58848, "mean_error_c": 0.074191, "random_only_validation": false}
+    },
+    {
+      "id": "projected-variogram-evidence",
+      "axis": "evidence",
+      "description": "Projected-metre coordinates, empirical variogram bins, and the fitted model are documented.",
+      "artifacts": ["outputs/provenance.json", "outputs/validation-report.json"],
+      "required": true,
+      "expected": {"crs": "EPSG:32636", "coordinate_units": "metres", "variogram_model": "exponential", "nonempty_variogram_bins": 5}
+    },
+    {
+      "id": "uncertainty-and-block-cv-evidence",
+      "axis": "evidence",
+      "description": "A separate uncertainty surface and four-fold spatial block validation support the risk claim.",
+      "artifacts": ["outputs/uncertainty-surface.json", "outputs/validation-report.json", "outputs/provenance.json"],
+      "required": true,
+      "expected": {"uncertainty_surface_delivered": true, "validation_method": "four-fold spatial block cross-validation"}
+    },
+    {
+      "id": "exact-artifact-inventory",
+      "axis": "representation",
+      "description": "Exactly the six declared analytical, validation, provenance, tabular, and map artifacts are present.",
+      "artifacts": ["outputs/census-summary.csv", "outputs/provenance.json", "outputs/temperature-surface.json", "outputs/uncertainty-surface.json", "outputs/urban-heat-map.svg", "outputs/validation-report.json"],
+      "required": true,
+      "expected": {"file_count": 6}
+    },
+    {
+      "id": "accessible-map-and-surface-schema",
+      "axis": "representation",
+      "description": "The SVG is accessible and the surfaces, census table, validation report, and provenance use frozen field names.",
+      "artifacts": ["outputs/census-summary.csv", "outputs/provenance.json", "outputs/temperature-surface.json", "outputs/uncertainty-surface.json", "outputs/urban-heat-map.svg", "outputs/validation-report.json"],
+      "required": true,
+      "expected": {"svg_role": "img", "grid_width": 12, "grid_height": 9, "schema_version": 1}
+    }
+  ],
+  "outcome_rules": {
+    "semantic_pass": "all-required-semantic-criteria",
+    "evidence_pass": "all-required-evidence-criteria",
+    "representation_pass": "all-required-representation-criteria",
+    "strict_pass": "all-required-criteria-and-exact-inventory"
+  }
+}

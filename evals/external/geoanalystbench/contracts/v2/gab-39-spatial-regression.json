@@ -1,0 +1,76 @@
+{
+  "schema_version": 2,
+  "contract_id": "geoanalystbench-derived-v2/gab-39-spatial-regression",
+  "case_id": "gab-39-spatial-regression",
+  "base_freeze_id": "geoanalystbench-derived-v1",
+  "base_suite_sha256": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12",
+  "base_case_sha256": "f7c544bff19184fd9c32e42c35bda900709a022874f0f4bb07e4880387804d9b",
+  "strict_validator": {
+    "path": "cases/gab-39-spatial-regression/validate_artifacts.py",
+    "sha256": "8b82ccc180f720ab06a565470a355372b5a551eb269655a7812cbeb589863d26"
+  },
+  "artifact_inventory": [
+    {"path": "outputs/coefficient-uncertainty.geojson", "media_type": "application/geo+json", "required": true},
+    {"path": "outputs/collinearity-extrapolation.json", "media_type": "application/json", "required": true},
+    {"path": "outputs/local-coefficients.geojson", "media_type": "application/geo+json", "required": true},
+    {"path": "outputs/model-comparison.json", "media_type": "application/json", "required": true},
+    {"path": "outputs/provenance.json", "media_type": "application/json", "required": true},
+    {"path": "outputs/spatial-validation.json", "media_type": "application/json", "required": true}
+  ],
+  "criteria": [
+    {
+      "id": "blocked-model-selection",
+      "axis": "semantic",
+      "description": "Blocked validation rejects the local model and selects global OLS under the declared gate.",
+      "artifacts": ["outputs/model-comparison.json", "outputs/spatial-validation.json"],
+      "required": true,
+      "expected": {"selected_model": "global OLS", "global_ols_rmse_c": 0.349983, "local_rmse_c": 0.451345, "local_rmse_improvement_fraction": -0.28962}
+    },
+    {
+      "id": "spatial-dependence-and-coefficients",
+      "axis": "semantic",
+      "description": "OLS residual dependence, global coefficients, and the excluded collinear predictor match the reference decision.",
+      "artifacts": ["outputs/model-comparison.json", "outputs/collinearity-extrapolation.json"],
+      "required": true,
+      "expected": {"queen_moran_i": 0.605429, "queen_p_value": 0.001, "excluded_predictor": "green_share_proxy", "causal_claim_allowed": false}
+    },
+    {
+      "id": "ols-first-spatial-diagnostics-evidence",
+      "axis": "evidence",
+      "description": "The record proves OLS was fitted first and reports seeded queen-primary and rook-sensitivity Moran diagnostics.",
+      "artifacts": ["outputs/model-comparison.json", "outputs/provenance.json"],
+      "required": true,
+      "expected": {"ols_fitted_before_local_model": true, "primary_weights": "queen", "sensitivity_weights": "rook", "permutations": 999, "seed": 39}
+    },
+    {
+      "id": "blocked-validation-and-inference-evidence",
+      "axis": "evidence",
+      "description": "Contiguous spatial blocks, training-only preprocessing, VIF exclusion, FDR inference, and unstable-region warnings are auditable.",
+      "artifacts": ["outputs/spatial-validation.json", "outputs/collinearity-extrapolation.json", "outputs/coefficient-uncertainty.geojson", "outputs/provenance.json"],
+      "required": true,
+      "expected": {"fold_count": 4, "same_area_in_train_and_test": false, "fdr_method": "Benjamini-Hochberg", "fdr_alpha": 0.05}
+    },
+    {
+      "id": "exact-artifact-inventory",
+      "axis": "representation",
+      "description": "Exactly the six declared model, validation, coefficient, uncertainty, warning, and provenance artifacts are present.",
+      "artifacts": ["outputs/coefficient-uncertainty.geojson", "outputs/collinearity-extrapolation.json", "outputs/local-coefficients.geojson", "outputs/model-comparison.json", "outputs/provenance.json", "outputs/spatial-validation.json"],
+      "required": true,
+      "expected": {"file_count": 6}
+    },
+    {
+      "id": "coefficient-map-and-metadata-schema",
+      "axis": "representation",
+      "description": "Coefficient maps retain projected CRS, scale and unit metadata, uncertainty fields, FDR flags, and schema versions.",
+      "artifacts": ["outputs/coefficient-uncertainty.geojson", "outputs/local-coefficients.geojson", "outputs/model-comparison.json", "outputs/provenance.json"],
+      "required": true,
+      "expected": {"crs": "EPSG:32636", "target_units": "degrees Celsius", "feature_count": 144, "schema_version": 1}
+    }
+  ],
+  "outcome_rules": {
+    "semantic_pass": "all-required-semantic-criteria",
+    "evidence_pass": "all-required-evidence-criteria",
+    "representation_pass": "all-required-representation-criteria",
+    "strict_pass": "all-required-criteria-and-exact-inventory"
+  }
+}

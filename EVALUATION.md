@@ -73,6 +73,16 @@ membership and source-file hashes. This freeze is an input-integrity record,
 not a model result or performance claim. A changed case population must receive
 a new freeze version rather than rewriting v1.
 
+The unchanged v1 population also has a separately immutable v2 artifact
+contract layer under `evals/external/geoanalystbench/contracts/v2/`, pinned by
+`freeze-v2.json`. It distinguishes three questions: whether the analytical
+result is semantically correct, whether the evidence is sufficient to support
+the claim, and whether the files match the exact representation and schema.
+This prevents a correct calculation with a wrong field name from being reported
+as the same failure as a wrong calculation. The frozen v1 validator and exact
+artifact inventory remain the strict pass authority; the v2 axes are diagnostic
+subcontracts and do not change the five-case denominator or any prior result.
+
 External model runs use a separate, fail-closed evidence contract:
 `run-schema.json` records the runtime, returned model version, installed skill
 package and digest, condition, authorization, call/retry/timeout limits, cost
