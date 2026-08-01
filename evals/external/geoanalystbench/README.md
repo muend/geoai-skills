@@ -69,7 +69,55 @@ python tools/build_external_eval_freeze.py --check
 python tools/validate_external_evals.py
 ```
 
-## Run the current case
+## External run protocol
+
+The repository does not contain an API or model runner for this suite.
+[`tools/evaluate_external_run.py`](../../../tools/evaluate_external_run.py)
+only performs two offline operations:
+
+1. `--dry-run` validates the exact freeze hash, five-case denominator,
+   runtime/model/package versions, explicit public/synthetic-data approval,
+   one-call-per-case limit, zero-retry policy, timeout, cost cap, and
+   external-only reporting boundary.
+2. `--result` regenerates each deterministic fixture locally, applies the
+   frozen artifact validator to outputs that already exist, hashes the response
+   and artifacts, and writes a machine-readable result. A validator failure is
+   retained as a failed case rather than removed from the denominator.
+
+Copy [`run-template.json`](run-template.json) into a new, untracked evidence
+directory. Replace every `replace-before-run` value and the all-zero archive
+digest. Keep response and artifact paths relative to the manifest:
+
+```bash
+python tools/evaluate_external_run.py \
+  --manifest /path/to/evidence/run.json \
+  --dry-run
+```
+
+A successful preflight makes **no** model, API, web, connector, fixture, or
+artifact-validator call. It only proves that the proposed run is authorized
+and bounded. Produce the five responses and artifacts through the separately
+approved runtime, then evaluate them offline:
+
+```bash
+python tools/evaluate_external_run.py \
+  --manifest /path/to/evidence/run.json \
+  --result /path/to/evidence/result.json
+```
+
+The result follows [`result-schema.json`](result-schema.json). Use
+[`RESULTS-TEMPLATE.md`](RESULTS-TEMPLATE.md) for a public result card, copying
+values from the result JSON rather than hand-entering outcomes. Responses,
+artifacts, run manifests, and results are evidence records; do not commit them
+to the runtime skill package.
+
+Runtime-specific manual profiles:
+
+- [MiniMax Code / MiniMax-M3](MINIMAX-CODE.md) — two-call activation smoke test
+  followed by the optional frozen five-case run. This is an application-surface
+  profile, not an API adapter.
+
+## Run one reference case locally
 
 From the repository root:
 

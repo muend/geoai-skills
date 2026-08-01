@@ -116,6 +116,7 @@ The current source tree contains two deliberately separate evaluation layers:
 
 The external subset is independently authored and reported separately. It does not
 copy upstream datasets, prompts, or reference implementations, and its outcomes must
+follow the [offline run and result protocol](evals/external/geoanalystbench/README.md#external-run-protocol).
 not be pooled with native routing metrics. Its five-case v1 source population is
 frozen under suite hash `c99563100cac…`. See
 [the external-suite boundary](evals/external/geoanalystbench/README.md).

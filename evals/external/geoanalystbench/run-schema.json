@@ -1,0 +1,249 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/muend/geoai-skills/evals/external/geoanalystbench/run-schema.json",
+  "title": "GeoAnalystBench-derived external evaluation run",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "suite",
+    "freeze_id",
+    "suite_sha256",
+    "reporting_scope",
+    "native_suite_included",
+    "condition",
+    "runtime",
+    "skill_package",
+    "authorization",
+    "execution_policy",
+    "cases"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{7,127}$"
+    },
+    "suite": {
+      "const": "geoanalystbench-derived"
+    },
+    "freeze_id": {
+      "const": "geoanalystbench-derived-v1"
+    },
+    "suite_sha256": {
+      "const": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12"
+    },
+    "reporting_scope": {
+      "const": "external-transfer-only"
+    },
+    "native_suite_included": {
+      "const": false
+    },
+    "condition": {
+      "enum": [
+        "skills-enabled",
+        "skills-disabled",
+        "unassisted"
+      ]
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "product",
+        "product_version",
+        "model",
+        "model_version"
+      ],
+      "properties": {
+        "provider": {
+          "$ref": "#/$defs/nonEmpty"
+        },
+        "product": {
+          "$ref": "#/$defs/nonEmpty"
+        },
+        "product_version": {
+          "$ref": "#/$defs/nonEmpty"
+        },
+        "model": {
+          "$ref": "#/$defs/nonEmpty"
+        },
+        "model_version": {
+          "$ref": "#/$defs/nonEmpty"
+        }
+      }
+    },
+    "skill_package": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "version",
+        "revision",
+        "archive_sha256"
+      ],
+      "properties": {
+        "source": {
+          "$ref": "#/$defs/nonEmpty"
+        },
+        "version": {
+          "$ref": "#/$defs/nonEmpty"
+        },
+        "revision": {
+          "$ref": "#/$defs/nonEmpty"
+        },
+        "archive_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "external_calls_approved",
+        "approved_by",
+        "approved_at",
+        "data_classification",
+        "scope"
+      ],
+      "properties": {
+        "external_calls_approved": {
+          "const": true
+        },
+        "approved_by": {
+          "$ref": "#/$defs/nonEmpty"
+        },
+        "approved_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "data_classification": {
+          "const": "public-synthetic-only"
+        },
+        "scope": {
+          "const": "geoanalystbench-derived-v1-five-case-run"
+        }
+      }
+    },
+    "execution_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_calls",
+        "max_calls_per_case",
+        "automatic_retries",
+        "timeout_seconds_per_case",
+        "max_cost_usd",
+        "web_access",
+        "connectors_enabled",
+        "network_scope",
+        "retry_observability"
+      ],
+      "properties": {
+        "max_calls": {
+          "const": 5
+        },
+        "max_calls_per_case": {
+          "const": 1
+        },
+        "automatic_retries": {
+          "const": 0
+        },
+        "timeout_seconds_per_case": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1800
+        },
+        "max_cost_usd": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "web_access": {
+          "const": false
+        },
+        "connectors_enabled": {
+          "const": false
+        },
+        "network_scope": {
+          "enum": [
+            "none",
+            "provider-only"
+          ]
+        },
+        "retry_observability": {
+          "enum": [
+            "operator-controlled",
+            "platform-internal-not-observable"
+          ]
+        }
+      }
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "case_id",
+          "attempt_count",
+          "completion_status",
+          "skill_activation",
+          "response_path",
+          "artifact_dir"
+        ],
+        "properties": {
+          "case_id": {
+            "pattern": "^gab-[0-9]{2}-[a-z0-9-]+$",
+            "type": "string"
+          },
+          "attempt_count": {
+            "const": 1
+          },
+          "completion_status": {
+            "enum": [
+              "completed",
+              "refused",
+              "runtime-error"
+            ]
+          },
+          "skill_activation": {
+            "enum": [
+              "activated",
+              "not-activated",
+              "not-observable"
+            ]
+          },
+          "response_path": {
+            "$ref": "#/$defs/relativePath"
+          },
+          "artifact_dir": {
+            "$ref": "#/$defs/relativePath"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "nonEmpty": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "not": {
+        "pattern": "(^/|^[A-Za-z]:|(^|/)\\.\\.(/|$)|\\\\)"
+      }
+    }
+  }
+}

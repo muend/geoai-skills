@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from jsonschema import Draft202012Validator
+from jsonschema import Draft202012Validator, FormatChecker
 
 from build_external_eval_freeze import MANIFEST_NAME, validate_freeze_manifest
 
@@ -15,6 +15,10 @@ ROOT = Path(__file__).resolve().parent.parent
 SUITE_ROOT = ROOT / "evals" / "external" / "geoanalystbench"
 CASE_ROOT = SUITE_ROOT / "cases"
 EXPECTED_UPSTREAM_SHA = "b5d8c40a8d23639ec77e9acb11f79fd033c07338"
+EXPECTED_FREEZE_ID = "geoanalystbench-derived-v1"
+EXPECTED_SUITE_SHA256 = (
+    "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12"
+)
 
 
 def read_json(path: Path) -> Any:
@@ -91,6 +95,10 @@ def validate_suite() -> tuple[int, list[str]]:
         SUITE_ROOT / "provenance.json",
         SUITE_ROOT / "schema.json",
         SUITE_ROOT / MANIFEST_NAME,
+        SUITE_ROOT / "run-schema.json",
+        SUITE_ROOT / "result-schema.json",
+        SUITE_ROOT / "run-template.json",
+        SUITE_ROOT / "RESULTS-TEMPLATE.md",
     ]
     for path in required:
         if not path.is_file():
@@ -101,6 +109,9 @@ def validate_suite() -> tuple[int, list[str]]:
     try:
         provenance = read_json(SUITE_ROOT / "provenance.json")
         schema = read_json(SUITE_ROOT / "schema.json")
+        run_schema = read_json(SUITE_ROOT / "run-schema.json")
+        result_schema = read_json(SUITE_ROOT / "result-schema.json")
+        run_template = read_json(SUITE_ROOT / "run-template.json")
     except (OSError, json.JSONDecodeError) as exc:
         return 0, [f"external-suite metadata is invalid: {exc}"]
 
@@ -116,6 +127,8 @@ def validate_suite() -> tuple[int, list[str]]:
             errors.append(f"provenance.json: {field} must remain false")
 
     Draft202012Validator.check_schema(schema)
+    Draft202012Validator.check_schema(run_schema)
+    Draft202012Validator.check_schema(result_schema)
     validator = Draft202012Validator(schema)
     case_paths = sorted(CASE_ROOT.glob("*/case.json"))
     seen_ids: set[str] = set()
@@ -132,6 +145,24 @@ def validate_suite() -> tuple[int, list[str]]:
         f"{MANIFEST_NAME}: {error}"
         for error in validate_freeze_manifest(SUITE_ROOT)
     )
+    run_validator = Draft202012Validator(
+        run_schema,
+        format_checker=FormatChecker(),
+    )
+    for error in sorted(
+        run_validator.iter_errors(run_template),
+        key=lambda item: list(item.path),
+    ):
+        location = ".".join(str(part) for part in error.path) or "<root>"
+        errors.append(f"run-template.json: {location}: {error.message}")
+    if run_template.get("freeze_id") != EXPECTED_FREEZE_ID:
+        errors.append("run-template.json: freeze_id must remain pinned to v1")
+    if run_template.get("suite_sha256") != EXPECTED_SUITE_SHA256:
+        errors.append("run-template.json: suite_sha256 must remain pinned to v1")
+    if run_template.get("native_suite_included") is not False:
+        errors.append("run-template.json: native suite pooling must remain false")
+    if run_template.get("reporting_scope") != "external-transfer-only":
+        errors.append("run-template.json: reporting scope must remain external-only")
     return len(case_paths), errors
 
 
