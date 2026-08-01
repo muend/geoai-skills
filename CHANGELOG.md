@@ -19,6 +19,14 @@ own `metadata.version` in its frontmatter.
   and clearly labeled the archived 17-skill routing result as superseded.
 
 ### Added
+- A separately immutable `geoanalystbench-derived-contracts-v3` semantic
+  validator and paired `geoanalystbench-producer-interface-v3`. The new
+  condition preserves the five-case v1 population and all historical v1/v2
+  evidence while replacing hidden byte-for-byte reference coupling with
+  disclosed semantic structures, bounded numeric tolerance, exact artifact
+  inventory, and representation-independent SVG checks. Run/result schemas,
+  deterministic prompt rendering, offline evaluation, and a v3 run template
+  now fail closed on the paired v3 hashes.
 - A separately frozen `geoanalystbench-producer-interface-v2` condition that
   keeps the five external cases and strict validators unchanged while adding
   answer-safe method conventions, exact path/null/mask serialization, UTF-8

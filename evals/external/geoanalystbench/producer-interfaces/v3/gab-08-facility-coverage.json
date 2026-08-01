@@ -1,0 +1,43 @@
+{
+  "schema_version": 3,
+  "interface_id": "geoanalystbench-producer-interface-v3/gab-08-facility-coverage",
+  "case_id": "gab-08-facility-coverage",
+  "base_freeze_id": "geoanalystbench-derived-v1",
+  "base_suite_sha256": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12",
+  "contract_freeze_id": "geoanalystbench-derived-contracts-v3",
+  "contract_suite_sha256": "e17b9ee3f6d69ba99aacc90cab998339bf0f679c76ce25645e09a70e882ad3f2",
+  "disclosure_boundary": {
+    "includes": ["artifact paths", "nested field names", "formats", "method evidence", "serialization rules", "execution hints"],
+    "excludes": ["reference outputs", "expected analytical values", "validator source"]
+  },
+  "execution_hints": [
+    "Use one deterministic local script when helpful; place it in the current workspace root, never an operating-system temporary directory.",
+    "Do not install dependencies or use network access; use the standard library and only packages that already import successfully.",
+    "Write text artifacts explicitly as UTF-8 and keep generated source ASCII-safe on Windows by using Unicode escape sequences when needed."
+  ],
+  "method_contract": [
+    "Run directed least-cost search from every facility using time_minutes and use facility_id as the deterministic tie-break for equal costs.",
+    "A demand is covered only when its least travel time is less than or equal to the fixture cutoff; retain reachable-but-uncovered and unreachable demands.",
+    "Count each demand population once in population totals even when more than one facility is within the cutoff."
+  ],
+  "artifacts": [
+    {
+      "path": "outputs/demand-coverage.csv",
+      "format": "CSV",
+      "required_fields": ["demand_id", "population", "reachable", "covered", "assigned_facility", "travel_time_minutes", "facilities_within_cutoff", "path"],
+      "requirements": ["Use this exact column order and write one row for every demand point.", "Serialize node paths as greater-than-separated node IDs with no spaces, for example NODE1>NODE2; use the same representation in every artifact.", "Use pipe-separated, facility_id-sorted IDs when multiple facilities are within cutoff.", "For unreachable demands write lowercase false and empty CSV cells for assigned_facility, travel_time_minutes, facilities_within_cutoff, and path; never write literal null, None, or a JSON array."]
+    },
+    {
+      "path": "outputs/service-gaps.geojson",
+      "format": "GeoJSON",
+      "required_fields": ["type", "crs", "features[].geometry", "features[].properties.demand_id", "features[].properties.population", "features[].properties.reachable", "features[].properties.assigned_facility", "features[].properties.travel_time_minutes", "features[].properties.reason"],
+      "requirements": ["Use a FeatureCollection in the fixture CRS.", "Include one point feature for every uncovered demand.", "Use JSON null for unavailable assigned facility and travel time properties."]
+    },
+    {
+      "path": "outputs/summary.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "crs", "mode", "cost_field", "cost_units", "coverage_cutoff_minutes", "facility_count", "demand_count", "covered_demand_count", "uncovered_demand_count", "unreachable_demand_count", "total_population", "covered_population", "uncovered_population", "overlap_demand_count", "overlap_population", "coverage_share"],
+      "requirements": ["Use schema_version 1.", "Calculate population totals from unique demand IDs.", "Report coverage_share as covered_population divided by total_population."]
+    }
+  ]
+}

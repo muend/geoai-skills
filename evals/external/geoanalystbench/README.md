@@ -67,8 +67,10 @@ Verify the boundary from the repository root:
 ```bash
 python tools/build_external_eval_freeze.py --check
 python tools/build_external_eval_freeze_v2.py --check
+python tools/build_external_eval_freeze_v3.py --check
 python tools/build_external_producer_interface.py --check
 python tools/build_external_producer_interface_v2.py --check
+python tools/build_external_producer_interface_v3.py --check
 python tools/validate_external_evals.py
 ```
 
@@ -114,6 +116,21 @@ semantics, UTF-8 output, and workspace-local execution explicit. These are
 producer instructions, not result values. V1 remains immutable for historical
 comparison.
 
+[`freeze-v3.json`](freeze-v3.json) and
+[`validators/v3/validate_artifacts.py`](validators/v3/validate_artifacts.py)
+define a separately immutable semantic pass contract. It retains exact artifact
+inventory, disclosed JSON/CSV/GeoJSON structures, analytical values, units,
+evidence, and bounded numeric tolerance while accepting semantically equivalent
+SVG serialization. It supersedes neither v1 nor v2 evidence.
+
+[`producer-interfaces/v3/`](producer-interfaces/v3/) is the answer-safe producer
+condition paired only with that semantic contract. Its manifest,
+[`producer-interface-v3.json`](producer-interface-v3.json), pins aggregate hash
+`f52aadf2bfc3db74e2e004f647696f1b0c9631154823ee02fb433e2daff6b754`.
+It exposes nested field paths, serialization and threshold precision, declared
+deterministic seeds, and performance-safe execution hints, but no expected
+analytical values, reference outputs, or validator source.
+
 Render the exact prompt for one case without invoking a model:
 
 ```bash
@@ -124,6 +141,11 @@ python tools/render_external_case_prompt.py \
 python tools/render_external_case_prompt.py \
   --case gab-38-travel-time \
   --interface-version 2 \
+  --output /path/to/evidence/gab-38-travel-time/prompt.txt
+
+python tools/render_external_case_prompt.py \
+  --case gab-38-travel-time \
+  --interface-version 3 \
   --output /path/to/evidence/gab-38-travel-time/prompt.txt
 ```
 
@@ -150,7 +172,8 @@ only performs two offline operations:
    validation is attempted even when the runtime timed out or returned an
 error. A runtime or validator failure remains in the five-case denominator.
 
-Use [`run-template-v2.json`](run-template-v2.json) for new v2-condition runs.
+Use [`run-template-v3.json`](run-template-v3.json) for new semantic-v3 runs or
+[`run-template-v2.json`](run-template-v2.json) when reproducing v2.
 The original [`run-template.json`](run-template.json) remains pinned to v1 so
 past evidence can be reproduced byte-for-byte.
 
