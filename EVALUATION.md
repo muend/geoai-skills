@@ -92,6 +92,16 @@ source remain hidden. A deterministic renderer creates the exact prompt for
 each case; changing any prompt byte creates a different condition and fails the
 schema-v3 preflight rather than being compared as the same run.
 
+Producer interface v2 is a new, separately frozen condition with aggregate
+SHA-256
+`7ebfc789c10e99e9b3ec012b6e1e5323dd374be2a961ae3a645c976c684a5647`.
+It keeps the same five source cases and strict validators while resolving
+answer-safe ambiguities found in v1: path and null serialization, Boolean mask
+semantics, threshold formatting, exact declared model conventions, and bounded
+UTF-8/workspace execution guidance. It contains no analytical result values or
+validator source. Use `--interface-version 2` with the deterministic renderer
+and `run-template-v2.json`; historical v1 runs remain valid and reproducible.
+
 External model runs use a separate, fail-closed evidence contract:
 `run-schema.json` records the runtime, returned model version, installed skill
 package and digest, condition, authorization, call/retry/timeout limits, cost

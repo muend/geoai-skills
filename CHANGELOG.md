@@ -19,6 +19,12 @@ own `metadata.version` in its frontmatter.
   and clearly labeled the archived 17-skill routing result as superseded.
 
 ### Added
+- A separately frozen `geoanalystbench-producer-interface-v2` condition that
+  keeps the five external cases and strict validators unchanged while adding
+  answer-safe method conventions, exact path/null/mask serialization, UTF-8
+  output guidance, and workspace-local execution hints. Run/result schemas now
+  accept only correctly paired v1 or v2 interface IDs and hashes, and a v2 run
+  template supports future evidence collection without rewriting v1 history.
 - A frozen, answer-safe `geoanalystbench-producer-interface-v1` layer that
   exposes only artifact paths, field names, formats, and method evidence to a
   model. It excludes reference outputs, expected analytical values, and

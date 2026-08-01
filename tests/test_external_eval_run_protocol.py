@@ -17,6 +17,7 @@ CASES = SUITE / "cases"
 TOOL = ROOT / "tools" / "evaluate_external_run.py"
 PROMPT_TOOL = ROOT / "tools" / "render_external_case_prompt.py"
 TEMPLATE = SUITE / "run-template.json"
+TEMPLATE_V2 = SUITE / "run-template-v2.json"
 RUN_SCHEMA = SUITE / "run-schema.json"
 RESULT_SCHEMA = SUITE / "result-schema.json"
 MINIMAX_PROFILE = SUITE / "MINIMAX-CODE.md"
@@ -27,6 +28,10 @@ EXPECTED_CASE_IDS = [
     "gab-38-travel-time",
     "gab-39-spatial-regression",
 ]
+PRODUCER_V2_ID = "geoanalystbench-producer-interface-v2"
+PRODUCER_V2_SHA256 = (
+    "7ebfc789c10e99e9b3ec012b6e1e5323dd374be2a961ae3a645c976c684a5647"
+)
 
 
 def read_json(path: Path) -> Any:
@@ -124,6 +129,9 @@ def populate_reference_evidence(base: Path, payload: dict[str, Any]) -> None:
 
 def populate_prompts(base: Path, payload: dict[str, Any]) -> None:
     """Render the exact answer-safe prompt recorded by the run protocol."""
+    interface_version = (
+        "2" if payload["producer_interface_id"] == PRODUCER_V2_ID else "1"
+    )
     for entry in payload["cases"]:
         prompt_path = base / entry["prompt_path"]
         prompt_path.parent.mkdir(parents=True, exist_ok=True)
@@ -133,6 +141,8 @@ def populate_prompts(base: Path, payload: dict[str, Any]) -> None:
                 str(PROMPT_TOOL),
                 "--case",
                 str(entry["case_id"]),
+                "--interface-version",
+                interface_version,
                 "--output",
                 str(prompt_path),
             ],
@@ -160,6 +170,15 @@ def test_public_schemas_and_template_are_valid() -> None:
     )
     assert errors == []
     assert [case["case_id"] for case in read_json(TEMPLATE)["cases"]] == EXPECTED_CASE_IDS
+    v2_errors = list(
+        Draft202012Validator(
+            run_schema,
+            format_checker=FormatChecker(),
+        ).iter_errors(read_json(TEMPLATE_V2))
+    )
+    assert v2_errors == []
+    assert read_json(TEMPLATE_V2)["producer_interface_id"] == PRODUCER_V2_ID
+    assert read_json(TEMPLATE_V2)["producer_interface_sha256"] == PRODUCER_V2_SHA256
 
 
 def test_template_fails_closed_until_operator_metadata_is_replaced(
@@ -189,6 +208,31 @@ def test_dry_run_validates_budget_and_call_gates_with_frozen_prompts(
     assert "no model, API, web, connector, or artifact validator was invoked" in (
         result.stdout
     )
+
+
+def test_dry_run_accepts_the_paired_v2_interface_identity(tmp_path: Path) -> None:
+    """A v2 run must bind its exact interface ID, hash, and prompt bytes."""
+    manifest = tmp_path / "run-v2.json"
+    payload = valid_manifest()
+    payload["producer_interface_id"] = PRODUCER_V2_ID
+    payload["producer_interface_sha256"] = PRODUCER_V2_SHA256
+    populate_prompts(tmp_path, payload)
+    write_json(manifest, payload)
+    result = run_tool("--manifest", str(manifest), "--dry-run")
+    assert result.returncode == 0, result.stderr
+    assert "5 cases, 5 calls max" in result.stdout
+
+
+def test_preflight_rejects_cross_paired_interface_id_and_hash(tmp_path: Path) -> None:
+    """An interface ID cannot be combined with another version's hash."""
+    manifest = tmp_path / "run-mismatched-interface.json"
+    payload = valid_manifest()
+    payload["producer_interface_id"] = PRODUCER_V2_ID
+    populate_prompts(tmp_path, payload)
+    write_json(manifest, payload)
+    result = run_tool("--manifest", str(manifest), "--dry-run")
+    assert result.returncode == 1
+    assert "producer_interface_sha256" in result.stderr
 
 
 def test_preflight_rejects_wrong_case_population_and_native_pooling(

@@ -1,0 +1,67 @@
+{
+  "schema_version": 2,
+  "interface_id": "geoanalystbench-producer-interface-v2/gab-39-spatial-regression",
+  "case_id": "gab-39-spatial-regression",
+  "base_freeze_id": "geoanalystbench-derived-v1",
+  "base_suite_sha256": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12",
+  "contract_freeze_id": "geoanalystbench-derived-contracts-v2",
+  "contract_suite_sha256": "86170ae144092f1ae0f34124d85505f0d3507a19f04f2b71f2081c89d10de418",
+  "disclosure_boundary": {
+    "includes": ["artifact paths", "field names", "formats", "method evidence", "serialization rules", "execution hints"],
+    "excludes": ["reference outputs", "expected analytical values", "validator source"]
+  },
+  "execution_hints": [
+    "Create one deterministic Python script in the current workspace root and run it once to produce and check all six artifacts; do not place helper files under outputs.",
+    "Do not install or probe for optional spatial-statistics packages and do not write to an operating-system temporary directory; use the Python standard library plus an already importable numeric package if desired.",
+    "Write text artifacts explicitly as UTF-8 and keep generated source ASCII-safe on Windows by using Unicode escape sequences when needed.",
+    "Implement the declared small dense linear algebra directly or with an already available numeric package; no SciPy, PySAL, statsmodels, or network access is required."
+  ],
+  "method_contract": [
+    "Fit global OLS first with an intercept and final predictors green_share and income_index; evaluate green_share_proxy in the VIF set and exclude it under the declared VIF gate.",
+    "Build row-standardized queen primary and rook sensitivity lattice neighbors, calculate Moran's I on residuals, and run the fixture's seeded two-sided permutation test using (exceedances+1)/(permutations+1).",
+    "Use four contiguous 6-by-6 folds in the deterministic order NE, NW, SE, SW; fit every model and preprocessing step on training areas only and score prediction minus observation.",
+    "Fit Gaussian local weighted regressions with weight exp(-0.5*(distance_m/bandwidth_m)^2), an intercept, and the same two final predictors; compute effective sample size as 1/sum(normalized_weight^2).",
+    "Compute weighted coefficient covariance from weighted SSE divided by max(sum(weights)-parameter_count,1), derive normal-approximation p-values with erfc, and adjust the local green-share p-values with Benjamini-Hochberg.",
+    "Mark a local estimate stable only when effective sample size meets the fixture minimum and the one-norm condition number of X'WX is at most 100000.",
+    "Select the local model only when both fixture decision gates pass: primary OLS residual Moran significance and minimum blocked-RMSE improvement; otherwise select global OLS.",
+    "Treat all coefficient maps as exploratory spatial associations, never causal effects, and preserve the registered bandwidth, units, inference seed, permutation count, and decision gates."
+  ],
+  "artifacts": [
+    {
+      "path": "outputs/model-comparison.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "analysis_units", "target", "target_units", "global_ols", "local_model", "decision"],
+      "requirements": ["Use schema_version 1.", "Record OLS fit order, predictors and exclusion, coefficients and standard errors, residual Moran diagnostics for both weights, local diagnostics, the predeclared gate outcomes, selected model, and non-causal interpretation."]
+    },
+    {
+      "path": "outputs/spatial-validation.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "method", "assignment_unit", "random_only_validation", "folds", "aggregate", "leakage_audit"],
+      "requirements": ["Use schema_version 1 and random_only_validation false.", "Report the four folds in order NE, NW, SE, SW for both global and local models.", "Document training-only preprocessing, no shared areas, aggregate RMSE metrics, and local_rmse_improvement_fraction."]
+    },
+    {
+      "path": "outputs/collinearity-extrapolation.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "vif_threshold", "vif", "excluded_features", "final_predictors", "local_fit_support"],
+      "requirements": ["Use schema_version 1.", "Retain VIF values for all assessed predictors, the exclusion, final predictor order, effective-sample-size range, condition-number range, unstable area IDs, and the non-causal warning."]
+    },
+    {
+      "path": "outputs/local-coefficients.geojson",
+      "format": "GeoJSON",
+      "required_fields": ["type", "crs", "coordinate_units", "coefficient_units", "model_status", "causal_interpretation", "map", "features[].geometry", "features[].properties.area_id", "features[].properties.predictor", "features[].properties.coefficient", "features[].properties.coefficient_scale", "features[].properties.coefficient_units", "features[].properties.bandwidth_m", "features[].properties.effective_sample_size", "features[].properties.condition_number", "features[].properties.stable", "features[].properties.fdr_method", "features[].properties.q_value", "features[].properties.fdr_significant", "features[].properties.warning"],
+      "requirements": ["Use a FeatureCollection in the fixture CRS with one bbox polygon feature per analysis area.", "Map the local green_share coefficient and make units, bandwidth, support, stability, selected-model status, and non-causal interpretation explicit."]
+    },
+    {
+      "path": "outputs/coefficient-uncertainty.geojson",
+      "format": "GeoJSON",
+      "required_fields": ["type", "crs", "coordinate_units", "coefficient_units", "model_status", "causal_interpretation", "map", "features[].geometry", "features[].properties.area_id", "features[].properties.predictor", "features[].properties.standard_error", "features[].properties.t_value", "features[].properties.p_value_normal_approximation", "features[].properties.q_value", "features[].properties.fdr_method", "features[].properties.fdr_significant", "features[].properties.effective_sample_size", "features[].properties.condition_number", "features[].properties.stable", "features[].properties.warning"],
+      "requirements": ["Use a FeatureCollection in the fixture CRS with one bbox polygon feature per analysis area.", "Retain six-decimal uncertainty, FDR, support, stability, scale, unit, selected-model status, and non-causal evidence."]
+    },
+    {
+      "path": "outputs/provenance.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "case_id", "fixture", "crs", "coordinate_units", "weights", "inference", "validation", "decision_gate", "local_model", "implementation"],
+      "requirements": ["Use schema_version 1 and case_id gab-39-spatial-regression.", "Preserve fixture-declared weights, inference, split, decision-gate, local-model, CRS, and unit objects.", "Record independently-authored standard-library-compatible implementation provenance and seeded Moran permutations as the only randomness."]
+    }
+  ]
+}
