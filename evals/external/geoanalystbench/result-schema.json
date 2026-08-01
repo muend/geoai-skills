@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/muend/geoai-skills/evals/external/geoanalystbench/result-schema.json",
+  "title": "GeoAnalystBench-derived external evaluation result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "manifest_sha256",
+    "suite",
+    "freeze_id",
+    "suite_sha256",
+    "reporting_scope",
+    "native_suite_included",
+    "condition",
+    "runtime",
+    "skill_package",
+    "execution_policy",
+    "evaluated_at",
+    "cases",
+    "summary",
+    "claim_boundary"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "manifest_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "suite": {
+      "const": "geoanalystbench-derived"
+    },
+    "freeze_id": {
+      "const": "geoanalystbench-derived-v1"
+    },
+    "suite_sha256": {
+      "const": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12"
+    },
+    "reporting_scope": {
+      "const": "external-transfer-only"
+    },
+    "native_suite_included": {
+      "const": false
+    },
+    "condition": {
+      "type": "string"
+    },
+    "runtime": {
+      "type": "object"
+    },
+    "skill_package": {
+      "type": "object"
+    },
+    "execution_policy": {
+      "type": "object"
+    },
+    "evaluated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "case_id",
+          "completion_status",
+          "skill_activation",
+          "passed",
+          "response_sha256",
+          "fixture_sha256",
+          "artifacts",
+          "missing_artifacts",
+          "unexpected_artifacts",
+          "validator"
+        ],
+        "properties": {
+          "case_id": {
+            "type": "string"
+          },
+          "completion_status": {
+            "type": "string"
+          },
+          "skill_activation": {
+            "type": "string"
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "response_sha256": {
+            "$ref": "#/$defs/sha256"
+          },
+          "fixture_sha256": {
+            "$ref": "#/$defs/sha256"
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path",
+                "sha256",
+                "bytes"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "sha256": {
+                  "$ref": "#/$defs/sha256"
+                },
+                "bytes": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "missing_artifacts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "unexpected_artifacts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "validator": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "executed",
+              "exit_code",
+              "stdout",
+              "stderr",
+              "output_truncated"
+            ],
+            "properties": {
+              "executed": {
+                "type": "boolean"
+              },
+              "exit_code": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "stdout": {
+                "type": "string"
+              },
+              "stderr": {
+                "type": "string"
+              },
+              "output_truncated": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total_cases",
+        "passed_cases",
+        "failed_cases",
+        "pass_rate"
+      ],
+      "properties": {
+        "total_cases": {
+          "const": 5
+        },
+        "passed_cases": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "failed_cases": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "pass_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "claim_boundary": {
+      "const": "GeoAnalystBench-derived external transfer results; not pooled with the native 158-case suite and not the upstream 50-task benchmark."
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

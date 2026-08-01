@@ -73,6 +73,23 @@ membership and source-file hashes. This freeze is an input-integrity record,
 not a model result or performance claim. A changed case population must receive
 a new freeze version rather than rewriting v1.
 
+External model runs use a separate, fail-closed evidence contract:
+`run-schema.json` records the runtime, returned model version, installed skill
+package and digest, condition, authorization, call/retry/timeout limits, cost
+cap, and one response/artifact location per frozen case. Run
+`python tools/evaluate_external_run.py --manifest <run.json> --dry-run` before
+any separately authorized model invocation. The command is offline and makes
+no model, API, web, connector, fixture, or validator call.
+
+After all five attempts, pass the same manifest with `--result <result.json>`.
+The tool regenerates only deterministic local fixtures, executes the frozen
+artifact validators, retains failed cases in the denominator, and records
+response, fixture, and artifact SHA-256 evidence. The resulting pass rate is
+always labeled **GeoAnalystBench-derived external transfer results** and cannot
+be pooled with the native 158-case metrics or represented as the upstream
+50-task benchmark. See the suite README and `RESULTS-TEMPLATE.md` for the
+operator and public-reporting protocol.
+
 ## 1. Prepare blind requests
 
 ```bash

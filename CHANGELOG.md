@@ -23,6 +23,16 @@ own `metadata.version` in its frontmatter.
   external case IDs, upstream task IDs and commit, reporting boundary, and
   SHA-256 digest of every governed suite source file, with fail-closed CI tests
   for changed bytes and unregistered case-local files.
+- A model-neutral external-run manifest, offline preflight, artifact evaluator,
+  machine-readable result schema, and public result-card template. The protocol
+  pins runtime/model/package versions and the v1 freeze hash, enforces five
+  one-shot calls with zero automatic retries and an explicit cost cap, records
+  response and artifact hashes, and prevents external results from being pooled
+  with the native 158-case suite.
+- A MiniMax Code / MiniMax-M3 manual runtime profile with reproducible import
+  metadata, two-call skill-activation smoke tests, explicit provider-internal
+  retry observability, and a gated path into the frozen five-case run. No
+  MiniMax API adapter or model call is included.
 
 ## [0.2.0] — 2026-07-28
 
