@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SUITE = ROOT / "evals" / "external" / "geoanalystbench"
 CASES = SUITE / "cases"
 TOOL = ROOT / "tools" / "evaluate_external_run.py"
+PROMPT_TOOL = ROOT / "tools" / "render_external_case_prompt.py"
 TEMPLATE = SUITE / "run-template.json"
 RUN_SCHEMA = SUITE / "run-schema.json"
 RESULT_SCHEMA = SUITE / "result-schema.json"
@@ -92,6 +93,7 @@ def run_case_helper(script: Path, *arguments: str) -> None:
 
 def populate_reference_evidence(base: Path, payload: dict[str, Any]) -> None:
     """Create valid local evidence without making a model or network call."""
+    populate_prompts(base, payload)
     for entry in payload["cases"]:
         case_id = entry["case_id"]
         case_dir = CASES / case_id
@@ -118,6 +120,30 @@ def populate_reference_evidence(base: Path, payload: dict[str, Any]) -> None:
             encoding="utf-8",
             newline="\n",
         )
+
+
+def populate_prompts(base: Path, payload: dict[str, Any]) -> None:
+    """Render the exact answer-safe prompt recorded by the run protocol."""
+    for entry in payload["cases"]:
+        prompt_path = base / entry["prompt_path"]
+        prompt_path.parent.mkdir(parents=True, exist_ok=True)
+        rendered = subprocess.run(  # noqa: S603 - repo-owned renderer
+            [
+                sys.executable,
+                str(PROMPT_TOOL),
+                "--case",
+                str(entry["case_id"]),
+                "--output",
+                str(prompt_path),
+            ],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            timeout=30,
+        )
+        assert rendered.returncode == 0, rendered.stderr
 
 
 def test_public_schemas_and_template_are_valid() -> None:
@@ -148,12 +174,14 @@ def test_template_fails_closed_until_operator_metadata_is_replaced(
     assert "archive_sha256 must record the installed archive" in result.stderr
 
 
-def test_dry_run_validates_budget_and_call_gates_without_outputs(
+def test_dry_run_validates_budget_and_call_gates_with_frozen_prompts(
     tmp_path: Path,
 ) -> None:
-    """Preflight succeeds before evidence exists and explicitly makes no calls."""
+    """Preflight hashes exact prompts before evidence exists and makes no calls."""
     manifest = tmp_path / "run.json"
-    write_json(manifest, valid_manifest())
+    payload = valid_manifest()
+    populate_prompts(tmp_path, payload)
+    write_json(manifest, payload)
     result = run_tool("--manifest", str(manifest), "--dry-run")
     assert result.returncode == 0, result.stderr
     assert "5 cases, 5 calls max" in result.stdout
@@ -237,7 +265,10 @@ def test_offline_evaluator_records_passes_failures_and_hashes(
         "total_cases": 5,
     }
     assert all(case["passed"] for case in result["cases"])
+    assert all(case["prompt_sha256"] for case in result["cases"])
     assert all(case["response_sha256"] for case in result["cases"])
+    assert result["producer_interface_id"] == "geoanalystbench-producer-interface-v1"
+    assert result["schema_version"] == 3
     assert result["native_suite_included"] is False
     assert "not pooled with the native 158-case suite" in result["claim_boundary"]
     assert (
@@ -280,6 +311,23 @@ def test_offline_evaluator_records_passes_failures_and_hashes(
     assert first["artifact_contract_passed"] is False
     assert first["runtime_passed"] is True
     assert first["missing_artifacts"] == ["temperature-surface.json"]
+
+
+def test_preflight_rejects_tampered_prompt_bytes(tmp_path: Path) -> None:
+    """A run cannot substitute a richer or answer-bearing prompt after rendering."""
+    payload = valid_manifest()
+    populate_prompts(tmp_path, payload)
+    prompt = tmp_path / payload["cases"][0]["prompt_path"]
+    prompt.write_text(
+        prompt.read_text(encoding="utf-8") + "Expected answer: leaked.\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    manifest = tmp_path / "run.json"
+    write_json(manifest, payload)
+    result = run_tool("--manifest", str(manifest), "--dry-run")
+    assert result.returncode == 1
+    assert "prompt bytes do not match" in result.stderr
 
 
 def test_artifacts_are_validated_even_when_runtime_did_not_complete(

@@ -67,6 +67,7 @@ Verify the boundary from the repository root:
 ```bash
 python tools/build_external_eval_freeze.py --check
 python tools/build_external_eval_freeze_v2.py --check
+python tools/build_external_producer_interface.py --check
 python tools/validate_external_evals.py
 ```
 
@@ -91,23 +92,49 @@ required criterion and the exact frozen inventory pass the original v1
 validator. The v2 freeze contains no model outputs or results and does not
 change the denominator, upstream attribution, native benchmark, or v1 bytes.
 
+## Frozen answer-safe producer interface
+
+[`producer-interfaces/v1/`](producer-interfaces/v1/) defines the artifact
+shape a runtime is allowed to see. Its manifest,
+[`producer-interface-v1.json`](producer-interface-v1.json), pins the five case
+interfaces under aggregate hash
+`8596ddfeac83679c9a7c0b5007e5c009a44559823d8e70903bf5c66fd4274962`.
+The interface includes only artifact paths, formats, required field names, and
+method-evidence requirements. It excludes reference outputs, expected
+analytical values, and validator source.
+
+Render the exact prompt for one case without invoking a model:
+
+```bash
+python tools/render_external_case_prompt.py \
+  --case gab-38-travel-time \
+  --output /path/to/evidence/gab-38-travel-time/prompt.txt
+```
+
+The renderer is deterministic. Run/result schema v3 records the producer
+interface ID and hash, requires each rendered `prompt_path`, verifies its exact
+bytes during preflight, and stores its SHA-256 in the result. A prior run that
+used a different prompt remains valid historical evidence but is a different
+experimental condition and must not be presented as a rerun of this interface.
+
 ## External run protocol
 
 The repository does not contain an API or model runner for this suite.
 [`tools/evaluate_external_run.py`](../../../tools/evaluate_external_run.py)
 only performs two offline operations:
 
-1. `--dry-run` validates the exact freeze hash, five-case denominator,
+1. `--dry-run` validates the exact freeze and producer-interface hashes,
+   deterministic prompt bytes, five-case denominator,
    runtime/model/package versions, explicit public/synthetic-data approval,
    one-call-per-case limit, zero-retry policy, timeout, five-second termination
    grace, cost cap, and external-only reporting boundary.
 2. `--result` regenerates each deterministic fixture locally, applies the
-   frozen artifact validator to outputs that already exist, hashes the response
-   and artifacts, and writes a machine-readable result. Artifact validation is
-   attempted even when the runtime timed out or returned an error. A runtime or
-   validator failure remains in the five-case denominator.
+   frozen artifact validator to outputs that already exist, hashes the prompt,
+   response, and artifacts, and writes a machine-readable result. Artifact
+   validation is attempted even when the runtime timed out or returned an
+   error. A runtime or validator failure remains in the five-case denominator.
 
-Run and result schema version 2 deliberately separates four questions:
+Run and result schema version 3 deliberately separates four questions:
 
 - **Skill activation:** was applicable local skill use observed?
 - **Runtime:** did the call finish within the bounded execution window?
@@ -124,7 +151,8 @@ protocol deviation and blocks an unqualified aggregate claim.
 
 Copy [`run-template.json`](run-template.json) into a new, untracked evidence
 directory. Replace every `replace-before-run` value and the all-zero archive
-digest. Keep response and artifact paths relative to the manifest:
+digest. Render each declared prompt before preflight, and keep prompt, response,
+and artifact paths relative to the manifest:
 
 ```bash
 python tools/evaluate_external_run.py \

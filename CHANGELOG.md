@@ -19,6 +19,12 @@ own `metadata.version` in its frontmatter.
   and clearly labeled the archived 17-skill routing result as superseded.
 
 ### Added
+- A frozen, answer-safe `geoanalystbench-producer-interface-v1` layer that
+  exposes only artifact paths, field names, formats, and method evidence to a
+  model. It excludes reference outputs, expected analytical values, and
+  validator source. Run/result schema v3 records the exact interface hash and
+  a deterministic prompt SHA-256 for every case, so prompt drift fails before
+  invocation and historical results remain distinguishable by condition.
 - A separately frozen `geoanalystbench-derived-contracts-v2` artifact-contract
   layer for the unchanged five-case v1 population. Each case now separates
   semantic correctness, evidence sufficiency, and representation/schema

@@ -13,6 +13,7 @@
       "case_id": "gab-01-urban-heat",
       "completion_status": "completed",
       "elapsed_seconds": 0,
+      "prompt_path": "evidence/gab-01-urban-heat/prompt.txt",
       "response_path": "evidence/gab-01-urban-heat/response.md",
       "skill_activation": "not-observable",
       "timed_out": false
@@ -23,6 +24,7 @@
       "case_id": "gab-08-facility-coverage",
       "completion_status": "completed",
       "elapsed_seconds": 0,
+      "prompt_path": "evidence/gab-08-facility-coverage/prompt.txt",
       "response_path": "evidence/gab-08-facility-coverage/response.md",
       "skill_activation": "not-observable",
       "timed_out": false
@@ -33,6 +35,7 @@
       "case_id": "gab-36-vegetation-change",
       "completion_status": "completed",
       "elapsed_seconds": 0,
+      "prompt_path": "evidence/gab-36-vegetation-change/prompt.txt",
       "response_path": "evidence/gab-36-vegetation-change/response.md",
       "skill_activation": "not-observable",
       "timed_out": false
@@ -43,6 +46,7 @@
       "case_id": "gab-38-travel-time",
       "completion_status": "completed",
       "elapsed_seconds": 0,
+      "prompt_path": "evidence/gab-38-travel-time/prompt.txt",
       "response_path": "evidence/gab-38-travel-time/response.md",
       "skill_activation": "not-observable",
       "timed_out": false
@@ -53,6 +57,7 @@
       "case_id": "gab-39-spatial-regression",
       "completion_status": "completed",
       "elapsed_seconds": 0,
+      "prompt_path": "evidence/gab-39-spatial-regression/prompt.txt",
       "response_path": "evidence/gab-39-spatial-regression/response.md",
       "skill_activation": "not-observable",
       "timed_out": false
@@ -73,6 +78,8 @@
   },
   "freeze_id": "geoanalystbench-derived-v1",
   "native_suite_included": false,
+  "producer_interface_id": "geoanalystbench-producer-interface-v1",
+  "producer_interface_sha256": "8596ddfeac83679c9a7c0b5007e5c009a44559823d8e70903bf5c66fd4274962",
   "reporting_scope": "external-transfer-only",
   "run_id": "replace-before-run",
   "runtime": {
@@ -82,7 +89,7 @@
     "product_version": "replace-before-run",
     "provider": "replace-before-run"
   },
-  "schema_version": 2,
+  "schema_version": 3,
   "skill_package": {
     "archive_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
     "revision": "replace-before-run",

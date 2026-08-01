@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "interface_id": "geoanalystbench-producer-interface-v1/gab-36-vegetation-change",
+  "case_id": "gab-36-vegetation-change",
+  "base_freeze_id": "geoanalystbench-derived-v1",
+  "base_suite_sha256": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12",
+  "contract_freeze_id": "geoanalystbench-derived-contracts-v2",
+  "contract_suite_sha256": "86170ae144092f1ae0f34124d85505f0d3507a19f04f2b71f2081c89d10de418",
+  "disclosure_boundary": {
+    "includes": ["artifact paths", "field names", "formats", "method evidence"],
+    "excludes": ["reference outputs", "expected analytical values", "validator source"]
+  },
+  "artifacts": [
+    {
+      "path": "outputs/savi-change.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "crs", "rows", "columns", "pre_savi", "post_savi", "delta_savi", "valid_overlap", "damage_mask"],
+      "requirements": ["Use schema_version 1.", "Preserve the fixture grid shape and null invalid cells in every numeric or mask grid.", "Store damage_mask as booleans or null values aligned to the grid."]
+    },
+    {
+      "path": "outputs/damage-pixels.geojson",
+      "format": "GeoJSON",
+      "required_fields": ["type", "crs", "features[].geometry", "features[].properties.row", "features[].properties.column", "features[].properties.delta_savi", "features[].properties.pixel_area_m2"],
+      "requirements": ["Use a FeatureCollection in the fixture CRS.", "Write one polygon feature per damaged valid pixel.", "Derive polygon dimensions and pixel_area_m2 from the fixture grid metadata."]
+    },
+    {
+      "path": "outputs/change-summary.csv",
+      "format": "CSV",
+      "required_fields": ["threshold", "damaged_pixels", "damaged_area_hectares", "valid_pixels", "valid_overlap_percent"],
+      "requirements": ["Use this exact column order.", "Write one row for each requested sensitivity threshold."]
+    },
+    {
+      "path": "outputs/provenance.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "sensor", "product_level", "crs", "pre_acquired", "post_acquired", "phenology", "reflectance_scale_factor", "savi_l", "damage_threshold", "pixel_width_m", "pixel_height_m", "co_registration_rmse_pixels", "valid_pixels", "total_pixels", "valid_overlap_percent"],
+      "requirements": ["Use schema_version 1.", "Copy declared acquisition and processing metadata from the fixture.", "Derive validity counts and overlap percentage from the intersected masks."]
+    }
+  ]
+}
