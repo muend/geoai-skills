@@ -221,9 +221,19 @@ def test_offline_evaluator_records_passes_failures_and_hashes(
     assert completed.returncode == 0, completed.stderr
     result = read_json(result_path)
     assert result["summary"] == {
+        "activated_cases": 0,
+        "activation_observed_cases": 0,
+        "activation_rate": None,
+        "artifact_failed_cases": 0,
+        "artifact_pass_rate": 1.0,
+        "artifact_passed_cases": 5,
         "failed_cases": 0,
         "pass_rate": 1.0,
         "passed_cases": 5,
+        "protocol_deviation_cases": 0,
+        "runtime_failed_cases": 0,
+        "runtime_pass_rate": 1.0,
+        "runtime_passed_cases": 5,
         "total_cases": 5,
     }
     assert all(case["passed"] for case in result["cases"])
@@ -267,7 +277,53 @@ def test_offline_evaluator_records_passes_failures_and_hashes(
     assert failed_result["summary"]["failed_cases"] == 1
     first = failed_result["cases"][0]
     assert first["passed"] is False
+    assert first["artifact_contract_passed"] is False
+    assert first["runtime_passed"] is True
     assert first["missing_artifacts"] == ["temperature-surface.json"]
+
+
+def test_artifacts_are_validated_even_when_runtime_did_not_complete(
+    tmp_path: Path,
+) -> None:
+    """Timeout/runtime axes must not erase independently valid artifacts."""
+    payload = valid_manifest()
+    populate_reference_evidence(tmp_path, payload)
+    timed_out = payload["cases"][0]
+    timed_out["completion_status"] = "timed-out"
+    timed_out["timed_out"] = True
+    timed_out["elapsed_seconds"] = 456.0
+    runtime_error = payload["cases"][1]
+    runtime_error["completion_status"] = "runtime-error"
+    runtime_error["elapsed_seconds"] = 120.0
+    manifest = tmp_path / "run.json"
+    result_path = tmp_path / "result.json"
+    write_json(manifest, payload)
+
+    completed = run_tool(
+        "--manifest",
+        str(manifest),
+        "--result",
+        str(result_path),
+    )
+    assert completed.returncode == 0, completed.stderr
+    result = read_json(result_path)
+    assert result["summary"]["artifact_passed_cases"] == 5
+    assert result["summary"]["runtime_passed_cases"] == 3
+    assert result["summary"]["passed_cases"] == 3
+    assert result["summary"]["protocol_deviation_cases"] == 1
+
+    first = result["cases"][0]
+    assert first["validator"]["executed"] is True
+    assert first["artifact_contract_passed"] is True
+    assert first["runtime_passed"] is False
+    assert first["passed"] is False
+    assert first["protocol_deviations"]
+
+    second = result["cases"][1]
+    assert second["validator"]["executed"] is True
+    assert second["artifact_contract_passed"] is True
+    assert second["runtime_passed"] is False
+    assert second["protocol_deviations"] == []
 
 
 def test_protocol_tool_contains_no_model_or_network_client() -> None:

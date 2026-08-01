@@ -24,7 +24,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": 1
+      "const": 2
     },
     "run_id": {
       "type": "string"
@@ -73,8 +73,13 @@
         "required": [
           "case_id",
           "completion_status",
+          "elapsed_seconds",
           "skill_activation",
+          "timed_out",
+          "runtime_passed",
+          "artifact_contract_passed",
           "passed",
+          "protocol_deviations",
           "response_sha256",
           "fixture_sha256",
           "artifacts",
@@ -87,13 +92,37 @@
             "type": "string"
           },
           "completion_status": {
-            "type": "string"
+            "enum": [
+              "completed",
+              "refused",
+              "timed-out",
+              "runtime-error"
+            ]
+          },
+          "elapsed_seconds": {
+            "type": "number",
+            "minimum": 0
           },
           "skill_activation": {
             "type": "string"
           },
+          "timed_out": {
+            "type": "boolean"
+          },
+          "runtime_passed": {
+            "type": "boolean"
+          },
+          "artifact_contract_passed": {
+            "type": "boolean"
+          },
           "passed": {
             "type": "boolean"
+          },
+          "protocol_deviations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "response_sha256": {
             "$ref": "#/$defs/sha256"
@@ -178,7 +207,17 @@
         "total_cases",
         "passed_cases",
         "failed_cases",
-        "pass_rate"
+        "pass_rate",
+        "runtime_passed_cases",
+        "runtime_failed_cases",
+        "runtime_pass_rate",
+        "artifact_passed_cases",
+        "artifact_failed_cases",
+        "artifact_pass_rate",
+        "activation_observed_cases",
+        "activated_cases",
+        "activation_rate",
+        "protocol_deviation_cases"
       ],
       "properties": {
         "total_cases": {
@@ -198,6 +237,59 @@
           "type": "number",
           "minimum": 0,
           "maximum": 1
+        },
+        "runtime_passed_cases": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "runtime_failed_cases": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "runtime_pass_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "artifact_passed_cases": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "artifact_failed_cases": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "artifact_pass_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "activation_observed_cases": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "activated_cases": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "activation_rate": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "protocol_deviation_cases": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
         }
       }
     },

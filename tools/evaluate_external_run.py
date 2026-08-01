@@ -27,6 +27,7 @@ CASE_ROOT = SUITE_ROOT / "cases"
 RUN_SCHEMA = SUITE_ROOT / "run-schema.json"
 RESULT_SCHEMA = SUITE_ROOT / "result-schema.json"
 OUTPUT_LIMIT = 20_000
+TIMEOUT_GRACE_SECONDS = 5.0
 CLAIM_BOUNDARY = (
     "GeoAnalystBench-derived external transfer results; not pooled with the "
     "native 158-case suite and not the upstream 50-task benchmark."
@@ -127,12 +128,32 @@ def validate_manifest(payload: Any, manifest_path: Path) -> list[str]:
         errors.append("skill_package.archive_sha256 must record the installed archive")
 
     base = manifest_path.resolve().parent
+    timeout_seconds = payload.get("execution_policy", {}).get(
+        "timeout_seconds_per_case"
+    )
     response_paths: set[Path] = set()
     artifact_dirs: set[Path] = set()
     for case in payload.get("cases", []):
         if not isinstance(case, dict):
             continue
         case_id = str(case.get("case_id", "<unknown>"))
+        status = case.get("completion_status")
+        timed_out = case.get("timed_out")
+        if timed_out is True and status != "timed-out":
+            errors.append(
+                f"{case_id}: timed_out=true requires completion_status=timed-out"
+            )
+        if status == "timed-out" and timed_out is not True:
+            errors.append(
+                f"{case_id}: completion_status=timed-out requires timed_out=true"
+            )
+        elapsed = case.get("elapsed_seconds")
+        if (
+            isinstance(elapsed, (int, float))
+            and isinstance(timeout_seconds, (int, float))
+            and elapsed < 0
+        ):
+            errors.append(f"{case_id}: elapsed_seconds may not be negative")
         for field, collection in (
             ("response_path", response_paths),
             ("artifact_dir", artifact_dirs),
@@ -211,6 +232,7 @@ def evaluate_case(
     entry: dict[str, Any],
     manifest_dir: Path,
     fixture_root: Path,
+    timeout_seconds: float,
 ) -> dict[str, Any]:
     """Generate the frozen fixture and validate one existing response."""
     case_id = str(entry["case_id"])
@@ -251,47 +273,54 @@ def evaluate_case(
     unexpected = sorted(actual_names - expected_names)
 
     status = str(entry["completion_status"])
-    if status == "completed":
-        validator_path = case_dir / str(contract["validator"])
-        validated = run_checked(
-            [
-                sys.executable,
-                str(validator_path),
-                "--input",
-                str(input_path),
-                "--output-dir",
-                str(output_dir),
-            ]
+    elapsed_seconds = float(entry["elapsed_seconds"])
+    timed_out = bool(entry["timed_out"])
+    validator_path = case_dir / str(contract["validator"])
+    validated = run_checked(
+        [
+            sys.executable,
+            str(validator_path),
+            "--input",
+            str(input_path),
+            "--output-dir",
+            str(output_dir),
+        ]
+    )
+    stdout, stdout_truncated = truncate_output(validated.stdout)
+    stderr, stderr_truncated = truncate_output(validated.stderr)
+    validator = {
+        "executed": True,
+        "exit_code": validated.returncode,
+        "stdout": stdout,
+        "stderr": stderr,
+        "output_truncated": stdout_truncated or stderr_truncated,
+    }
+    artifact_contract_passed = (
+        validated.returncode == 0 and not missing and not unexpected
+    )
+    runtime_passed = status == "completed" and not timed_out
+    protocol_deviations: list[str] = []
+    if elapsed_seconds > timeout_seconds + TIMEOUT_GRACE_SECONDS:
+        protocol_deviations.append(
+            "elapsed_seconds exceeded timeout_seconds_per_case plus "
+            f"the {TIMEOUT_GRACE_SECONDS:g}-second termination grace"
         )
-        stdout, stdout_truncated = truncate_output(validated.stdout)
-        stderr, stderr_truncated = truncate_output(validated.stderr)
-        validator = {
-            "executed": True,
-            "exit_code": validated.returncode,
-            "stdout": stdout,
-            "stderr": stderr,
-            "output_truncated": stdout_truncated or stderr_truncated,
-        }
-        passed = validated.returncode == 0 and not missing and not unexpected
-    else:
-        validator = {
-            "executed": False,
-            "exit_code": None,
-            "stdout": "",
-            "stderr": f"not executed because completion_status is {status}",
-            "output_truncated": False,
-        }
-        passed = False
+    passed = runtime_passed and artifact_contract_passed
 
     return {
         "artifacts": inventory,
         "case_id": case_id,
         "completion_status": status,
+        "elapsed_seconds": elapsed_seconds,
         "fixture_sha256": sha256_file(input_path),
+        "artifact_contract_passed": artifact_contract_passed,
         "missing_artifacts": missing,
         "passed": passed,
+        "protocol_deviations": protocol_deviations,
         "response_sha256": sha256_file(response_path),
+        "runtime_passed": runtime_passed,
         "skill_activation": entry["skill_activation"],
+        "timed_out": timed_out,
         "unexpected_artifacts": unexpected,
         "validator": validator,
     }
@@ -302,11 +331,27 @@ def build_result(payload: dict[str, Any], manifest_path: Path) -> dict[str, Any]
     manifest_dir = manifest_path.resolve().parent
     with tempfile.TemporaryDirectory(prefix="geoai-external-eval-") as temp_dir:
         fixture_root = Path(temp_dir)
+        timeout_seconds = float(
+            payload["execution_policy"]["timeout_seconds_per_case"]
+        )
         cases = [
-            evaluate_case(entry, manifest_dir, fixture_root)
+            evaluate_case(entry, manifest_dir, fixture_root, timeout_seconds)
             for entry in payload["cases"]
         ]
     passed = sum(1 for case in cases if case["passed"])
+    runtime_passed = sum(1 for case in cases if case["runtime_passed"])
+    artifact_passed = sum(
+        1 for case in cases if case["artifact_contract_passed"]
+    )
+    activation_observed = sum(
+        1 for case in cases if case["skill_activation"] != "not-observable"
+    )
+    activated = sum(
+        1 for case in cases if case["skill_activation"] == "activated"
+    )
+    protocol_deviations = sum(
+        1 for case in cases if case["protocol_deviations"]
+    )
     result = {
         "cases": cases,
         "claim_boundary": CLAIM_BOUNDARY,
@@ -319,14 +364,26 @@ def build_result(payload: dict[str, Any], manifest_path: Path) -> dict[str, Any]
         "reporting_scope": "external-transfer-only",
         "run_id": payload["run_id"],
         "runtime": payload["runtime"],
-        "schema_version": 1,
+        "schema_version": 2,
         "skill_package": payload["skill_package"],
         "suite": "geoanalystbench-derived",
         "suite_sha256": payload["suite_sha256"],
         "summary": {
+            "activated_cases": activated,
+            "activation_observed_cases": activation_observed,
+            "activation_rate": (
+                activated / activation_observed if activation_observed else None
+            ),
+            "artifact_failed_cases": len(cases) - artifact_passed,
+            "artifact_pass_rate": artifact_passed / len(cases),
+            "artifact_passed_cases": artifact_passed,
             "failed_cases": len(cases) - passed,
             "pass_rate": passed / len(cases),
             "passed_cases": passed,
+            "protocol_deviation_cases": protocol_deviations,
+            "runtime_failed_cases": len(cases) - runtime_passed,
+            "runtime_pass_rate": runtime_passed / len(cases),
+            "runtime_passed_cases": runtime_passed,
             "total_cases": len(cases),
         },
     }
@@ -412,8 +469,16 @@ def main() -> int:
     summary = result["summary"]
     print(
         "external run evaluated: "
-        f"{summary['passed_cases']}/{summary['total_cases']} artifact contracts passed"
+        f"runtime {summary['runtime_passed_cases']}/{summary['total_cases']}, "
+        f"artifacts {summary['artifact_passed_cases']}/{summary['total_cases']}, "
+        f"overall {summary['passed_cases']}/{summary['total_cases']}"
     )
+    if summary["protocol_deviation_cases"]:
+        print(
+            "protocol deviations: "
+            f"{summary['protocol_deviation_cases']} case(s) exceeded the bounded "
+            "termination window"
+        )
     print(f"result: {args.result}")
     return 0
 

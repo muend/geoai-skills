@@ -28,20 +28,25 @@
 - Automatic retries: `0`
 - Retry observability: `<operator-controlled | platform-internal-not-observable>`
 - Timeout: `<seconds>` per case
+- Termination grace: `5` seconds
 - Maximum authorized cost: `<USD>`
 - Web access / connectors: disabled / disabled
 
 ## Results
 
-| Case | Skill activation | Artifact validator | Evidence |
-| --- | --- | --- | --- |
-| `gab-01-urban-heat` | `<state>` | `<pass/fail>` | `<response/artifact hashes>` |
-| `gab-08-facility-coverage` | `<state>` | `<pass/fail>` | `<response/artifact hashes>` |
-| `gab-36-vegetation-change` | `<state>` | `<pass/fail>` | `<response/artifact hashes>` |
-| `gab-38-travel-time` | `<state>` | `<pass/fail>` | `<response/artifact hashes>` |
-| `gab-39-spatial-regression` | `<state>` | `<pass/fail>` | `<response/artifact hashes>` |
+| Case | Skill activation | Runtime | Artifact contract | Overall | Evidence |
+| --- | --- | --- | --- | --- | --- |
+| `gab-01-urban-heat` | `<state>` | `<pass/fail>` | `<pass/fail>` | `<pass/fail>` | `<response/artifact hashes>` |
+| `gab-08-facility-coverage` | `<state>` | `<pass/fail>` | `<pass/fail>` | `<pass/fail>` | `<response/artifact hashes>` |
+| `gab-36-vegetation-change` | `<state>` | `<pass/fail>` | `<pass/fail>` | `<pass/fail>` | `<response/artifact hashes>` |
+| `gab-38-travel-time` | `<state>` | `<pass/fail>` | `<pass/fail>` | `<pass/fail>` | `<response/artifact hashes>` |
+| `gab-39-spatial-regression` | `<state>` | `<pass/fail>` | `<pass/fail>` | `<pass/fail>` | `<response/artifact hashes>` |
 
-**External transfer pass rate:** `<passed>/5 (<percent>%)`
+- **Observed skill activation:** `<activated>/<observable> (<percent or N/A>%)`
+- **Runtime pass rate:** `<passed>/5 (<percent>%)`
+- **Artifact-contract pass rate:** `<passed>/5 (<percent>%)`
+- **Overall external transfer pass rate:** `<passed>/5 (<percent>%)`
+- **Protocol deviations:** `<count>`
 
 ## Required claim boundary
 
@@ -55,4 +60,6 @@ datasets or reference code.
 
 List every validator failure, runtime error, refusal, unobservable activation,
 missing artifact, unexpected artifact, and protocol deviation. A failed case
-remains part of the denominator.
+remains part of the denominator. When artifacts exist after a timeout or runtime
+error, report their validator result separately; do not convert that evidence
+into a runtime or overall pass.

@@ -118,8 +118,10 @@ The external subset is independently authored and reported separately. It does n
 copy upstream datasets, prompts, or reference implementations, and its outcomes must
 follow the [offline run and result protocol](evals/external/geoanalystbench/README.md#external-run-protocol).
 not be pooled with native routing metrics. Its five-case v1 source population is
-frozen under suite hash `c99563100cac…`. See
-[the external-suite boundary](evals/external/geoanalystbench/README.md).
+frozen under suite hash `c99563100cac…`. Results follow the
+[offline run and result protocol](evals/external/geoanalystbench/README.md#external-run-protocol),
+which reports skill activation, runtime completion, artifact-contract compliance,
+and overall success as separate measures.
 
 An archived 17-skill, 120-case Claude Code run recorded 100% routing precision,
 92.86% routing recall, and 92.5% full-route accuracy. That run is reproducible but

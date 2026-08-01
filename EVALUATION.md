@@ -83,10 +83,14 @@ no model, API, web, connector, fixture, or validator call.
 
 After all five attempts, pass the same manifest with `--result <result.json>`.
 The tool regenerates only deterministic local fixtures, executes the frozen
-artifact validators, retains failed cases in the denominator, and records
-response, fixture, and artifact SHA-256 evidence. The resulting pass rate is
-always labeled **GeoAnalystBench-derived external transfer results** and cannot
-be pooled with the native 158-case metrics or represented as the upstream
+artifact validators even when a runtime timed out or returned an error, retains
+every attempted case in the denominator, and records response, fixture, and
+artifact SHA-256 evidence. It reports skill activation, bounded runtime
+completion, strict artifact-contract compliance, and overall success separately;
+none may be substituted for another. Elapsed time beyond the configured timeout
+plus the five-second termination grace is a protocol deviation. These measures
+are always labeled **GeoAnalystBench-derived external transfer results** and
+cannot be pooled with the native 158-case metrics or represented as the upstream
 50-task benchmark. See the suite README and `RESULTS-TEMPLATE.md` for the
 operator and public-reporting protocol.
 

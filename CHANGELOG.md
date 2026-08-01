@@ -28,7 +28,10 @@ own `metadata.version` in its frontmatter.
   pins runtime/model/package versions and the v1 freeze hash, enforces five
   one-shot calls with zero automatic retries and an explicit cost cap, records
   response and artifact hashes, and prevents external results from being pooled
-  with the native 158-case suite.
+  with the native 158-case suite. Schema v2 separates observed activation,
+  bounded runtime completion, strict artifact-contract compliance, and overall
+  success; it still validates artifacts left by failed or timed-out runtimes and
+  flags calls exceeding the timeout plus five-second termination grace.
 - A MiniMax Code / MiniMax-M3 manual runtime profile with reproducible import
   metadata, two-call skill-activation smoke tests, explicit provider-internal
   retry observability, and a gated path into the frozen five-case run. No

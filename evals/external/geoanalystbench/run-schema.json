@@ -21,7 +21,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": 1
+      "const": 2
     },
     "run_id": {
       "type": "string",
@@ -139,6 +139,7 @@
         "max_calls_per_case",
         "automatic_retries",
         "timeout_seconds_per_case",
+        "termination_grace_seconds",
         "max_cost_usd",
         "web_access",
         "connectors_enabled",
@@ -159,6 +160,9 @@
           "type": "integer",
           "minimum": 1,
           "maximum": 1800
+        },
+        "termination_grace_seconds": {
+          "const": 5
         },
         "max_cost_usd": {
           "type": "number",
@@ -196,7 +200,9 @@
           "case_id",
           "attempt_count",
           "completion_status",
+          "elapsed_seconds",
           "skill_activation",
+          "timed_out",
           "response_path",
           "artifact_dir"
         ],
@@ -212,8 +218,13 @@
             "enum": [
               "completed",
               "refused",
+              "timed-out",
               "runtime-error"
             ]
+          },
+          "elapsed_seconds": {
+            "type": "number",
+            "minimum": 0
           },
           "skill_activation": {
             "enum": [
@@ -221,6 +232,9 @@
               "not-activated",
               "not-observable"
             ]
+          },
+          "timed_out": {
+            "type": "boolean"
           },
           "response_path": {
             "$ref": "#/$defs/relativePath"

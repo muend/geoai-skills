@@ -77,12 +77,28 @@ only performs two offline operations:
 
 1. `--dry-run` validates the exact freeze hash, five-case denominator,
    runtime/model/package versions, explicit public/synthetic-data approval,
-   one-call-per-case limit, zero-retry policy, timeout, cost cap, and
-   external-only reporting boundary.
+   one-call-per-case limit, zero-retry policy, timeout, five-second termination
+   grace, cost cap, and external-only reporting boundary.
 2. `--result` regenerates each deterministic fixture locally, applies the
    frozen artifact validator to outputs that already exist, hashes the response
-   and artifacts, and writes a machine-readable result. A validator failure is
-   retained as a failed case rather than removed from the denominator.
+   and artifacts, and writes a machine-readable result. Artifact validation is
+   attempted even when the runtime timed out or returned an error. A runtime or
+   validator failure remains in the five-case denominator.
+
+Run and result schema version 2 deliberately separates four questions:
+
+- **Skill activation:** was applicable local skill use observed?
+- **Runtime:** did the call finish within the bounded execution window?
+- **Artifact contract:** do the produced files satisfy the frozen validator and
+  exact artifact inventory?
+- **Overall:** did both runtime and artifact checks pass?
+
+Do not report one axis as another. A call may activate the right skill and
+produce useful files while still failing the strict artifact contract. Likewise,
+files left by a timed-out process are validated and preserved as evidence, but
+the runtime and overall result remain failed. Elapsed time greater than the
+configured timeout plus the five-second termination grace is recorded as a
+protocol deviation and blocks an unqualified aggregate claim.
 
 Copy [`run-template.json`](run-template.json) into a new, untracked evidence
 directory. Replace every `replace-before-run` value and the all-zero archive

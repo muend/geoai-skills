@@ -12,40 +12,50 @@
       "attempt_count": 1,
       "case_id": "gab-01-urban-heat",
       "completion_status": "completed",
+      "elapsed_seconds": 0,
       "response_path": "evidence/gab-01-urban-heat/response.md",
-      "skill_activation": "not-observable"
+      "skill_activation": "not-observable",
+      "timed_out": false
     },
     {
       "artifact_dir": "evidence/gab-08-facility-coverage/outputs",
       "attempt_count": 1,
       "case_id": "gab-08-facility-coverage",
       "completion_status": "completed",
+      "elapsed_seconds": 0,
       "response_path": "evidence/gab-08-facility-coverage/response.md",
-      "skill_activation": "not-observable"
+      "skill_activation": "not-observable",
+      "timed_out": false
     },
     {
       "artifact_dir": "evidence/gab-36-vegetation-change/outputs",
       "attempt_count": 1,
       "case_id": "gab-36-vegetation-change",
       "completion_status": "completed",
+      "elapsed_seconds": 0,
       "response_path": "evidence/gab-36-vegetation-change/response.md",
-      "skill_activation": "not-observable"
+      "skill_activation": "not-observable",
+      "timed_out": false
     },
     {
       "artifact_dir": "evidence/gab-38-travel-time/outputs",
       "attempt_count": 1,
       "case_id": "gab-38-travel-time",
       "completion_status": "completed",
+      "elapsed_seconds": 0,
       "response_path": "evidence/gab-38-travel-time/response.md",
-      "skill_activation": "not-observable"
+      "skill_activation": "not-observable",
+      "timed_out": false
     },
     {
       "artifact_dir": "evidence/gab-39-spatial-regression/outputs",
       "attempt_count": 1,
       "case_id": "gab-39-spatial-regression",
       "completion_status": "completed",
+      "elapsed_seconds": 0,
       "response_path": "evidence/gab-39-spatial-regression/response.md",
-      "skill_activation": "not-observable"
+      "skill_activation": "not-observable",
+      "timed_out": false
     }
   ],
   "condition": "skills-enabled",
@@ -57,6 +67,7 @@
     "max_cost_usd": 1.0,
     "network_scope": "provider-only",
     "retry_observability": "operator-controlled",
+    "termination_grace_seconds": 5,
     "timeout_seconds_per_case": 300,
     "web_access": false
   },
@@ -71,7 +82,7 @@
     "product_version": "replace-before-run",
     "provider": "replace-before-run"
   },
-  "schema_version": 1,
+  "schema_version": 2,
   "skill_package": {
     "archive_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
     "revision": "replace-before-run",
