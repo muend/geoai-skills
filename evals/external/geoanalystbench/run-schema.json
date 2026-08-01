@@ -10,6 +10,8 @@
     "suite",
     "freeze_id",
     "suite_sha256",
+    "producer_interface_id",
+    "producer_interface_sha256",
     "reporting_scope",
     "native_suite_included",
     "condition",
@@ -21,7 +23,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": 2
+      "const": 3
     },
     "run_id": {
       "type": "string",
@@ -35,6 +37,12 @@
     },
     "suite_sha256": {
       "const": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12"
+    },
+    "producer_interface_id": {
+      "const": "geoanalystbench-producer-interface-v1"
+    },
+    "producer_interface_sha256": {
+      "const": "8596ddfeac83679c9a7c0b5007e5c009a44559823d8e70903bf5c66fd4274962"
     },
     "reporting_scope": {
       "const": "external-transfer-only"
@@ -203,6 +211,7 @@
           "elapsed_seconds",
           "skill_activation",
           "timed_out",
+          "prompt_path",
           "response_path",
           "artifact_dir"
         ],
@@ -235,6 +244,9 @@
           },
           "timed_out": {
             "type": "boolean"
+          },
+          "prompt_path": {
+            "$ref": "#/$defs/relativePath"
           },
           "response_path": {
             "$ref": "#/$defs/relativePath"

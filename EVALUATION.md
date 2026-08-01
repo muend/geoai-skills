@@ -83,10 +83,20 @@ as the same failure as a wrong calculation. The frozen v1 validator and exact
 artifact inventory remain the strict pass authority; the v2 axes are diagnostic
 subcontracts and do not change the five-case denominator or any prior result.
 
+Model-facing artifact instructions are frozen separately as
+`geoanalystbench-producer-interface-v1`, with aggregate SHA-256
+`8596ddfeac83679c9a7c0b5007e5c009a44559823d8e70903bf5c66fd4274962`.
+This answer-safe layer discloses only artifact paths, field names, formats, and
+method evidence. Reference outputs, expected analytical values, and validator
+source remain hidden. A deterministic renderer creates the exact prompt for
+each case; changing any prompt byte creates a different condition and fails the
+schema-v3 preflight rather than being compared as the same run.
+
 External model runs use a separate, fail-closed evidence contract:
 `run-schema.json` records the runtime, returned model version, installed skill
 package and digest, condition, authorization, call/retry/timeout limits, cost
-cap, and one response/artifact location per frozen case. Run
+cap, producer-interface identity, and one prompt/response/artifact location per
+frozen case. Run
 `python tools/evaluate_external_run.py --manifest <run.json> --dry-run` before
 any separately authorized model invocation. The command is offline and makes
 no model, API, web, connector, fixture, or validator call.
@@ -94,8 +104,8 @@ no model, API, web, connector, fixture, or validator call.
 After all five attempts, pass the same manifest with `--result <result.json>`.
 The tool regenerates only deterministic local fixtures, executes the frozen
 artifact validators even when a runtime timed out or returned an error, retains
-every attempted case in the denominator, and records response, fixture, and
-artifact SHA-256 evidence. It reports skill activation, bounded runtime
+every attempted case in the denominator, and records prompt, response, fixture,
+and artifact SHA-256 evidence. It reports skill activation, bounded runtime
 completion, strict artifact-contract compliance, and overall success separately;
 none may be substituted for another. Elapsed time beyond the configured timeout
 plus the five-second termination grace is a protocol deviation. These measures

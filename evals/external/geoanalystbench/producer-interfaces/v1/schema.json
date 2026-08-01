@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/muend/geoai-skills/evals/external/geoanalystbench/producer-interfaces/v1/schema.json",
+  "title": "GeoAnalystBench-derived answer-safe producer interface",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "interface_id",
+    "case_id",
+    "base_freeze_id",
+    "base_suite_sha256",
+    "contract_freeze_id",
+    "contract_suite_sha256",
+    "disclosure_boundary",
+    "artifacts"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "interface_id": {
+      "type": "string",
+      "pattern": "^geoanalystbench-producer-interface-v1/gab-[0-9]{2}-[a-z0-9-]+$"
+    },
+    "case_id": {"type": "string", "pattern": "^gab-[0-9]{2}-[a-z0-9-]+$"},
+    "base_freeze_id": {"const": "geoanalystbench-derived-v1"},
+    "base_suite_sha256": {
+      "const": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12"
+    },
+    "contract_freeze_id": {"const": "geoanalystbench-derived-contracts-v2"},
+    "contract_suite_sha256": {
+      "const": "86170ae144092f1ae0f34124d85505f0d3507a19f04f2b71f2081c89d10de418"
+    },
+    "disclosure_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["includes", "excludes"],
+      "properties": {
+        "includes": {
+          "const": ["artifact paths", "field names", "formats", "method evidence"]
+        },
+        "excludes": {
+          "const": ["reference outputs", "expected analytical values", "validator source"]
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "format", "required_fields", "requirements"],
+        "properties": {
+          "path": {"type": "string", "pattern": "^outputs/[A-Za-z0-9._-]+$"},
+          "format": {"enum": ["CSV", "JSON", "GeoJSON", "SVG"]},
+          "required_fields": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "requirements": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 8}
+          }
+        }
+      }
+    }
+  }
+}

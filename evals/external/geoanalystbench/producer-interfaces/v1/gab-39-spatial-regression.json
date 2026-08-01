@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "interface_id": "geoanalystbench-producer-interface-v1/gab-39-spatial-regression",
+  "case_id": "gab-39-spatial-regression",
+  "base_freeze_id": "geoanalystbench-derived-v1",
+  "base_suite_sha256": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12",
+  "contract_freeze_id": "geoanalystbench-derived-contracts-v2",
+  "contract_suite_sha256": "86170ae144092f1ae0f34124d85505f0d3507a19f04f2b71f2081c89d10de418",
+  "disclosure_boundary": {
+    "includes": ["artifact paths", "field names", "formats", "method evidence"],
+    "excludes": ["reference outputs", "expected analytical values", "validator source"]
+  },
+  "artifacts": [
+    {
+      "path": "outputs/model-comparison.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "analysis_units", "target", "target_units", "global_ols", "local_model", "decision"],
+      "requirements": ["Use schema_version 1.", "Record OLS fit order, residual Moran diagnostics, both models, the predeclared gate, selected model, and non-causal interpretation."]
+    },
+    {
+      "path": "outputs/spatial-validation.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "method", "assignment_unit", "random_only_validation", "folds", "aggregate", "leakage_audit"],
+      "requirements": ["Use schema_version 1.", "Report all four contiguous spatial folds for both models.", "Document training-only preprocessing and absence of shared areas across train and test."]
+    },
+    {
+      "path": "outputs/collinearity-extrapolation.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "vif_threshold", "vif", "excluded_features", "final_predictors", "local_fit_support"],
+      "requirements": ["Use schema_version 1.", "Retain VIF evidence, exclusions, final predictors, and unstable or low-support region warnings."]
+    },
+    {
+      "path": "outputs/local-coefficients.geojson",
+      "format": "GeoJSON",
+      "required_fields": ["type", "crs", "coordinate_units", "coefficient_units", "model_status", "causal_interpretation", "map", "features[].geometry", "features[].properties.area_id", "features[].properties.predictor", "features[].properties.coefficient", "features[].properties.coefficient_scale", "features[].properties.coefficient_units", "features[].properties.bandwidth_m", "features[].properties.effective_sample_size", "features[].properties.condition_number", "features[].properties.stable", "features[].properties.fdr_method", "features[].properties.q_value", "features[].properties.fdr_significant", "features[].properties.warning"],
+      "requirements": ["Use a FeatureCollection in the fixture CRS.", "Write one feature per analysis area.", "Make map scale, units, support, selection status, and non-causal interpretation explicit."]
+    },
+    {
+      "path": "outputs/coefficient-uncertainty.geojson",
+      "format": "GeoJSON",
+      "required_fields": ["type", "crs", "coordinate_units", "coefficient_units", "model_status", "causal_interpretation", "map", "features[].geometry", "features[].properties.area_id", "features[].properties.predictor", "features[].properties.standard_error", "features[].properties.t_value", "features[].properties.p_value_normal_approximation", "features[].properties.q_value", "features[].properties.fdr_method", "features[].properties.fdr_significant", "features[].properties.effective_sample_size", "features[].properties.condition_number", "features[].properties.stable", "features[].properties.warning"],
+      "requirements": ["Use a FeatureCollection in the fixture CRS.", "Write one feature per analysis area.", "Retain uncertainty, FDR, support, stability, scale, and unit evidence."]
+    },
+    {
+      "path": "outputs/provenance.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "case_id", "fixture", "crs", "coordinate_units", "weights", "inference", "validation", "decision_gate", "local_model", "implementation"],
+      "requirements": ["Use schema_version 1.", "Preserve fixture-declared weights, permutation seed, inference, split, decision-gate, bandwidth, CRS, and units."]
+    }
+  ]
+}

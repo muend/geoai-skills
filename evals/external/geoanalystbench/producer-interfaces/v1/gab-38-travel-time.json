@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "interface_id": "geoanalystbench-producer-interface-v1/gab-38-travel-time",
+  "case_id": "gab-38-travel-time",
+  "base_freeze_id": "geoanalystbench-derived-v1",
+  "base_suite_sha256": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12",
+  "contract_freeze_id": "geoanalystbench-derived-contracts-v2",
+  "contract_suite_sha256": "86170ae144092f1ae0f34124d85505f0d3507a19f04f2b71f2081c89d10de418",
+  "disclosure_boundary": {
+    "includes": ["artifact paths", "field names", "formats", "method evidence"],
+    "excludes": ["reference outputs", "expected analytical values", "validator source"]
+  },
+  "artifacts": [
+    {
+      "path": "outputs/travel-times.csv",
+      "format": "CSV",
+      "required_fields": ["destination_id", "reachable", "travel_time_minutes", "path"],
+      "requirements": ["Use this exact column order.", "Write one row for every listed destination, including unreachable destinations."]
+    },
+    {
+      "path": "outputs/routes.geojson",
+      "format": "GeoJSON",
+      "required_fields": ["type", "crs", "features[].geometry", "features[].properties.destination_id", "features[].properties.path", "features[].properties.travel_time_minutes"],
+      "requirements": ["Use a FeatureCollection in the fixture CRS.", "Write exactly one LineString feature per reachable destination.", "Route coordinates must follow the reported node path order."]
+    },
+    {
+      "path": "outputs/summary.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "origin", "crs", "directed", "cost_field", "cost_units", "destination_count", "reachable_count", "unreachable_count"],
+      "requirements": ["Use schema_version 1.", "Report counts from the produced destination rows rather than hard-coding them."]
+    }
+  ]
+}

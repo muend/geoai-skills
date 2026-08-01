@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "interface_id": "geoanalystbench-producer-interface-v1/gab-01-urban-heat",
+  "case_id": "gab-01-urban-heat",
+  "base_freeze_id": "geoanalystbench-derived-v1",
+  "base_suite_sha256": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12",
+  "contract_freeze_id": "geoanalystbench-derived-contracts-v2",
+  "contract_suite_sha256": "86170ae144092f1ae0f34124d85505f0d3507a19f04f2b71f2081c89d10de418",
+  "disclosure_boundary": {
+    "includes": ["artifact paths", "field names", "formats", "method evidence"],
+    "excludes": ["reference outputs", "expected analytical values", "validator source"]
+  },
+  "artifacts": [
+    {
+      "path": "outputs/temperature-surface.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "variable", "units", "crs", "origin_x", "origin_y", "cell_size_m", "width", "height", "row_order", "values"],
+      "requirements": ["Use schema_version 1.", "Build the grid from fixture prediction_grid metadata.", "Store a complete height-by-width numeric values matrix."]
+    },
+    {
+      "path": "outputs/uncertainty-surface.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "variable", "units", "crs", "origin_x", "origin_y", "cell_size_m", "width", "height", "row_order", "values"],
+      "requirements": ["Use schema_version 1.", "Use the same grid identity as the temperature surface.", "Store kriging uncertainty rather than temperature values."]
+    },
+    {
+      "path": "outputs/census-summary.csv",
+      "format": "CSV",
+      "required_fields": ["census_id", "total_population", "elderly_population", "elderly_rate", "mean_temperature_c", "mean_uncertainty_c", "selection_status"],
+      "requirements": ["Use this exact column order.", "Write one row for every census zone.", "Use numeric population and elderly_rate fields."]
+    },
+    {
+      "path": "outputs/validation-report.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "validation_method", "random_only_validation", "empirical_variogram", "variogram_model", "spatial_block_cv", "diagnostics"],
+      "requirements": ["Use schema_version 1.", "Report all four spatial folds and aggregate error metrics.", "Include empirical lag-bin counts and semivariances."]
+    },
+    {
+      "path": "outputs/provenance.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "case_id", "fixture", "crs", "coordinate_units", "method", "variogram", "prediction_grid", "validation", "risk_rule", "map", "implementation"],
+      "requirements": ["Use schema_version 1.", "Preserve fixture-declared model, grid, validation, risk-rule, CRS, and unit metadata."]
+    },
+    {
+      "path": "outputs/urban-heat-map.svg",
+      "format": "SVG",
+      "required_fields": ["role=img", "aria-labelledby=map-title map-desc", "title#map-title", "desc#map-desc", "temperature legend", "uncertainty exclusion legend", "projection label", "data-census-id"],
+      "requirements": ["Render all census zones.", "Include accessible title and description elements.", "Expose temperature units, manual classes, uncertainty exclusions, and projection in visible or accessible text."]
+    }
+  ]
+}

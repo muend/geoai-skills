@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "interface_id": "geoanalystbench-producer-interface-v1/gab-08-facility-coverage",
+  "case_id": "gab-08-facility-coverage",
+  "base_freeze_id": "geoanalystbench-derived-v1",
+  "base_suite_sha256": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12",
+  "contract_freeze_id": "geoanalystbench-derived-contracts-v2",
+  "contract_suite_sha256": "86170ae144092f1ae0f34124d85505f0d3507a19f04f2b71f2081c89d10de418",
+  "disclosure_boundary": {
+    "includes": ["artifact paths", "field names", "formats", "method evidence"],
+    "excludes": ["reference outputs", "expected analytical values", "validator source"]
+  },
+  "artifacts": [
+    {
+      "path": "outputs/demand-coverage.csv",
+      "format": "CSV",
+      "required_fields": ["demand_id", "population", "reachable", "covered", "assigned_facility", "travel_time_minutes", "facilities_within_cutoff", "path"],
+      "requirements": ["Use this exact column order.", "Write one row for every demand point.", "Use pipe-separated facility IDs when multiple facilities are within cutoff."]
+    },
+    {
+      "path": "outputs/service-gaps.geojson",
+      "format": "GeoJSON",
+      "required_fields": ["type", "crs", "features[].geometry", "features[].properties.demand_id", "features[].properties.population", "features[].properties.reachable", "features[].properties.assigned_facility", "features[].properties.travel_time_minutes", "features[].properties.reason"],
+      "requirements": ["Use a FeatureCollection in the fixture CRS.", "Include one point feature for every uncovered demand."]
+    },
+    {
+      "path": "outputs/summary.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "crs", "mode", "cost_field", "cost_units", "coverage_cutoff_minutes", "facility_count", "demand_count", "covered_demand_count", "uncovered_demand_count", "unreachable_demand_count", "total_population", "covered_population", "uncovered_population", "overlap_demand_count", "overlap_population", "coverage_share"],
+      "requirements": ["Use schema_version 1.", "Calculate population totals from unique demand IDs.", "Report coverage_share as covered_population divided by total_population."]
+    }
+  ]
+}

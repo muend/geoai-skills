@@ -14,6 +14,10 @@ from build_external_eval_freeze_v2 import (
     MANIFEST_NAME as CONTRACT_MANIFEST_NAME,
     validate_contracts_v2,
 )
+from build_external_producer_interface import (
+    MANIFEST_NAME as PRODUCER_MANIFEST_NAME,
+    validate_producer_interface,
+)
 
 ROOT = Path(__file__).resolve().parent.parent
 SUITE_ROOT = ROOT / "evals" / "external" / "geoanalystbench"
@@ -100,6 +104,7 @@ def validate_suite() -> tuple[int, list[str]]:
         SUITE_ROOT / "schema.json",
         SUITE_ROOT / MANIFEST_NAME,
         SUITE_ROOT / CONTRACT_MANIFEST_NAME,
+        SUITE_ROOT / PRODUCER_MANIFEST_NAME,
         SUITE_ROOT / "run-schema.json",
         SUITE_ROOT / "result-schema.json",
         SUITE_ROOT / "run-template.json",
@@ -153,6 +158,10 @@ def validate_suite() -> tuple[int, list[str]]:
     errors.extend(
         f"{CONTRACT_MANIFEST_NAME}: {error}"
         for error in validate_contracts_v2(SUITE_ROOT)
+    )
+    errors.extend(
+        f"{PRODUCER_MANIFEST_NAME}: {error}"
+        for error in validate_producer_interface(SUITE_ROOT)
     )
     run_validator = Draft202012Validator(
         run_schema,

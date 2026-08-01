@@ -20,6 +20,12 @@ from build_external_eval_freeze import (
     FREEZE_ID,
     validate_freeze_manifest,
 )
+from build_external_producer_interface import (
+    EXPECTED_INTERFACE_SHA256,
+    INTERFACE_ID,
+    validate_producer_interface,
+)
+from render_external_case_prompt import render_prompt
 
 ROOT = Path(__file__).resolve().parent.parent
 SUITE_ROOT = ROOT / "evals" / "external" / "geoanalystbench"
@@ -89,10 +95,18 @@ def validate_manifest(payload: Any, manifest_path: Path) -> list[str]:
 
     freeze_errors = validate_freeze_manifest(SUITE_ROOT)
     errors.extend(f"freeze-v1.json: {error}" for error in freeze_errors)
+    interface_errors = validate_producer_interface(SUITE_ROOT)
+    errors.extend(
+        f"producer-interface-v1.json: {error}" for error in interface_errors
+    )
     if payload.get("freeze_id") != FREEZE_ID:
         errors.append(f"freeze_id must equal {FREEZE_ID}")
     if payload.get("suite_sha256") != EXPECTED_V1_SUITE_SHA256:
         errors.append("suite_sha256 does not match frozen v1")
+    if payload.get("producer_interface_id") != INTERFACE_ID:
+        errors.append(f"producer_interface_id must equal {INTERFACE_ID}")
+    if payload.get("producer_interface_sha256") != EXPECTED_INTERFACE_SHA256:
+        errors.append("producer_interface_sha256 does not match frozen interface v1")
 
     case_ids = [str(case.get("case_id")) for case in payload.get("cases", [])]
     if case_ids != EXPECTED_CASE_IDS:
@@ -132,6 +146,7 @@ def validate_manifest(payload: Any, manifest_path: Path) -> list[str]:
         "timeout_seconds_per_case"
     )
     response_paths: set[Path] = set()
+    prompt_paths: set[Path] = set()
     artifact_dirs: set[Path] = set()
     for case in payload.get("cases", []):
         if not isinstance(case, dict):
@@ -149,12 +164,13 @@ def validate_manifest(payload: Any, manifest_path: Path) -> list[str]:
             )
         elapsed = case.get("elapsed_seconds")
         if (
-            isinstance(elapsed, (int, float))
-            and isinstance(timeout_seconds, (int, float))
+            isinstance(elapsed, int | float)
+            and isinstance(timeout_seconds, int | float)
             and elapsed < 0
         ):
             errors.append(f"{case_id}: elapsed_seconds may not be negative")
         for field, collection in (
+            ("prompt_path", prompt_paths),
             ("response_path", response_paths),
             ("artifact_dir", artifact_dirs),
         ):
@@ -169,8 +185,31 @@ def validate_manifest(payload: Any, manifest_path: Path) -> list[str]:
             if resolved in collection:
                 errors.append(f"{field} must be unique across cases: {value}")
             collection.add(resolved)
+            if field == "prompt_path" and case_id in EXPECTED_CASE_IDS:
+                expected = render_prompt(case_id).encode("utf-8")
+                if not resolved.is_file():
+                    errors.append(f"{case_id}: prompt file is missing: {value}")
+                elif resolved.read_bytes() != expected:
+                    errors.append(
+                        f"{case_id}: prompt bytes do not match the deterministic "
+                        f"{INTERFACE_ID} renderer"
+                    )
+    if prompt_paths & response_paths:
+        errors.append("a prompt_path may not also be a response_path")
     if response_paths & artifact_dirs:
         errors.append("a response_path may not also be an artifact_dir")
+    for path in prompt_paths:
+        if any(
+            path == directory or path.is_relative_to(directory)
+            for directory in artifact_dirs
+        ):
+            errors.append("a prompt_path may not be inside an artifact_dir")
+    for path in response_paths:
+        if any(
+            path == directory or path.is_relative_to(directory)
+            for directory in artifact_dirs
+        ):
+            errors.append("a response_path may not be inside an artifact_dir")
     return errors
 
 
@@ -260,6 +299,11 @@ def evaluate_case(
     )
     if not response_path.is_file():
         raise ProtocolError(f"{case_id}: response file is missing: {response_path}")
+    prompt_path = resolve_relative(
+        manifest_dir, str(entry["prompt_path"]), f"{case_id}.prompt_path"
+    )
+    if not prompt_path.is_file():
+        raise ProtocolError(f"{case_id}: prompt file is missing: {prompt_path}")
     output_dir = resolve_relative(
         manifest_dir, str(entry["artifact_dir"]), f"{case_id}.artifact_dir"
     )
@@ -317,6 +361,7 @@ def evaluate_case(
         "missing_artifacts": missing,
         "passed": passed,
         "protocol_deviations": protocol_deviations,
+        "prompt_sha256": sha256_file(prompt_path),
         "response_sha256": sha256_file(response_path),
         "runtime_passed": runtime_passed,
         "skill_activation": entry["skill_activation"],
@@ -361,10 +406,12 @@ def build_result(payload: dict[str, Any], manifest_path: Path) -> dict[str, Any]
         "freeze_id": payload["freeze_id"],
         "manifest_sha256": sha256_file(manifest_path),
         "native_suite_included": False,
+        "producer_interface_id": payload["producer_interface_id"],
+        "producer_interface_sha256": payload["producer_interface_sha256"],
         "reporting_scope": "external-transfer-only",
         "run_id": payload["run_id"],
         "runtime": payload["runtime"],
-        "schema_version": 2,
+        "schema_version": 3,
         "skill_package": payload["skill_package"],
         "suite": "geoanalystbench-derived",
         "suite_sha256": payload["suite_sha256"],
