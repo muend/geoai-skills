@@ -9,6 +9,7 @@ from pathlib import Path
 from zipfile import ZipFile
 
 import pytest
+import yaml
 
 from tools import build_skill_archives as archives
 
@@ -36,6 +37,32 @@ def test_package_versions_match() -> None:
 
     assert declared == {version}, (
         f"marketplace.json declares {declared}, the other manifests declare {version}"
+    )
+
+
+def test_citation_metadata_tracks_the_release() -> None:
+    """`CITATION.cff` must declare the shipped version and point at its tag.
+
+    This file sat at 0.1.0 through two releases because nothing read it. It is
+    not a packaging manifest, so `package_version` ignores it, and no other test
+    touched it — the one artefact in the repository whose entire purpose is to
+    be quoted by someone else was the one artefact free to be wrong.
+    """
+    version = archives.package_version(ROOT)
+    citation = yaml.safe_load((ROOT / "CITATION.cff").read_text(encoding="utf-8"))
+
+    assert citation["version"] == version, (
+        f"CITATION.cff cites {citation['version']}, the release manifests declare {version}"
+    )
+
+    expected_url = f"https://github.com/muend/geoai-skills/releases/tag/v{version}"
+    assert citation["url"] == expected_url, (
+        f"CITATION.cff points at {citation['url']}, expected {expected_url}"
+    )
+
+    released = str(citation["date-released"])
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2}", released), (
+        f"date-released must be ISO 8601 (YYYY-MM-DD), got {released!r}"
     )
 
 
