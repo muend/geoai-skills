@@ -77,13 +77,38 @@ verification runs so the release check does not emit optional usage telemetry.
 | Skills CLI full suite for Claude Code | `npx skills add muend/geoai-skills --skill '*' -a claude-code --copy -y` | Exactly 18 installed `SKILL.md` files; no evaluation or local-planning files. |
 | Skills CLI full suite for Codex | `npx skills add muend/geoai-skills --skill '*' -a codex --copy -y` | Exactly 18 installed `SKILL.md` files under the detected Codex project path. |
 | Skills CLI single skill | `npx skills add muend/geoai-skills --skill remote-sensing-analysis -a claude-code --copy -y` | One skill installs with its declared runtime resources. |
-| Claude marketplace | `claude plugin marketplace add muend/geoai-skills`, then `claude plugin install geoai@geoai-skills` | Plugin is enabled at the expected version; cache contains exactly 18 skills and no development-only files. |
+| Claude marketplace | `claude plugin marketplace add muend/geoai-skills`, then `claude plugin install geoai@geoai-skills` | Plugin is enabled at the expected version; the cached `skills/` directory holds exactly 18 skills; the cache contains no ignored or private material (`private-planning/`, `dist/`). See the note below on what the marketplace does cache. |
 | Claude.ai / Claude desktop ZIP | Build archives, verify `SHA256SUMS`, and upload one representative ZIP through **Customize → Skills**. | The skill is accepted, displays its name and description, and activates for one positive prompt without activating for one negative prompt. |
-| OpenAI plugin | `python tools/build_openai_plugin_bundle.py`, then inspect the ignored ZIP. | Manifest, policies, logo, and 18 runtime skills are present; evaluations, benchmarks, tests, tools, and local planning are absent. The directory version receives one positive and one negative smoke prompt. |
+| OpenAI plugin | `python tools/build_openai_plugin_bundle.py`, then inspect the ignored ZIP. Upload via the listing's **Upload draft** action, never **Create plugin**. | Manifest, policies, logo, and 18 runtime skills are present; evaluations, benchmarks, tests, tools, and local planning are absent. The directory version receives one positive and one negative smoke prompt. |
+
+**The OpenAI portal may publish on submit.** In July 2026 a submission entered a
+review queue and went live only after approval; in August 2026 the same flow
+published immediately. Treat pressing *Confirm and submit* as the public act for
+that channel, and do not upload until the release is otherwise ready — including
+the tag. Do not rely on a review window to catch a mistake.
 | GitHub repository validator | With GitHub CLI 2.90.0 or later, run `gh skill publish --dry-run` from the candidate checkout. | The Agent Skills specification and remote repository security checks pass without publishing. |
 | GitHub Copilot via GitHub CLI | With GitHub CLI 2.90.0 or later, run `gh skill preview muend/geoai-skills remote-sensing-analysis`, then `gh skill install muend/geoai-skills remote-sensing-analysis@<candidate-ref>`. | Preview is reviewed before installation; the project receives one skill directory with provenance metadata and its resources. |
 | GitHub Copilot via Skills CLI | `npx skills add muend/geoai-skills --skill remote-sensing-analysis -a github-copilot --copy -y` | One skill is installed to Copilot's detected project path and is discoverable by Copilot. |
 | Generic Agent Skills runtime | Copy one complete directory from `skills/` into the runtime's documented skills directory. | `SKILL.md` and referenced runtime files remain together; positive and negative activation checks behave as expected. |
+
+### What the Claude marketplace actually caches
+
+The marketplace clones the repository. `.claude-plugin/plugin.json` declares
+`"skills": "./skills/"`, which selects what the plugin *exposes* to the agent —
+not what gets downloaded. So the cache under
+`~/.claude/plugins/cache/geoai-skills/geoai/<version>/` also holds `evals/`,
+`tests/`, `tools/`, `benchmarks/`, `.github/` and `assets/`.
+
+This is the marketplace's design, not a packaging defect, and it cannot be
+filtered from this side. It differs from the ZIP archives, which contain runtime
+files only and are enforced by `tests/test_skill_archives.py`.
+
+It is acceptable because everything cached is already public in the repository.
+The material that must never reach a user's disk — `private-planning/` — lives
+*outside* the repository directory and is therefore unreachable by any clone.
+Ignored build output (`dist/`) is likewise absent. Verify both rather than
+assuming: a future reorganisation that moves private material inside the repo
+would silently start shipping it.
 
 Real `arcgis-pro-automation` execution is a separate exact-environment
 integration check. It requires Windows, licensed ArcGIS Pro, and a configured
