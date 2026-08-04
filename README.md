@@ -137,9 +137,10 @@ A current 18-skill, 158-case Claude Code run recorded **100% routing precision,
 `f03e327a57d2…` under Claude Code `2.1.214` with `claude-sonnet-5` (2026-08-04).
 The paired skills-disabled control produced zero activations across all 158
 cases. All nine false negatives and all seven `max_turns` execution errors were
-inspected; the errors had already recorded their correct activation and so do not
-affect routing metrics. Behavior quality remains **unclaimed** until
-independent-family judging and the manual-review protocol are complete.
+inspected; the four enabled errors had already recorded their correct target
+activation, so the enabled routing metrics are unaffected. Behavior quality
+remains **unclaimed** until independent-family judging and the manual-review
+protocol are complete.
 
 Read [BENCHMARK.md](BENCHMARK.md) for the full result card and
 [EVALUATION.md](EVALUATION.md) for the provider-neutral protocol, suite hashes,
