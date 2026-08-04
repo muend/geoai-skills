@@ -6,6 +6,8 @@ own `metadata.version` in its frontmatter.
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-08-04
+
 ### Changed
 - Published a current 18-skill, 158-case routing result measured on
   2026-08-04 under Claude Code `2.1.214` with `claude-sonnet-5`: **100%

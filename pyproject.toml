@@ -1,6 +1,6 @@
 [project]
 name = "geoai-skills"
-version = "0.2.0"
+version = "0.3.0"
 description = "Measured GeoAI agent skills with a reproducible evaluation harness."
 # numpy 2.4.x requires >=3.11 and CI runs 3.12. Without this declaration a
 # contributor on an older interpreter gets "Could not find a version that
