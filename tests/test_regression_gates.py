@@ -317,3 +317,39 @@ def test_readme_badges_carry_their_scope() -> None:
     assert "one runtime/model pair" in readme
     assert current_suite_sha256[:12] in readme
     assert "not universal or model-independent claims" in readme
+
+
+def test_demo_asset_matches_the_published_benchmark() -> None:
+    """The demo animation must not outlive the numbers it displays.
+
+    The GIF sits at the top of the README and is the most-viewed artefact in the
+    repository, but nothing links it to the benchmark it quotes. Its first
+    version claimed that `change-detection` and `remote-sensing-analysis`
+    activate together on multi-date prompts — a routing behaviour the 2026-08-04
+    run disproved, in the same repository that published the disproof.
+
+    `assets/demo/asset-manifest.json` records what the frames assert. This test
+    pins those assertions to `BENCHMARK.md` so a future benchmark run cannot
+    leave a stale claim animating above it.
+    """
+    manifest = json.loads(
+        (ROOT / "assets" / "demo" / "asset-manifest.json").read_text(encoding="utf-8")
+    )
+    card = " ".join((ROOT / "BENCHMARK.md").read_text(encoding="utf-8").split())
+    accuracy = manifest["accuracy"]
+
+    assert f"**{accuracy['routing_precision']}**" in card
+    assert f"**{accuracy['routing_recall_exact']}**" in card
+    assert accuracy["disabled_control_activations"] == 0
+    assert "Answer quality is not claimed" in accuracy["qualifier"]
+
+    assert manifest["frame4_activation_claim"] is False, (
+        "The demo must not assert which skills activate; that claim is what the "
+        "routing benchmark contradicted."
+    )
+
+    displayed = float(accuracy["routing_recall_display"].rstrip("%"))
+    exact = float(accuracy["routing_recall_exact"].rstrip("%"))
+    assert abs(displayed - exact) < 0.05, (
+        f"Displayed recall {displayed}% rounds away from the measured {exact}%."
+    )
