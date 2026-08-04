@@ -1,3 +1,4 @@
+skills/** text=auto eol=lf
 skills/*/SKILL.md text eol=lf
 evals/cases/*/fixtures/** text=auto eol=lf
 evals/external/** text=auto eol=lf
