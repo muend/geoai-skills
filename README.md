@@ -122,7 +122,11 @@ semantic correctness, evidence sufficiency, and exact representation compliance
 without changing those cases. Frozen producer interface v1 preserves the first
 shape-only condition; v2 adds answer-safe method, serialization, UTF-8, and
 workspace execution guidance after observed cross-runtime ambiguities, without
-exposing reference values. Every deterministically rendered prompt is hashed.
+exposing reference values. The separately frozen v3 condition pairs a semantic
+validator with fully disclosed nested output structures, bounded floating-point
+tolerance, exact inventory checks, and representation-independent map checks;
+historical v1/v2 evidence remains unchanged. Every deterministically rendered
+prompt is hashed.
 Results follow the
 [offline run and result protocol](evals/external/geoanalystbench/README.md#external-run-protocol),
 which reports skill activation, runtime completion, artifact-contract compliance,

@@ -1,0 +1,65 @@
+{
+  "schema_version": 3,
+  "interface_id": "geoanalystbench-producer-interface-v3/gab-01-urban-heat",
+  "case_id": "gab-01-urban-heat",
+  "base_freeze_id": "geoanalystbench-derived-v1",
+  "base_suite_sha256": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12",
+  "contract_freeze_id": "geoanalystbench-derived-contracts-v3",
+  "contract_suite_sha256": "e17b9ee3f6d69ba99aacc90cab998339bf0f679c76ce25645e09a70e882ad3f2",
+  "disclosure_boundary": {
+    "includes": ["artifact paths", "nested field names", "formats", "method evidence", "serialization rules", "execution hints"],
+    "excludes": ["reference outputs", "expected analytical values", "validator source"]
+  },
+  "execution_hints": [
+    "Create one deterministic Python script in the current workspace root and run it once to produce and check all artifacts; do not place helper files under outputs.",
+    "Do not install dependencies, probe optional packages, use network access, or write to an operating-system temporary directory.",
+    "Use NumPy directly for the repeated dense linear solves when it is already importable; otherwise use a deterministic standard-library solver.",
+    "Write text artifacts explicitly as UTF-8; keep generated source ASCII-safe on Windows and emit non-ASCII SVG text with Unicode escapes when necessary."
+  ],
+  "method_contract": [
+    "Use the fixture exponential semivariogram: gamma(0)=0 and gamma(h)=nugget + partial_sill * (1 - exp(-h/range_m)) for h greater than zero; do not substitute a covariance model or multiply distance by an undocumented factor.",
+    "Solve the ordinary-kriging semivariance system with a Lagrange multiplier, predict from the solved weights, and report standard deviation as sqrt(max(sum(weight_i * gamma_i) + multiplier, 0)).",
+    "Predict at cell centers x=origin_x+(column+0.5)*cell_size_m and y=origin_y+(row+0.5)*cell_size_m; rows advance south-to-north and surface values are rounded to six decimals.",
+    "Summarize each census zone from the already six-decimal surface cells whose centers satisfy the half-open bbox; do not average unrounded intermediate predictions.",
+    "Set selection_status to selected only when heat and elderly-rate thresholds pass and uncertainty is within the ceiling; otherwise use uncertainty_excluded when heat and elderly-rate pass but uncertainty fails, and not_selected for all other zones.",
+    "Build empirical bins from each unique unordered point pair exactly once using lower < lag <= upper, then run the declared four spatial holdout folds in order NE, NW, SE, SW without random-only validation."
+  ],
+  "artifacts": [
+    {
+      "path": "outputs/temperature-surface.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "variable", "units", "crs", "origin_x", "origin_y", "cell_size_m", "width", "height", "row_order", "values"],
+      "requirements": ["Use schema_version 1.", "Use variable ordinary_kriging_temperature_mean, units degrees Celsius, and row_order south-to-north.", "Build the grid from fixture metadata and round every value to six decimals."]
+    },
+    {
+      "path": "outputs/uncertainty-surface.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "variable", "units", "crs", "origin_x", "origin_y", "cell_size_m", "width", "height", "row_order", "values"],
+      "requirements": ["Use schema_version 1.", "Use variable ordinary_kriging_standard_deviation and units degrees Celsius.", "Use the identical grid identity and six-decimal rounding as the temperature surface."]
+    },
+    {
+      "path": "outputs/census-summary.csv",
+      "format": "CSV",
+      "required_fields": ["census_id", "total_population", "elderly_population", "elderly_rate", "mean_temperature_c", "mean_uncertainty_c", "selection_status"],
+      "requirements": ["Use this exact column order and fixture census-zone order.", "Compute elderly_rate as elderly_population divided by total_population.", "Calculate temperature and uncertainty means from the serialized six-decimal surfaces, then serialize all three calculated fields to six decimals."]
+    },
+    {
+      "path": "outputs/validation-report.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "validation_method", "random_only_validation", "empirical_variogram[].bin_index", "empirical_variogram[].lower_m", "empirical_variogram[].upper_m", "empirical_variogram[].pair_count", "empirical_variogram[].mean_lag_m", "empirical_variogram[].semivariance", "variogram_model.model", "variogram_model.nugget", "variogram_model.partial_sill", "variogram_model.range_m", "variogram_model.max_lag_m", "spatial_block_cv.folds[].fold", "spatial_block_cv.folds[].count", "spatial_block_cv.folds[].mean_error_c", "spatial_block_cv.folds[].rmse_c", "spatial_block_cv.aggregate.count", "spatial_block_cv.aggregate.mean_error_c", "spatial_block_cv.aggregate.rmse_c", "spatial_block_cv.training_mean_baseline.count", "spatial_block_cv.training_mean_baseline.mean_error_c", "spatial_block_cv.training_mean_baseline.rmse_c", "diagnostics.duplicate_coordinate_count", "diagnostics.nonempty_variogram_bins", "diagnostics.minimum_nonempty_bin_pair_count", "diagnostics.uncertainty_surface_delivered"],
+      "requirements": ["Use exactly these nested keys without additional keys.", "Use schema_version 1, validation_method four-fold spatial block cross-validation, and random_only_validation false.", "Write empirical bins in fixture edge order and spatial folds in NE, NW, SE, SW order; round computed diagnostics to six decimals."]
+    },
+    {
+      "path": "outputs/provenance.json",
+      "format": "JSON",
+      "required_fields": ["schema_version", "case_id", "fixture", "crs", "coordinate_units", "method", "variogram.bin_edges_m", "variogram.estimator", "variogram.max_lag_m", "variogram.model", "variogram.nugget", "variogram.partial_sill", "variogram.range_m", "prediction_grid.cell_size_m", "prediction_grid.width", "prediction_grid.height", "validation.method", "validation.block_split_x", "validation.block_split_y", "risk_rule.temperature_threshold_c", "risk_rule.elderly_rate_threshold", "risk_rule.max_mean_uncertainty_c", "map.format", "map.palette", "map.temperature_breaks_c", "map.temperature_classification", "map.uncertainty_exclusion_symbol", "implementation.origin", "implementation.randomness", "implementation.runtime"],
+      "requirements": ["Use exactly these nested keys without additional keys.", "Use method ordinary kriging and implementation values independently-authored, none, and Python standard library.", "Use a colorblind-safe sequential orange palette, manual fixed breaks from fixture risk context, and a purple dashed uncertainty-exclusion outline."]
+    },
+    {
+      "path": "outputs/urban-heat-map.svg",
+      "format": "SVG",
+      "required_fields": ["svg", "role=img", "aria-labelledby=map-title map-desc", "title#map-title", "desc#map-desc", "data-census-id"],
+      "requirements": ["Render exactly one element with data-census-id for every fixture census zone.", "Include accessible title and description elements.", "Include text Mean temperature (°C), Excluded: uncertainty, Projection: EPSG:32636, and manual fixed temperature classes.", "The semantic validator checks accessibility, census coverage, classification and projection evidence; it does not require byte-identical SVG markup."]
+    }
+  ]
+}

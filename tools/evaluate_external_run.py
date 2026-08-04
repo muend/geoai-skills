@@ -30,6 +30,12 @@ from build_external_producer_interface_v2 import (
     INTERFACE_ID as INTERFACE_V2_ID,
     validate_producer_interface_v2,
 )
+from build_external_eval_freeze_v3 import validate_contract_v3
+from build_external_producer_interface_v3 import (
+    EXPECTED_INTERFACE_SHA256 as EXPECTED_INTERFACE_V3_SHA256,
+    INTERFACE_ID as INTERFACE_V3_ID,
+    validate_producer_interface_v3,
+)
 from render_external_case_prompt import render_prompt
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -50,12 +56,24 @@ INTERFACE_CONFIG = {
         "version": 1,
         "manifest": "producer-interface-v1.json",
         "validate": validate_producer_interface,
+        "contract_validate": None,
+        "validator": None,
     },
     INTERFACE_V2_ID: {
         "sha256": EXPECTED_INTERFACE_V2_SHA256,
         "version": 2,
         "manifest": "producer-interface-v2.json",
         "validate": validate_producer_interface_v2,
+        "contract_validate": None,
+        "validator": None,
+    },
+    INTERFACE_V3_ID: {
+        "sha256": EXPECTED_INTERFACE_V3_SHA256,
+        "version": 3,
+        "manifest": "producer-interface-v3.json",
+        "validate": validate_producer_interface_v3,
+        "contract_validate": validate_contract_v3,
+        "validator": SUITE_ROOT / "validators" / "v3" / "validate_artifacts.py",
     },
 }
 
@@ -121,6 +139,10 @@ def validate_manifest(payload: Any, manifest_path: Path) -> list[str]:
             "producer_interface_id must identify a supported frozen interface"
         )
     else:
+        contract_validate = interface_config["contract_validate"]
+        if contract_validate is not None:
+            contract_errors = contract_validate(SUITE_ROOT)
+            errors.extend(f"freeze-v3.json: {error}" for error in contract_errors)
         interface_errors = interface_config["validate"](SUITE_ROOT)
         errors.extend(
             f"{interface_config['manifest']}: {error}" for error in interface_errors
@@ -306,6 +328,7 @@ def evaluate_case(
     manifest_dir: Path,
     fixture_root: Path,
     timeout_seconds: float,
+    semantic_validator: Path | None = None,
 ) -> dict[str, Any]:
     """Generate the frozen fixture and validate one existing response."""
     case_id = str(entry["case_id"])
@@ -353,7 +376,7 @@ def evaluate_case(
     status = str(entry["completion_status"])
     elapsed_seconds = float(entry["elapsed_seconds"])
     timed_out = bool(entry["timed_out"])
-    validator_path = case_dir / str(contract["validator"])
+    validator_path = semantic_validator or case_dir / str(contract["validator"])
     validated = run_checked(
         [
             sys.executable,
@@ -413,8 +436,16 @@ def build_result(payload: dict[str, Any], manifest_path: Path) -> dict[str, Any]
         timeout_seconds = float(
             payload["execution_policy"]["timeout_seconds_per_case"]
         )
+        interface_config = INTERFACE_CONFIG[payload["producer_interface_id"]]
+        semantic_validator = interface_config["validator"]
         cases = [
-            evaluate_case(entry, manifest_dir, fixture_root, timeout_seconds)
+            evaluate_case(
+                entry,
+                manifest_dir,
+                fixture_root,
+                timeout_seconds,
+                semantic_validator,
+            )
             for entry in payload["cases"]
         ]
     passed = sum(1 for case in cases if case["passed"])

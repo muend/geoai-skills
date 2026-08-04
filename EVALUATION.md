@@ -102,6 +102,18 @@ UTF-8/workspace execution guidance. It contains no analytical result values or
 validator source. Use `--interface-version 2` with the deterministic renderer
 and `run-template-v2.json`; historical v1 runs remain valid and reproducible.
 
+Producer interface v3 and artifact contract v3 form another immutable,
+explicitly paired condition. Contract v3 keeps the same five source cases but
+uses a universal semantic validator pinned by `freeze-v3.json`: disclosed JSON,
+CSV, GeoJSON, method-evidence, and numeric requirements remain strict, the
+artifact inventory remains exact, and equivalent SVG bytes are accepted when
+their required accessibility and map semantics are preserved. Producer
+interface v3 discloses the corresponding nested field paths, serialization
+rules, thresholds, deterministic seeds, and bounded execution guidance without
+revealing analytical outcomes or validator source. Use
+`--interface-version 3` and `run-template-v3.json`; v1 and v2 remain immutable
+historical conditions and must not be relabeled as v3.
+
 External model runs use a separate, fail-closed evidence contract:
 `run-schema.json` records the runtime, returned model version, installed skill
 package and digest, condition, authorization, call/retry/timeout limits, cost

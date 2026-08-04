@@ -1,0 +1,48 @@
+{
+  "base_freeze_id": "geoanalystbench-derived-v1",
+  "base_suite_sha256": "c99563100cacc1e03234edd82ec64f4f47dc9479ca2ca4f9aabe84a1d5373f12",
+  "case_ids": [
+    "gab-01-urban-heat",
+    "gab-08-facility-coverage",
+    "gab-36-vegetation-change",
+    "gab-38-travel-time",
+    "gab-39-spatial-regression"
+  ],
+  "contract_freeze_id": "geoanalystbench-derived-contracts-v3",
+  "contract_suite_sha256": "e17b9ee3f6d69ba99aacc90cab998339bf0f679c76ce25645e09a70e882ad3f2",
+  "files": [
+    {
+      "path": "producer-interfaces/v3/gab-01-urban-heat.json",
+      "sha256": "8066de351afbeaf43c9b47cd5f65e95085f0b4933e93d28b0a3c0d6bab753b6f"
+    },
+    {
+      "path": "producer-interfaces/v3/gab-08-facility-coverage.json",
+      "sha256": "72b0f27de2aba303c40317b9c06c763efc6471357a3d2446623cb44c92081de2"
+    },
+    {
+      "path": "producer-interfaces/v3/gab-36-vegetation-change.json",
+      "sha256": "31527e2dbe190018c34322d5ecb2dbc98873e5a12e88b3ac50cfa3c96cabec62"
+    },
+    {
+      "path": "producer-interfaces/v3/gab-38-travel-time.json",
+      "sha256": "cbdebb05f5e5dd1b8cbdd6cc94d392b8be4a77378a2b9cf7d753fbbf9093741f"
+    },
+    {
+      "path": "producer-interfaces/v3/gab-39-spatial-regression.json",
+      "sha256": "76ecd4811b599c37c3ae1ea7061bab1dc75ae4a1d22d1fa19275b5125924e17d"
+    },
+    {
+      "path": "producer-interfaces/v3/schema.json",
+      "sha256": "80c8a6622fc9d434488ef580331f8b00bc8f8aa9ce586115defca11ef612248f"
+    }
+  ],
+  "frozen_on": "2026-08-01",
+  "interface_id": "geoanalystbench-producer-interface-v3",
+  "native_suite_included": false,
+  "reference_values_included": false,
+  "reporting_scope": "external-transfer-only",
+  "schema_version": 3,
+  "status": "frozen",
+  "suite_sha256": "f52aadf2bfc3db74e2e004f647696f1b0c9631154823ee02fb433e2daff6b754",
+  "supersedes": "geoanalystbench-producer-interface-v2"
+}
