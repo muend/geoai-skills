@@ -122,3 +122,32 @@ def test_unclassified_skill_input_fails_closed(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="unclassified package inputs"):
         archives.archive_inputs(root, skill_root)
+
+
+def test_packaged_skill_files_have_no_carriage_returns() -> None:
+    """Archived bytes must not depend on the packaging platform.
+
+    `build_skill_archives.py` reads the working tree, not git's object store, so
+    a file checked out or saved with CRLF produces a different archive and a
+    different SHA-256 than the same commit packaged on Linux. This was not
+    hypothetical: the v0.3.0 candidate produced three archives
+    (`mcda-suitability-analysis`, `network-accessibility-analysis`,
+    `point-cloud-lidar`) whose checksums disagreed with the GitHub runner,
+    because `references/authoritative-sources.md` sat in the working tree as
+    CRLF while the index held LF.
+
+    `.gitattributes` now pins `skills/**` to `eol=lf`. This test is the part
+    that fails loudly if that protection is removed or a file escapes it, and
+    it only has teeth on the Windows CI job.
+    """
+    offenders = []
+    for path in sorted((ROOT / "skills").rglob("*")):
+        if not path.is_file() or "__pycache__" in path.parts:
+            continue
+        if b"\r\n" in path.read_bytes():
+            offenders.append(path.relative_to(ROOT).as_posix())
+
+    assert not offenders, (
+        "CRLF in packaged skill files makes archives platform-dependent: "
+        + ", ".join(offenders)
+    )
