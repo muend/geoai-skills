@@ -6,6 +6,19 @@ own `metadata.version` in its frontmatter.
 
 ## [Unreleased]
 
+### Changed
+- Replaced the demo animation. Its fourth frame previously showed
+  `change-detection` and `remote-sensing-analysis` activating together on a
+  multi-date prompt — a routing behaviour the 2026-08-04 benchmark disproved in
+  this same repository, where `change-detection` takes those prompts alone. The
+  frame now lists what the method requires (matched phenology, consistent
+  processing level, shared valid-pixel mask, registration evidence) and makes no
+  claim about which skills activate. A new frame reports the current routing
+  figures with the qualifier "Routing only. Answer quality is not claimed."
+- Added `assets/demo/asset-manifest.json` recording what the frames assert, and
+  a test pinning those assertions to `BENCHMARK.md`. A future benchmark run can
+  no longer leave stale numbers animating at the top of the README.
+
 ## [0.3.0] — 2026-08-04
 
 ### Changed
