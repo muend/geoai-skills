@@ -1,0 +1,622 @@
+{
+  "model": "claude-sonnet-5",
+  "runtime": "claude-code-2.1.214",
+  "schema_version": 1,
+  "skills-disabled": [
+    {
+      "cases": 13,
+      "errors": 0,
+      "negative_cases": 4,
+      "positive_cases": 9,
+      "routing": {
+        "accuracy": 0.3076923076923077,
+        "fn": 9,
+        "fp": 0,
+        "precision": null,
+        "recall": 0.0,
+        "route_accuracy": 0.0,
+        "tn": 4,
+        "tp": 0
+      },
+      "skill": "arcgis-pro-automation"
+    },
+    {
+      "cases": 8,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 6,
+      "routing": {
+        "accuracy": 0.25,
+        "fn": 6,
+        "fp": 0,
+        "precision": null,
+        "recall": 0.0,
+        "route_accuracy": 0.0,
+        "tn": 2,
+        "tp": 0
+      },
+      "skill": "cartography-geoviz"
+    },
+    {
+      "cases": 9,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 7,
+      "routing": {
+        "accuracy": 0.2222222222222222,
+        "fn": 7,
+        "fp": 0,
+        "precision": null,
+        "recall": 0.0,
+        "route_accuracy": 0.0,
+        "tn": 2,
+        "tp": 0
+      },
+      "skill": "change-detection"
+    },
+    {
+      "cases": 8,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 6,
+      "routing": {
+        "accuracy": 0.25,
+        "fn": 6,
+        "fp": 0,
+        "precision": null,
+        "recall": 0.0,
+        "route_accuracy": 0.0,
+        "tn": 2,
+        "tp": 0
+      },
+      "skill": "geo-data-engineering"
+    },
+    {
+      "cases": 9,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 7,
+      "routing": {
+        "accuracy": 0.2222222222222222,
+        "fn": 7,
+        "fp": 0,
+        "precision": null,
+        "recall": 0.0,
+        "route_accuracy": 0.0,
+        "tn": 2,
+        "tp": 0
+      },
+      "skill": "geo-deep-learning"
+    },
+    {
+      "cases": 9,
+      "errors": 0,
+      "negative_cases": 4,
+      "positive_cases": 5,
+      "routing": {
+        "accuracy": 0.4444444444444444,
+        "fn": 5,
+        "fp": 0,
+        "precision": null,
+        "recall": 0.0,
+        "route_accuracy": 0.0,
+        "tn": 4,
+        "tp": 0
+      },
+      "skill": "geoai-orchestrator"
+    },
+    {
+      "cases": 9,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 7,
+      "routing": {
+        "accuracy": 0.2222222222222222,
+        "fn": 7,
+        "fp": 0,
+        "precision": null,
+        "recall": 0.0,
+        "route_accuracy": 0.0,
+        "tn": 2,
+        "tp": 0
+      },
+      "skill": "geostatistics-interpolation"
+    },
+    {
+      "cases": 8,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 6,
+      "routing": {
+        "accuracy": 0.25,
+        "fn": 6,
+        "fp": 0,
+        "precision": null,
+        "recall": 0.0,
+        "route_accuracy": 0.0,
+        "tn": 2,
+        "tp": 0
+      },
+      "skill": "google-earth-engine"
+    },
+    {
+      "cases": 9,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 7,
+      "routing": {
+        "accuracy": 0.2222222222222222,
+        "fn": 7,
+        "fp": 0,
+        "precision": null,
+        "recall": 0.0,
+        "route_accuracy": 0.0,
+        "tn": 2,
+        "tp": 0
+      },
+      "skill": "mcda-suitability-analysis"
+    },
+    {
+      "cases": 8,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 6,
+      "routing": {
+        "accuracy": 0.25,
+        "fn": 6,
+        "fp": 0,
+        "precision": null,
+        "recall": 0.0,
+        "route_accuracy": 0.0,
+        "tn": 2,
+        "tp": 0
+      },
+      "skill": "ml-experiment-standards"
+    },
+    {
+      "cases": 9,
+      "errors": 1,
+      "negative_cases": 2,
+      "positive_cases": 7,
+      "routing": {
+        "accuracy": 0.2222222222222222,
+        "fn": 7,
+        "fp": 0,
+        "precision": null,
+        "recall": 0.0,
+        "route_accuracy": 0.0,
+        "tn": 2,
+        "tp": 0
+      },
+      "skill": "movement-trajectory"
+    },
+    {
+      "cases": 8,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 6,
+      "routing": {
+        "accuracy": 0.25,
+        "fn": 6,
+        "fp": 0,
+        "precision": null,
+        "recall": 0.0,
+        "route_accuracy": 0.0,
+        "tn": 2,
+        "tp": 0
+      },
+      "skill": "network-accessibility-analysis"
+    },
+    {
+      "cases": 9,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 7,
+      "routing": {
+        "accuracy": 0.2222222222222222,
+        "fn": 7,
+        "fp": 0,
+        "precision": null,
+        "recall": 0.0,
+        "route_accuracy": 0.0,
+        "tn": 2,
+        "tp": 0
+      },
+      "skill": "point-cloud-lidar"
+    },
+    {
+      "cases": 8,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 6,
+      "routing": {
+        "accuracy": 0.25,
+        "fn": 6,
+        "fp": 0,
+        "precision": null,
+        "recall": 0.0,
+        "route_accuracy": 0.0,
+        "tn": 2,
+        "tp": 0
+      },
+      "skill": "postgis-spatial-sql"
+    },
+    {
+      "cases": 9,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 7,
+      "routing": {
+        "accuracy": 0.2222222222222222,
+        "fn": 7,
+        "fp": 0,
+        "precision": null,
+        "recall": 0.0,
+        "route_accuracy": 0.0,
+        "tn": 2,
+        "tp": 0
+      },
+      "skill": "remote-sensing-analysis"
+    },
+    {
+      "cases": 8,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 6,
+      "routing": {
+        "accuracy": 0.25,
+        "fn": 6,
+        "fp": 0,
+        "precision": null,
+        "recall": 0.0,
+        "route_accuracy": 0.0,
+        "tn": 2,
+        "tp": 0
+      },
+      "skill": "spatial-statistics"
+    },
+    {
+      "cases": 9,
+      "errors": 2,
+      "negative_cases": 2,
+      "positive_cases": 7,
+      "routing": {
+        "accuracy": 0.2222222222222222,
+        "fn": 7,
+        "fp": 0,
+        "precision": null,
+        "recall": 0.0,
+        "route_accuracy": 0.0,
+        "tn": 2,
+        "tp": 0
+      },
+      "skill": "swe-devops-standards"
+    },
+    {
+      "cases": 8,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 6,
+      "routing": {
+        "accuracy": 0.25,
+        "fn": 6,
+        "fp": 0,
+        "precision": null,
+        "recall": 0.0,
+        "route_accuracy": 0.0,
+        "tn": 2,
+        "tp": 0
+      },
+      "skill": "terrain-hydrology"
+    }
+  ],
+  "skills-enabled": [
+    {
+      "cases": 13,
+      "errors": 0,
+      "negative_cases": 4,
+      "positive_cases": 9,
+      "routing": {
+        "accuracy": 0.9230769230769231,
+        "fn": 1,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.8888888888888888,
+        "route_accuracy": 0.9230769230769231,
+        "tn": 4,
+        "tp": 8
+      },
+      "skill": "arcgis-pro-automation"
+    },
+    {
+      "cases": 8,
+      "errors": 1,
+      "negative_cases": 2,
+      "positive_cases": 6,
+      "routing": {
+        "accuracy": 0.875,
+        "fn": 1,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.8333333333333334,
+        "route_accuracy": 0.875,
+        "tn": 2,
+        "tp": 5
+      },
+      "skill": "cartography-geoviz"
+    },
+    {
+      "cases": 9,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 7,
+      "routing": {
+        "accuracy": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "route_accuracy": 1.0,
+        "tn": 2,
+        "tp": 7
+      },
+      "skill": "change-detection"
+    },
+    {
+      "cases": 8,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 6,
+      "routing": {
+        "accuracy": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "route_accuracy": 1.0,
+        "tn": 2,
+        "tp": 6
+      },
+      "skill": "geo-data-engineering"
+    },
+    {
+      "cases": 9,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 7,
+      "routing": {
+        "accuracy": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "route_accuracy": 1.0,
+        "tn": 2,
+        "tp": 7
+      },
+      "skill": "geo-deep-learning"
+    },
+    {
+      "cases": 9,
+      "errors": 2,
+      "negative_cases": 4,
+      "positive_cases": 5,
+      "routing": {
+        "accuracy": 0.8888888888888888,
+        "fn": 1,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.8,
+        "route_accuracy": 0.7777777777777778,
+        "tn": 4,
+        "tp": 4
+      },
+      "skill": "geoai-orchestrator"
+    },
+    {
+      "cases": 9,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 7,
+      "routing": {
+        "accuracy": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "route_accuracy": 1.0,
+        "tn": 2,
+        "tp": 7
+      },
+      "skill": "geostatistics-interpolation"
+    },
+    {
+      "cases": 8,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 6,
+      "routing": {
+        "accuracy": 0.875,
+        "fn": 1,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.8333333333333334,
+        "route_accuracy": 0.875,
+        "tn": 2,
+        "tp": 5
+      },
+      "skill": "google-earth-engine"
+    },
+    {
+      "cases": 9,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 7,
+      "routing": {
+        "accuracy": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "route_accuracy": 1.0,
+        "tn": 2,
+        "tp": 7
+      },
+      "skill": "mcda-suitability-analysis"
+    },
+    {
+      "cases": 8,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 6,
+      "routing": {
+        "accuracy": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "route_accuracy": 1.0,
+        "tn": 2,
+        "tp": 6
+      },
+      "skill": "ml-experiment-standards"
+    },
+    {
+      "cases": 9,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 7,
+      "routing": {
+        "accuracy": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "route_accuracy": 1.0,
+        "tn": 2,
+        "tp": 7
+      },
+      "skill": "movement-trajectory"
+    },
+    {
+      "cases": 8,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 6,
+      "routing": {
+        "accuracy": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "route_accuracy": 1.0,
+        "tn": 2,
+        "tp": 6
+      },
+      "skill": "network-accessibility-analysis"
+    },
+    {
+      "cases": 9,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 7,
+      "routing": {
+        "accuracy": 0.8888888888888888,
+        "fn": 1,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.8571428571428571,
+        "route_accuracy": 0.8888888888888888,
+        "tn": 2,
+        "tp": 6
+      },
+      "skill": "point-cloud-lidar"
+    },
+    {
+      "cases": 8,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 6,
+      "routing": {
+        "accuracy": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "route_accuracy": 1.0,
+        "tn": 2,
+        "tp": 6
+      },
+      "skill": "postgis-spatial-sql"
+    },
+    {
+      "cases": 9,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 7,
+      "routing": {
+        "accuracy": 0.7777777777777778,
+        "fn": 2,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.7142857142857143,
+        "route_accuracy": 0.7777777777777778,
+        "tn": 2,
+        "tp": 5
+      },
+      "skill": "remote-sensing-analysis"
+    },
+    {
+      "cases": 8,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 6,
+      "routing": {
+        "accuracy": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "route_accuracy": 1.0,
+        "tn": 2,
+        "tp": 6
+      },
+      "skill": "spatial-statistics"
+    },
+    {
+      "cases": 9,
+      "errors": 1,
+      "negative_cases": 2,
+      "positive_cases": 7,
+      "routing": {
+        "accuracy": 0.7777777777777778,
+        "fn": 2,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.7142857142857143,
+        "route_accuracy": 0.7777777777777778,
+        "tn": 2,
+        "tp": 5
+      },
+      "skill": "swe-devops-standards"
+    },
+    {
+      "cases": 8,
+      "errors": 0,
+      "negative_cases": 2,
+      "positive_cases": 6,
+      "routing": {
+        "accuracy": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "route_accuracy": 1.0,
+        "tn": 2,
+        "tp": 6
+      },
+      "skill": "terrain-hydrology"
+    }
+  ],
+  "suite_sha256": "f03e327a57d2faa70ed31f0b3920355f31527991626992b5fc0add3edbace7f9"
+}

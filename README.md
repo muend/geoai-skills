@@ -132,14 +132,16 @@ Results follow the
 which reports skill activation, runtime completion, artifact-contract compliance,
 and overall success as separate measures.
 
-An archived 17-skill, 120-case Claude Code run recorded 100% routing precision,
-92.86% routing recall, and 92.5% full-route accuracy. That run is reproducible but
-**superseded**: it does not describe the current 18-skill source tree. No current
-headline routing number will be published until a fresh enabled/disabled pair is
-completed. Behavior quality also remains unclaimed until independent-family judging
-and the manual-review protocol are complete.
+A current 18-skill, 158-case Claude Code run recorded **100% routing precision,
+92.37% routing recall, and 93.67% full-route accuracy** on suite
+`f03e327a57d2…` under Claude Code `2.1.214` with `claude-sonnet-5` (2026-08-04).
+The paired skills-disabled control produced zero activations across all 158
+cases. All nine false negatives and all seven `max_turns` execution errors were
+inspected; the errors had already recorded their correct activation and so do not
+affect routing metrics. Behavior quality remains **unclaimed** until
+independent-family judging and the manual-review protocol are complete.
 
-Read [BENCHMARK.md](BENCHMARK.md) for the archived result card and
+Read [BENCHMARK.md](BENCHMARK.md) for the full result card and
 [EVALUATION.md](EVALUATION.md) for the provider-neutral protocol, suite hashes,
 split rules, judge boundaries, and publication gates.
 
