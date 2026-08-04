@@ -7,6 +7,30 @@ own `metadata.version` in its frontmatter.
 ## [Unreleased]
 
 ### Changed
+- Published a current 18-skill, 158-case routing result measured on
+  2026-08-04 under Claude Code `2.1.214` with `claude-sonnet-5`: **100%
+  precision, 92.37% recall, 93.67% full-route accuracy**, suite
+  `f03e327a57d2…`. The paired skills-disabled control recorded zero
+  activations across all 158 cases. This replaces the `superseded` state that
+  `BENCHMARK.md` and the README had carried since `arcgis-pro-automation` was
+  added; the archived 120-case package remains available as evidence for its
+  own suite and must not be pooled with this one.
+- Disclosed that this run spent the 62-case held-out half
+  (assignment `a82ce97903b2…`). Gate C's disclosure line is recorded in the
+  published package README. Subsequent changes that improve a held-out case
+  must be justified on their own merits and cannot be presented as independent
+  confirmation.
+- Recorded the first measured `skills-enabled` routing cost rate, 0.1279
+  USD-equivalent per case over 158 cases. The previous 0.0939 figure was an
+  unmeasured estimate of the same class that had already proven 6.3x low for
+  disabled routing.
+- Documented a routing boundary defect found during the mandatory manual
+  review: `change-detection` absorbs four multi-date comparability cases that
+  belong to `remote-sensing-analysis`, `point-cloud-lidar`, and
+  `google-earth-engine`. It scores 100% on its own nine cases while causing
+  four other skills' misses, which the precision metric structurally cannot
+  detect. `BENCHMARK.md` now states that per-skill recall, not precision, is
+  the boundary-health signal.
 - Reframed the README around the repository's differentiator—guarding
   geospatial claims against silent CRS, leakage, validity, unit, phenology,
   overlap, and uncertainty failures—with the quick start and evidence boundary

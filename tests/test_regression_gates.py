@@ -240,17 +240,44 @@ def test_published_benchmark_declares_itself_superseded() -> None:
     assert "must not be cited as if they" in readme
 
 
-def test_benchmark_card_discloses_supersession_and_names_the_revised_skills() -> None:
+def test_benchmark_card_state_matches_the_suite_it_claims() -> None:
+    """A card may say `current` only if it names the live suite hash.
+
+    This replaces an earlier test that hard-coded `superseded`. That assertion
+    was correct while the published card described a retired 120-case suite, but
+    it could only ever check a string. Pinning the declared hash to the
+    recomputed one is strictly stronger: a stale card cannot pass by editing a
+    label, and a current card cannot pass by claiming a suite it did not run.
+    """
+    card = (ROOT / "BENCHMARK.md").read_text(encoding="utf-8")
+    _cases, current_suite_sha256, _skills = gates.suite()
+
+    assert "| Suite state | `current`" in card or "| Suite state | `superseded`" in card
+
+    if "| Suite state | `current`" in card:
+        assert current_suite_sha256 in card, (
+            "The card declares itself current but does not contain the "
+            f"recomputed suite hash {current_suite_sha256}."
+        )
+    else:
+        assert "**This suite is superseded.**" in card
+        assert current_suite_sha256 not in card
+
+
+def test_benchmark_card_keeps_the_archived_result_separate() -> None:
+    """The retired 120-case package stays reachable and explicitly un-poolable."""
     card = (ROOT / "BENCHMARK.md").read_text(encoding="utf-8")
 
-    assert "| Suite state | `superseded`" in card
-    assert "**This suite is superseded.**" in card
-    for skill in (
-        "geoai-orchestrator",
-        "point-cloud-lidar",
-        "geo-deep-learning",
-        "movement-trajectory",
-        "postgis-spatial-sql",
-        "google-earth-engine",
-    ):
-        assert skill in card
+    assert "d45ad2c82635" in card
+    assert "Do not pool the two." in card
+
+
+def test_benchmark_card_does_not_claim_behavior() -> None:
+    """Routing evidence must never be presented as answer-quality evidence."""
+    card = (ROOT / "BENCHMARK.md").read_text(encoding="utf-8")
+
+    # Normalize wrapping: these sentences are line-wrapped in the card.
+    flat = " ".join(card.split())
+
+    assert "**Behavior quality is not evaluated in this release.**" in flat
+    assert "These are routing results, not claims about answer quality." in flat
