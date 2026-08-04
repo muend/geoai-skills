@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import hashlib
+import json
+import re
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -14,16 +16,37 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 def test_package_versions_match() -> None:
-    assert archives.package_version(ROOT) == "0.2.0"
+    """All four release manifests must declare one SemVer.
+
+    This previously asserted a hard-coded version string, which broke on every
+    release bump while protecting nothing: `package_version` already raises on
+    drift between pyproject, the Codex manifest and the Claude manifest. The
+    check now covers what the assertion could not — `marketplace.json`, which
+    `package_version` does not read even though RELEASING.md's first invariant
+    requires it to agree.
+    """
+    version = archives.package_version(ROOT)
+
+    assert re.fullmatch(r"\d+\.\d+\.\d+", version), version
+
+    marketplace = json.loads(
+        (ROOT / ".claude-plugin" / "marketplace.json").read_text(encoding="utf-8")
+    )
+    declared = {plugin.get("version") for plugin in marketplace.get("plugins", [])}
+
+    assert declared == {version}, (
+        f"marketplace.json declares {declared}, the other manifests declare {version}"
+    )
 
 
 def test_builds_all_skills_with_uploadable_root_layout(tmp_path: Path) -> None:
     built = archives.build_archives(ROOT, tmp_path / "release")
+    version = archives.package_version(ROOT)
 
     assert len(built) == 18
     for artifact in built:
         assert artifact.path.name.startswith("geoai-skills-")
-        assert artifact.path.name.endswith("-0.2.0.zip")
+        assert artifact.path.name.endswith(f"-{version}.zip")
         assert artifact.sha256 == hashlib.sha256(artifact.path.read_bytes()).hexdigest()
 
         with ZipFile(artifact.path) as archive:

@@ -12,12 +12,19 @@ RUNBOOK = ROOT / "RELEASING.md"
 
 
 def test_runbook_tracks_the_current_package_version() -> None:
+    """RELEASING.md must name the version the manifests actually declare.
+
+    The hard-coded `version == "0.2.0"` line was removed: it broke on every
+    release bump and duplicated a check `package_version` already performs. The
+    surviving assertions are the ones that matter — they fail when the runbook
+    is left pointing at a previous release, which is the drift worth catching.
+    """
     text = RUNBOOK.read_text(encoding="utf-8")
     version = archives.package_version(ROOT)
 
-    assert version == "0.2.0"
     assert f"`v{version}` does not already exist" in text
     assert f"after publication, use\n`v{version}`" in text
+    assert f"--expected-version {version}" in text
 
 
 def test_runbook_covers_every_documented_installation_surface() -> None:
