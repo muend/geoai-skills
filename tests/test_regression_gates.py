@@ -13,6 +13,7 @@ ever passes is worse than no guard, because it manufactures confidence.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -281,3 +282,38 @@ def test_benchmark_card_does_not_claim_behavior() -> None:
 
     assert "**Behavior quality is not evaluated in this release.**" in flat
     assert "These are routing results, not claims about answer quality." in flat
+
+
+def test_readme_badges_match_the_published_benchmark() -> None:
+    """README badges must not outlive the numbers they advertise.
+
+    A badge is the most-read and least-contextual claim in the repository. It
+    survives copy-paste into places the card never reaches, so a stale badge is
+    a durable false claim. This pins each headline badge to the value published
+    in `BENCHMARK.md`: publish a new pair without updating the badges and CI
+    fails here.
+    """
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    card = " ".join((ROOT / "BENCHMARK.md").read_text(encoding="utf-8").split())
+
+    precision = re.search(r"routing_precision-([\d.]+)%25", readme)
+    recall = re.search(r"routing_recall-([\d.]+)%25", readme)
+
+    assert precision and recall, "headline routing badges are missing"
+    assert f"**{precision.group(1)}%**" in card, (
+        f"precision badge says {precision.group(1)}% but the card does not"
+    )
+    assert f"**{recall.group(1)}%**" in card, (
+        f"recall badge says {recall.group(1)}% but the card does not"
+    )
+
+
+def test_readme_badges_carry_their_scope() -> None:
+    """Context-free badges need the runtime/model qualifier next to them."""
+    readme = " ".join((ROOT / "README.md").read_text(encoding="utf-8").split())
+    _cases, current_suite_sha256, _skills = gates.suite()
+
+    assert "behavior_quality-not_evaluated" in readme
+    assert "one runtime/model pair" in readme
+    assert current_suite_sha256[:12] in readme
+    assert "not universal or model-independent claims" in readme
