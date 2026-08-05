@@ -150,6 +150,13 @@ the packaging manifests; individual skills do not carry their own version.
 - Added `assets/demo/asset-manifest.json` recording what the frames assert, and
   a test pinning those assertions to `BENCHMARK.md`. A future benchmark run can
   no longer leave stale numbers animating at the top of the README.
+- `RELEASING.md` §2 gave only `sha256sum --check SHA256SUMS`, which does not
+  exist in a stock Windows shell — the platform this project is maintained on.
+  The runbook now carries the Git-for-Windows and pure-PowerShell equivalents,
+  and adds the step that actually carries the evidence: comparing the runner's
+  `SHA256SUMS` against the locally built one. Identical output is what shows the
+  archives are byte-identical across platforms, which is the property the
+  pre-v0.3.0 CRLF/LF packaging defect broke.
 - Regenerated frames 1, 6 and 7 of the demo animation for the 167-case figures
   and recorded which frames were regenerated and which preserved. Assembly moved
   from hand steps into `private-planning/build_demo_assets.py`, so the frame
