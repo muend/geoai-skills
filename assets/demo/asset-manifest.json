@@ -1,5 +1,5 @@
 {
-  "revision": "branded-logo-and-social-preview",
+  "revision": "routing-v04-20260805-154217",
   "canvas": [
     960,
     540
@@ -13,11 +13,24 @@
     2400,
     1900
   ],
+  "regenerated_frames": [
+    1,
+    6,
+    7
+  ],
+  "preserved_frames": [
+    2,
+    3,
+    4,
+    5
+  ],
   "supplied_sources": {
     "logo": "geoai-skills-logo.png",
     "visual_reference": "social-preview.jpg"
   },
   "accuracy": {
+    "suite_sha256_prefix": "efe27d8c1736",
+    "run_date": "2026-08-05",
     "cases": 167,
     "routing_precision": "99.17%",
     "routing_precision_display": "99.2%",
