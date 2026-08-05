@@ -10,7 +10,6 @@ description: >-
   methods and change-detection when temporal change is the deliverable.
 license: MIT
 metadata:
-  version: "0.1.0"
   author: Muhammed Enes Duran
 ---
 

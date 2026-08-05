@@ -309,14 +309,36 @@ def test_readme_badges_match_the_published_benchmark() -> None:
 
 
 def test_readme_badges_carry_their_scope() -> None:
-    """Context-free badges need the runtime/model qualifier next to them."""
+    """Context-free badges need their qualifier, and the qualifier has to track
+    whether the measured suite still exists.
+
+    The earlier version of this test required the README to name the live suite
+    hash unconditionally. That is right while the card is current and actively
+    wrong once a skill edit retires the suite: printing the new hash beside the
+    old figures would assert a run that was never performed. The check is now
+    branched on the card's declared state, and the superseded branch forbids
+    that association outright rather than merely not requiring it.
+    """
     readme = " ".join((ROOT / "README.md").read_text(encoding="utf-8").split())
+    card = (ROOT / "BENCHMARK.md").read_text(encoding="utf-8")
     _cases, current_suite_sha256, _skills = gates.suite()
 
     assert "behavior_quality-not_evaluated" in readme
     assert "one runtime/model pair" in readme
-    assert current_suite_sha256[:12] in readme
     assert "not universal or model-independent claims" in readme
+
+    if "| Suite state | `current`" in card:
+        assert current_suite_sha256[:12] in readme
+        return
+
+    assert current_suite_sha256[:12] not in readme, (
+        "the current suite is unmeasured; printing its hash beside the "
+        "published figures advertises a run that does not exist"
+    )
+    assert "retired" in readme.lower(), (
+        "a retired suite must be disclosed where the badges are read"
+    )
+    assert "remeasurement" in readme.lower()
 
 
 def test_demo_asset_matches_the_published_benchmark() -> None:

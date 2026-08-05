@@ -10,7 +10,6 @@ description: >-
   server-side execution to google-earth-engine.
 license: MIT
 metadata:
-  version: "0.1.0"
   author: Muhammed Enes Duran
 ---
 
@@ -58,6 +57,29 @@ search parameters for reproducibility.
 Always state which level you used. Never mix TOA and BOA scenes in one
 composite or time series. Landsat Collection 2 L2 needs its scale factors
 applied (`reflectance = DN * 0.0000275 - 0.2`).
+
+### The Sentinel-2 baseline discontinuity — passes the level check above
+
+Processing Baseline 04.00, applied from **25 January 2022**, added a constant
+`BOA_ADD_OFFSET` (currently −1000) to L2A digital numbers so that negative
+surface reflectance can be encoded. Two scenes on opposite sides of that date
+are **both L2A**: the level check above sees nothing wrong while their DNs sit
+1000 apart. Differencing them yields a systematic reflectance shift that reads
+as real change and survives every mask, threshold and accuracy report you
+apply afterwards.
+
+- Read `BOA_ADD_OFFSET` and `QUANTIFICATION_VALUE` from each product's
+  metadata rather than hardcoding −1000 and 10000; both are per-band and the
+  baseline has changed before.
+- Convert with `reflectance = (DN + BOA_ADD_OFFSET) / QUANTIFICATION_VALUE`.
+- Record the **processing baseline of every scene** in the manifest, not just
+  the product level. Two L2A scenes is not a sufficient statement.
+- **Do not correct twice.** Harmonised collections — Earth Engine's
+  `COPERNICUS/S2_SR_HARMONIZED` and several commercial mirrors — have already
+  shifted post-baseline data back to the pre-2022 range. Applying the offset
+  again inverts the error rather than removing it.
+- If the baseline is undocumented for either scene, the comparison is not
+  defensible. Say that instead of assuming pre- or post-2022.
 
 ## Cloud and quality masking — before anything else
 
@@ -119,6 +141,9 @@ flood mapping and continuous monitoring.
 ## Pitfalls checklist
 
 - Comparing scenes across dates without consistent atmospheric correction.
+- Mixing Sentinel-2 scenes across the 2022-01-25 baseline change without
+  applying `BOA_ADD_OFFSET` — or applying it a second time on a collection
+  that is already harmonised.
 - Ignoring 20 m→10 m band mixing on Sentinel-2 (B11/B12 are natively 20 m).
 - Computing indices on integer DNs without scale factors → nonsense ranges.
 - Median composites of SAR in linear units (do statistics in dB).
@@ -130,7 +155,7 @@ flood mapping and continuous monitoring.
 
 - **Workflow:** define phenomenon and scale; select sensor, product level, and dates; harmonize calibration, masks, CRS, and resolution; derive features; analyze; validate spatially; publish provenance.
 - **Decision rules:** use this skill for imagery preparation and classical analysis, change detection for explicit temporal differencing, deep learning for neural training, and Earth Engine for archive-scale execution.
-- **Verification protocol:** inspect masks and valid counts, confirm scale factors and band resolution, overlay outputs, use spatially independent validation, map errors, and test seasonal or sensor sensitivity.
-- **Failure modes:** reject results for cloud or shadow leakage, incomparable processing levels, resampling artifacts, label leakage, nodata contamination, or claims beyond sensor resolution.
+- **Verification protocol:** inspect masks and valid counts, confirm scale factors, offsets and processing baseline per scene, confirm band resolution, overlay outputs, use spatially independent validation, map errors, and test seasonal or sensor sensitivity.
+- **Failure modes:** reject results for cloud or shadow leakage, incomparable processing levels, undocumented or mismatched processing baselines, resampling artifacts, label leakage, nodata contamination, or claims beyond sensor resolution.
 - **Deliverables:** analysis-ready imagery or features, processing manifest, masks, derived products, validation metrics and error map, reproducible code, and limitations.
 - **Source freshness:** consult [the authoritative source registry](references/authoritative-sources.md) at execution time for product, calibration, and catalog changes.

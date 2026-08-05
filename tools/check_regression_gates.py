@@ -450,13 +450,21 @@ def check_holdout_containment() -> list[str]:
                     f"    Spending the held-out set is allowed once and has to be "
                     f"visible in the diff that does it."
                 )
-            elif match.group(1).lower() != assignment:
+            elif match.group(1).lower() != assignment and suite_is_current:
                 failures.append(
                     f"{name}: the held-out disclosure names assignment "
                     f"{match.group(1)[:12]}… but the committed split is "
                     f"{str(assignment)[:12]}…. The disclosure was made against a "
                     f"different split, so it does not cover these cases."
                 )
+            # A retired package is deliberately exempt from the equality check.
+            # Its disclosure names the split it actually ran against, which is
+            # the only true statement it can make; demanding the current
+            # assignment would force either a rewritten history or a permanent
+            # failure. Nothing is lost: the line must still be present, so the
+            # spend stays visible in the file and in the diff that made it, and
+            # Gate B independently forbids a retired package from presenting
+            # itself as current.
 
     return failures
 

@@ -17,20 +17,24 @@ of the deliverable.
 [![validate-skills](https://github.com/muend/geoai-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/muend/geoai-skills/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Skills](https://img.shields.io/badge/skills-18-brightgreen.svg)](#the-18-skill-stack)
-[![Evaluation corpus](https://img.shields.io/badge/evaluation-158_native_%2B_5_external_cases-2ea44f.svg)](#evidence-with-boundaries)
-[![Routing precision](https://img.shields.io/badge/routing_precision-100%25-2ea44f.svg)](BENCHMARK.md)
-[![Routing recall](https://img.shields.io/badge/routing_recall-92.37%25-2ea44f.svg)](BENCHMARK.md)
-[![Control activations](https://img.shields.io/badge/disabled_control-0_activations-2ea44f.svg)](BENCHMARK.md)
+[![Evaluation corpus](https://img.shields.io/badge/evaluation-167_native_%2B_5_external_cases-2ea44f.svg)](#evidence-with-boundaries)
+[![Routing precision](https://img.shields.io/badge/routing_precision-100%25-9e9e9e.svg)](BENCHMARK.md)
+[![Routing recall](https://img.shields.io/badge/routing_recall-92.37%25-9e9e9e.svg)](BENCHMARK.md)
+[![Control activations](https://img.shields.io/badge/disabled_control-0_activations-9e9e9e.svg)](BENCHMARK.md)
+[![Suite](https://img.shields.io/badge/suite-retired_awaiting_remeasurement-orange.svg)](BENCHMARK.md)
 [![Behavior](https://img.shields.io/badge/behavior_quality-not_evaluated-lightgrey.svg)](BENCHMARK.md)
 [![Browse on skills.sh](https://img.shields.io/badge/skills.sh-browse-111111.svg)](https://www.skills.sh/muend/geoai-skills)
 [![Spec](https://img.shields.io/badge/agentskills.io-compliant-orange.svg)](https://agentskills.io)
 
-<sub>Routing figures are measured on one runtime/model pair — Claude Code
-`2.1.214` with `claude-sonnet-5`, 158-case suite `f03e327a57d2…`, 2026-08-04 —
-and are not universal or model-independent claims. Routing measures which skill
-activates, not whether the answer is correct. See
-[BENCHMARK.md](BENCHMARK.md) for the full card, the reviewed failures, and a
-disclosed unfixed boundary defect.</sub>
+<sub>**These figures describe a retired suite.** They were measured on one
+runtime/model pair — Claude Code `2.1.214` with `claude-sonnet-5`, 158-case
+suite `f03e327a57d2…`, 2026-08-04 — and are not universal or
+model-independent claims. Every `SKILL.md` has since been edited, including a
+fix to the boundary defect that run exposed, so the shipped tree is **awaiting
+remeasurement** and those edits are hypotheses rather than results. Routing
+measures which skill activates, not whether the answer is correct. See
+[BENCHMARK.md](BENCHMARK.md) for the full card, the reviewed failures, and what
+retired the suite.</sub>
 
 <p align="center">
   <img
@@ -121,7 +125,7 @@ The current source tree contains two deliberately separate evaluation layers:
 
 | Evidence layer | Current coverage | What it supports |
 |---|---:|---|
-| Native skill suite | **158 cases** across 18 skills; 96 development and 62 held-out | Routing boundaries, negative activation, collisions, interaction modes, and artifact requirements |
+| Native skill suite | **167 cases** across 18 skills; 105 development and 62 held-out | Routing boundaries, negative activation, collisions, interaction modes, and artifact requirements |
 | GeoAnalystBench-derived external subset | **5 executable cases** with deterministic synthetic fixtures and artifact validators | Transfer checks for network analysis, facility coverage, vegetation change, urban heat/kriging, and spatial regression |
 | Platform verification | Windows, macOS, and Linux CI; clean installs for Codex, Claude, Skills CLI, and GitHub Copilot | Packaging, portability, runtime-file isolation, and deterministic archives |
 
@@ -143,7 +147,7 @@ Results follow the
 which reports skill activation, runtime completion, artifact-contract compliance,
 and overall success as separate measures.
 
-A current 18-skill, 158-case Claude Code run recorded **100% routing precision,
+An 18-skill, 158-case Claude Code run recorded **100% routing precision,
 92.37% routing recall, and 93.67% full-route accuracy** on suite
 `f03e327a57d2…` under Claude Code `2.1.214` with `claude-sonnet-5` (2026-08-04).
 The paired skills-disabled control produced zero activations across all 158
@@ -152,6 +156,13 @@ inspected; the four enabled errors had already recorded their correct target
 activation, so the enabled routing metrics are unaffected. Behavior quality
 remains **unclaimed** until independent-family judging and the manual-review
 protocol are complete.
+
+**That suite is now retired.** The skill descriptions have since been edited —
+including the `change-detection` boundary responsible for four of those nine
+false negatives — so the figures above describe the tree that was measured, not
+the tree that ships today. The fix is unmeasured and is not presented as an
+improvement. Until the v0.4 run, the repository has no current measurement of
+itself, and says so rather than reusing the old number.
 
 Read [BENCHMARK.md](BENCHMARK.md) for the full result card and
 [EVALUATION.md](EVALUATION.md) for the provider-neutral protocol, suite hashes,

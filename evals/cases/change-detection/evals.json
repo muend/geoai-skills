@@ -149,6 +149,109 @@
           "required": true
         }
       ]
+    },
+    {
+      "id": "baseline-discontinuity-handoff",
+      "behavior_class": "advisory",
+      "interaction_mode": "deliver",
+      "prompt": "Both scenes are Sentinel-2 L2A over the same tile, same month — March 2021 and March 2023. Difference them and give me the NDVI change in hectares.",
+      "case_types": [
+        "negative",
+        "collision"
+      ],
+      "critical": true,
+      "should_trigger": false,
+      "expected_route": [
+        "remote-sensing-analysis"
+      ],
+      "expected_behavior": [
+        "Routes to remote-sensing-analysis because the blocker is reflectance comparability, not change methodology",
+        "Identifies the Sentinel-2 Processing Baseline 04.00 discontinuity: the 2023 scene carries BOA_ADD_OFFSET, the 2021 scene does not",
+        "Does not treat matched season and matched processing level as sufficient evidence of comparability"
+      ],
+      "forbidden_behavior": [
+        "Reports an NDVI change or hectares figure from the two scenes as given",
+        "Concludes the pair is comparable because both products are L2A"
+      ]
+    },
+    {
+      "id": "season-and-sensor-conflict",
+      "behavior_class": "advisory",
+      "interaction_mode": "deliver",
+      "prompt": "Compare a Landsat 8 scene from July 2019 with a Sentinel-2 scene from October 2024 to map vegetation loss.",
+      "case_types": [
+        "negative",
+        "collision"
+      ],
+      "critical": true,
+      "should_trigger": false,
+      "expected_route": [
+        "remote-sensing-analysis"
+      ],
+      "expected_behavior": [
+        "Routes to remote-sensing-analysis: a cross-sensor comparability blocker outranks the phenology confounder present in the same prompt",
+        "Names both problems but treats sensor harmonization as the precondition and season as the downstream confounder"
+      ],
+      "forbidden_behavior": [
+        "Handles the prompt as a phenology problem alone because two seasons are named"
+      ]
+    },
+    {
+      "id": "harmonized-collection-double-correction",
+      "behavior_class": "advisory",
+      "interaction_mode": "deliver",
+      "prompt": "I am pulling Sentinel-2 imagery from COPERNICUS/S2_SR_HARMONIZED for a 2020 versus 2024 comparison. Do I need to subtract 1000 from the post-2022 scenes before differencing?",
+      "case_types": [
+        "negative",
+        "collision"
+      ],
+      "should_trigger": false,
+      "expected_route": [
+        "remote-sensing-analysis"
+      ],
+      "expected_behavior": [
+        "Routes to remote-sensing-analysis: the question is reflectance scaling, not change methodology, despite naming a comparison and an Earth Engine collection",
+        "Answers no — the harmonized collection has already removed the offset, and applying it again inverts the error"
+      ],
+      "forbidden_behavior": [
+        "Advises subtracting the offset from a collection that is already harmonized"
+      ]
+    },
+    {
+      "id": "documented-datum-elevation-change",
+      "behavior_class": "advisory",
+      "interaction_mode": "deliver",
+      "prompt": "Two LiDAR-derived DTMs, both NAVD88 with GEOID18, co-registration RMSE 4 cm documented, vendor vertical-accuracy reports attached and consistent. Subtract them and tell me where the ground moved.",
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
+      "expected_behavior": [
+        "Proceeds with change estimation: every comparability precondition is explicitly satisfied, so nothing remains to route away",
+        "Requires the change threshold to be defended against the combined vertical uncertainty rather than eyeballed",
+        "Reports change area with an uncertainty bound rather than a bare surface difference"
+      ],
+      "forbidden_behavior": [
+        "Refuses or defers on vertical datum grounds when the datum, geoid model and accuracy budget are all stated"
+      ]
+    },
+    {
+      "id": "short-series-small-area-breakpoints",
+      "behavior_class": "advisory",
+      "interaction_mode": "deliver",
+      "prompt": "I already have a six-year monthly NDVI series for a single 40 km² irrigation district. Find the breakpoints and tell me when the decline started.",
+      "case_types": [
+        "positive",
+        "collision"
+      ],
+      "expected_behavior": [
+        "Handles the break detection directly: the series is already in hand and the extent is small, so no archive-scale platform decision arises",
+        "Separates trend from seasonality before dating breaks, given a monthly series",
+        "Reports break dates with significance, not just presence"
+      ],
+      "forbidden_behavior": [
+        "Defers to an archive-scale execution platform for a six-year series the user already holds"
+      ]
     }
   ]
 }

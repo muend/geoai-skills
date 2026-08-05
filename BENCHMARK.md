@@ -1,13 +1,18 @@
 # Routing Benchmark
 
-GeoAI Skills reaches **100% routing precision**, **92.37% routing recall**, and
-**93.67% full-route accuracy** on its current 158-case suite for the exact
-runtime/model pair below. These are routing results, not claims about answer
-quality.
+**This suite is superseded.** The figures on this card — **100% routing
+precision**, **92.37% routing recall**, **93.67% full-route accuracy** — were
+measured on suite `f03e327a57d2…`. Every `SKILL.md` has since been edited, so
+the repository's current suite is different and **has not been measured**.
+These are routing results, not claims about answer quality.
+
+Read the numbers below as evidence about the tree that was measured, not about
+the tree you are downloading. What changed and why is in
+[What retired this suite](#what-retired-this-suite).
 
 | Field | Value |
 |---|---|
-| Suite state | `current` — matches the shipped source tree |
+| Suite state | `superseded` — the shipped source tree has moved on |
 | Runtime | Claude Code `2.1.214` |
 | Model | `claude-sonnet-5` |
 | Skills | 18 |
@@ -19,6 +24,57 @@ quality.
 | Retry policy | Primary records retained; no retry replacement |
 | Human review | All 9 false negatives, the 1 incomplete-route case, and all 7 execution errors inspected |
 | Evidence | [Sanitized run package](benchmarks/claude-code-2.1.214--claude-sonnet-5--f03e327a57d2/) |
+
+## What retired this suite
+
+Five deliberate edits, made together so a single paid run can measure them all.
+Four of the five exist because this run found them.
+
+| Change | Why | Measured? |
+|---|---|---|
+| `change-detection` no longer claims prompts whose blocker is sensor or processing-level comparability | Its description read "Invoke even when seasons, sensors, or processing levels are not comparable" — that one conjunction caused 4 of the 9 false negatives below | **No** |
+| `point-cloud-lidar` now owns cross-acquisition vertical datum comparability | The datum axis had no owner, so `change-detection` took it by default | **No** |
+| `remote-sensing-analysis` encodes the Sentinel-2 Baseline 04.00 `BOA_ADD_OFFSET` discontinuity | Two L2A scenes across 2022-01-25 pass the existing L1C/L2A check while their DNs sit 1000 apart | **No** |
+| `metadata.version` removed from all 18 skills | Read by nothing, reported as `skill_metadata_ignored` by the OpenAI portal, and drifted at `0.1.0` across three releases | n/a |
+| `arcgis-pro-automation` gained its missing `license` field | The only skill without one | n/a |
+
+The first three are **hypotheses, not results.** A boundary fix is not fixed
+until it is measured, and it cannot be measured against the cases below: this
+run spent the held-out half, so re-scoring the same 158 cases after editing the
+descriptions they exposed would be iteration presented as confirmation. The
+v0.4 run needs cases written for the boundary and a fresh dev / held-out split.
+
+Note what this table does *not* say. It does not say routing improved. Until
+the v0.4 run lands, the honest position is that the repository has no current
+measurement of itself.
+
+## What the v0.4 run will and will not be able to show
+
+Nine boundary probes were added for it, taking the suite to **167 cases**, and
+the split was rebuilt (assignment `b2ab0305ffc8…`, 105 dev / 62 held-out).
+They are deliberately adversarial: three present a comparability blocker
+disguised as a clean change question, two guard against over-correction by
+wrapping a genuine change question in the vocabulary of a blocker, and four
+probe the baseline-offset content in both error directions — failing to apply
+the offset, and applying it twice on an already-harmonised collection.
+
+All nine are declared in `analysed_before_split` and forced to **dev**. They
+were written by the same author who diagnosed the defect and made the fix, so
+they cannot be independent evidence and are not offered as any. Three
+previously blind cases were moved to dev for the same reason: they were read
+while narrowing the boundary.
+
+The 62 held-out cases are a weaker instrument than the label implies. They were
+blind when authored and were not consulted while making these changes, but the
+`f03e327a57d2…` run measured the full suite, so their outcomes are known. They
+can therefore detect a **regression** caused by the narrowing — which is the
+real risk here, and worth measuring — but they cannot confirm an
+**improvement**, because a case whose result you already know cannot surprise
+you. The v0.4 report must state them that way.
+
+Independence returns only when cases are written by an author who has not seen
+these results. That is a v0.5 problem, and pretending otherwise now would cost
+more than the missing evidence does.
 
 ## Headline results
 

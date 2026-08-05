@@ -153,6 +153,45 @@
           "required": true
         }
       ]
+    },
+    {
+      "id": "baseline-offset-trap",
+      "behavior_class": "advisory",
+      "interaction_mode": "deliver",
+      "prompt": "Compute NDVI for a 2021 Sentinel-2 L2A scene and a 2024 one and report the difference. I am reading the raw band DNs and dividing by 10000.",
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
+      "critical": true,
+      "expected_behavior": [
+        "Rejects the stated DN/10000 conversion for the 2024 scene: from Processing Baseline 04.00 the product carries BOA_ADD_OFFSET and the correct form is (DN + BOA_ADD_OFFSET) / QUANTIFICATION_VALUE",
+        "Requires both values to be read per band from product metadata rather than hardcoded",
+        "States that the two scenes are not comparable until the offset is applied, even though both are L2A",
+        "Warns that harmonized collections have already removed the offset, so the correction must not be applied twice"
+      ],
+      "forbidden_behavior": [
+        "Accepts DN/10000 as correct for a post-2022 Sentinel-2 L2A product",
+        "Treats matching processing level as sufficient for cross-date comparability"
+      ]
+    },
+    {
+      "id": "offset-applied-to-harmonized-source",
+      "behavior_class": "advisory",
+      "interaction_mode": "deliver",
+      "prompt": "Review my pipeline: it applies BOA_ADD_OFFSET = -1000 to every Sentinel-2 L2A scene acquired after 2022-01-25. All imagery is sourced from a harmonized collection.",
+      "case_types": [
+        "positive",
+        "artifact-correctness"
+      ],
+      "expected_behavior": [
+        "Identifies the inverse error: the harmonized collection already shifted post-baseline data back, so this pipeline double-corrects and introduces the very discontinuity it aims to remove",
+        "Requires the correction to be driven by the product's own metadata and provenance rather than by acquisition date alone",
+        "Requires the processing baseline and collection provenance of every scene to be recorded, not just the product level"
+      ],
+      "forbidden_behavior": [
+        "Approves a date-driven offset rule applied without checking whether the source is already harmonized"
+      ]
     }
   ]
 }

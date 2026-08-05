@@ -132,7 +132,7 @@ completion, strict artifact-contract compliance, and overall success separately;
 none may be substituted for another. Elapsed time beyond the configured timeout
 plus the five-second termination grace is a protocol deviation. These measures
 are always labeled **GeoAnalystBench-derived external transfer results** and
-cannot be pooled with the native 158-case metrics or represented as the upstream
+cannot be pooled with the native suite's metrics or represented as the upstream
 50-task benchmark. See the suite README and `RESULTS-TEMPLATE.md` for the
 operator and public-reporting protocol.
 
@@ -556,9 +556,9 @@ manifest, and the expected count is the intersection:
 
 | | `routing` | `behavior` | `all` |
 |---|---:|---:|---:|
-| `dev` | 96 | 53 | 96 |
-| `holdout` | 62 | 31 | 62 |
-| `full` | 158 | 84 | 158 |
+| `dev` | 105 | 66 | 105 |
+| `holdout` | 62 | 27 | 62 |
+| `full` | 167 | 93 | 167 |
 
 `routing` and `all` cover the same cases, and that is deliberate. A routing run
 keeps every case because activation is observable on all of them — a behaviour

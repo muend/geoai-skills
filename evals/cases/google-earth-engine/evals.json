@@ -124,6 +124,24 @@
       "forbidden_behavior": [
         "Documents only a moving latest-data alias with no reproducible date bounds."
       ]
+    },
+    {
+      "id": "basin-scale-multidecade-landcover",
+      "behavior_class": "advisory",
+      "interaction_mode": "deliver",
+      "prompt": "I need annual land-cover change for the entire Nile basin from 1990 to 2024. I have a laptop.",
+      "case_types": [
+        "positive",
+        "collision"
+      ],
+      "expected_behavior": [
+        "Treats the execution platform as the first decision: a multi-decade archive over a basin-scale extent is server-side work, not a local download",
+        "Explains the trade-off against local processing rather than assuming Earth Engine without justification",
+        "Covers quota-aware batching and export strategy for a run of this size"
+      ],
+      "forbidden_behavior": [
+        "Designs a local download-and-process workflow for a 35-year basin-scale archive"
+      ]
     }
   ]
 }
