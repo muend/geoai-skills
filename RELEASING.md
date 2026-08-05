@@ -56,6 +56,41 @@ Before creating a tag:
    sha256sum --check SHA256SUMS
    ```
 
+   `sha256sum` is GNU coreutils and is absent from a stock Windows shell. On
+   Windows, either call the copy Git for Windows ships:
+
+   ```powershell
+   & "$env:ProgramFiles\Git\usr\bin\sha256sum.exe" --check SHA256SUMS
+   ```
+
+   or verify with PowerShell alone:
+
+   ```powershell
+   Get-Content SHA256SUMS | ForEach-Object {
+     $expected, $name = $_ -split '\s+', 2
+     $name = $name.Trim()
+     $actual = (Get-FileHash -Algorithm SHA256 -LiteralPath $name).Hash.ToLower()
+     if ($actual -ne $expected) { "FAIL  $name  expected=$expected actual=$actual" }
+   }
+   ```
+
+6. Compare the artifact's `SHA256SUMS` against the one produced locally in
+   step 1. This is the step that has evidential value: an identical file means
+   the maintainer's platform and the Ubuntu runner produced byte-identical
+   archives from the same commit.
+
+   ```bash
+   diff dist/skills/SHA256SUMS <artifact-dir>/SHA256SUMS
+   ```
+
+   ```powershell
+   Compare-Object (Get-Content dist\skills\SHA256SUMS) (Get-Content <artifact-dir>\SHA256SUMS)
+   ```
+
+   Empty output is the pass condition. Any difference is a platform dependency
+   in packaging — the class of defect found and fixed before v0.3.0 — and keeps
+   the candidate open until it is explained.
+
 The manual workflow has read-only repository permission and retains its
 run-scoped workflow artifact for seven days. It cannot create a tag, GitHub
 Release, or release asset. Only the separate `release: published` job has
