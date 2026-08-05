@@ -34,7 +34,7 @@ python tools/check_links.py
 python tools/build_split.py
 python tools/check_regression_gates.py
 python tools/build_openai_plugin_bundle.py
-python tools/build_skill_archives.py --expected-version 0.3.0
+python tools/build_skill_archives.py --expected-version 0.4.0
 ```
 
 Record the candidate commit, Python version, operating system, package version,
@@ -66,7 +66,7 @@ Release, or release asset. Only the separate `release: published` job has
 Use a new temporary directory or a disposable user profile for every row.
 Do not reuse an existing skill cache. For pre-release tests, replace
 `<candidate-ref>` with the exact candidate commit SHA; after publication, use
-`v0.3.0`.
+`v0.4.0`.
 
 Record the installed Skills CLI version and set `DISABLE_TELEMETRY=1` for
 verification runs so the release check does not emit optional usage telemetry.
@@ -136,7 +136,7 @@ Publishing requires explicit maintainer approval after all applicable rows pass.
 Immediately before approval, confirm:
 
 1. the candidate commit is the intended `main` commit;
-2. `v0.3.0` does not already exist;
+2. `v0.4.0` does not already exist;
 3. release notes match `CHANGELOG.md`;
 4. the repository tree and generated archives contain no secrets or private
    development material;
