@@ -5,11 +5,12 @@ description: >-
   ground classification, DTM/DSM/CHM generation, canopy and building
   metrics, and photogrammetric (SfM) point clouds. Use when the primary input
   is LAS, LAZ, COPC, LiDAR, or an unstructured 3D point cloud. This skill owns
-  vertical datum agreement, co-registration, and vertical-accuracy budgets
-  whenever two acquisitions are differenced, including subsidence and
-  elevation-change claims. Route analysis of an already derived DEM, DTM, DSM,
-  or CHM to terrain-hydrology unless point-level classification, comparability,
-  or metrics remain in scope.
+  vertical datum agreement, co-registration and the vertical-accuracy budget
+  when two acquisitions are differenced with comparability not yet established;
+  once datum, geoid and accuracy are documented, a subsidence or
+  elevation-change question is change-detection's. Route a derived DEM, DTM,
+  DSM or CHM to terrain-hydrology unless point-level classification,
+  comparability, or metrics remain in scope.
 license: MIT
 metadata:
   author: Muhammed Enes Duran
