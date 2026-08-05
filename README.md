@@ -17,7 +17,7 @@ of the deliverable.
 [![validate-skills](https://github.com/muend/geoai-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/muend/geoai-skills/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Skills](https://img.shields.io/badge/skills-18-brightgreen.svg)](#the-18-skill-stack)
-[![Evaluation corpus](https://img.shields.io/badge/evaluation-158_native_%2B_5_external_cases-2ea44f.svg)](#evidence-with-boundaries)
+[![Evaluation corpus](https://img.shields.io/badge/evaluation-167_native_%2B_5_external_cases-2ea44f.svg)](#evidence-with-boundaries)
 [![Routing precision](https://img.shields.io/badge/routing_precision-100%25-9e9e9e.svg)](BENCHMARK.md)
 [![Routing recall](https://img.shields.io/badge/routing_recall-92.37%25-9e9e9e.svg)](BENCHMARK.md)
 [![Control activations](https://img.shields.io/badge/disabled_control-0_activations-9e9e9e.svg)](BENCHMARK.md)
@@ -125,7 +125,7 @@ The current source tree contains two deliberately separate evaluation layers:
 
 | Evidence layer | Current coverage | What it supports |
 |---|---:|---|
-| Native skill suite | **158 cases** across 18 skills; 96 development and 62 held-out | Routing boundaries, negative activation, collisions, interaction modes, and artifact requirements |
+| Native skill suite | **167 cases** across 18 skills; 105 development and 62 held-out | Routing boundaries, negative activation, collisions, interaction modes, and artifact requirements |
 | GeoAnalystBench-derived external subset | **5 executable cases** with deterministic synthetic fixtures and artifact validators | Transfer checks for network analysis, facility coverage, vegetation change, urban heat/kriging, and spatial regression |
 | Platform verification | Windows, macOS, and Linux CI; clean installs for Codex, Claude, Skills CLI, and GitHub Copilot | Packaging, portability, runtime-file isolation, and deterministic archives |
 

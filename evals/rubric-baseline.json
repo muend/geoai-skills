@@ -1,6 +1,6 @@
 {
   "note": "Pinned expected and forbidden criteria. A criterion may be added, or decomposed into finer criteria when the decomposition is declared below, but it may never be silently removed or reworded away. This baseline is forward-looking: it constrains changes made after it was seeded, and makes no claim about the history before that point.",
-  "seeded_from_suite_sha256": "f03e327a57d2faa70ed31f0b3920355f31527991626992b5fc0add3edbace7f9",
+  "seeded_from_suite_sha256": "5092c3d76f5c418f12cf1c899eda2c8688719925661a16710af638cc3dc0874d",
   "seeded_skill_count": 18,
   "decompositions": {},
   "cases": {
@@ -184,6 +184,17 @@
       ],
       "forbidden_behavior": []
     },
+    "change-detection/baseline-discontinuity-handoff": {
+      "expected_behavior": [
+        "Routes to remote-sensing-analysis because the blocker is reflectance comparability, not change methodology",
+        "Identifies the Sentinel-2 Processing Baseline 04.00 discontinuity: the 2023 scene carries BOA_ADD_OFFSET, the 2021 scene does not",
+        "Does not treat matched season and matched processing level as sufficient evidence of comparability"
+      ],
+      "forbidden_behavior": [
+        "Reports an NDVI change or hectares figure from the two scenes as given",
+        "Concludes the pair is comparable because both products are L2A"
+      ]
+    },
     "change-detection/change-accuracy-audit": {
       "expected_behavior": [
         "Checks that the reference sample supports change-class accuracy and area estimation",
@@ -192,12 +203,40 @@
       ],
       "forbidden_behavior": []
     },
+    "change-detection/documented-datum-elevation-change": {
+      "expected_behavior": [
+        "Proceeds with change estimation: every comparability precondition is explicitly satisfied, so nothing remains to route away",
+        "Requires the change threshold to be defended against the combined vertical uncertainty rather than eyeballed",
+        "Reports change area with an uncertainty bound rather than a bare surface difference"
+      ],
+      "forbidden_behavior": [
+        "Refuses or defers on vertical datum grounds when the datum, geoid model and accuracy budget are all stated"
+      ]
+    },
+    "change-detection/harmonized-collection-double-correction": {
+      "expected_behavior": [
+        "Routes to remote-sensing-analysis: the question is reflectance scaling, not change methodology, despite naming a comparison and an Earth Engine collection",
+        "Answers no — the harmonized collection has already removed the offset, and applying it again inverts the error"
+      ],
+      "forbidden_behavior": [
+        "Advises subtracting the offset from a collection that is already harmonized"
+      ]
+    },
     "change-detection/scene-correction-only": {
       "expected_behavior": [
         "Routes to remote-sensing-analysis for single-scene preprocessing",
         "Does not activate change-detection when no change question is present"
       ],
       "forbidden_behavior": []
+    },
+    "change-detection/season-and-sensor-conflict": {
+      "expected_behavior": [
+        "Routes to remote-sensing-analysis: a cross-sensor comparability blocker outranks the phenology confounder present in the same prompt",
+        "Names both problems but treats sensor harmonization as the precondition and season as the downstream confounder"
+      ],
+      "forbidden_behavior": [
+        "Handles the prompt as a phenology problem alone because two seasons are named"
+      ]
     },
     "change-detection/season-confounded-fire-attribution": {
       "expected_behavior": [
@@ -216,6 +255,16 @@
         "Proposes matched-season pairs, composites, or time-series methods"
       ],
       "forbidden_behavior": []
+    },
+    "change-detection/short-series-small-area-breakpoints": {
+      "expected_behavior": [
+        "Handles the break detection directly: the series is already in hand and the extent is small, so no archive-scale platform decision arises",
+        "Separates trend from seasonality before dating breaks, given a monthly series",
+        "Reports break dates with significance, not just presence"
+      ],
+      "forbidden_behavior": [
+        "Defers to an archive-scale execution platform for a six-year series the user already holds"
+      ]
     },
     "change-detection/single-date-classification": {
       "expected_behavior": [
@@ -556,6 +605,16 @@
         "Rejects delivery without kriging standard deviation and extrapolation flags"
       ],
       "forbidden_behavior": []
+    },
+    "google-earth-engine/basin-scale-multidecade-landcover": {
+      "expected_behavior": [
+        "Treats the execution platform as the first decision: a multi-decade archive over a basin-scale extent is server-side work, not a local download",
+        "Explains the trade-off against local processing rather than assuming Earth Engine without justification",
+        "Covers quota-aware batching and export strategy for a run of this size"
+      ],
+      "forbidden_behavior": [
+        "Designs a local download-and-process workflow for a 35-year basin-scale archive"
+      ]
     },
     "google-earth-engine/country-composite": {
       "expected_behavior": [
@@ -908,6 +967,16 @@
       ],
       "forbidden_behavior": []
     },
+    "point-cloud-lidar/accuracy-budget-below-claimed-change": {
+      "expected_behavior": [
+        "Refuses to confirm 7 cm: the combined uncertainty of two 9 cm surfaces exceeds the claimed change, so the difference cannot be distinguished from noise",
+        "Computes or states the combined vertical uncertainty explicitly rather than comparing against a single acquisition's RMSE",
+        "Requires co-registration against stable surfaces and a stated detection limit before any settlement figure is reported"
+      ],
+      "forbidden_behavior": [
+        "Confirms the 7 cm settlement because the vertical datums match"
+      ]
+    },
     "point-cloud-lidar/chm-forestry": {
       "expected_behavior": [
         "Normalizes heights (HAG) against the DTM; pit-free CHM",
@@ -1059,6 +1128,18 @@
       ],
       "forbidden_behavior": []
     },
+    "remote-sensing-analysis/baseline-offset-trap": {
+      "expected_behavior": [
+        "Rejects the stated DN/10000 conversion for the 2024 scene: from Processing Baseline 04.00 the product carries BOA_ADD_OFFSET and the correct form is (DN + BOA_ADD_OFFSET) / QUANTIFICATION_VALUE",
+        "Requires both values to be read per band from product metadata rather than hardcoded",
+        "States that the two scenes are not comparable until the offset is applied, even though both are L2A",
+        "Warns that harmonized collections have already removed the offset, so the correction must not be applied twice"
+      ],
+      "forbidden_behavior": [
+        "Accepts DN/10000 as correct for a post-2022 Sentinel-2 L2A product",
+        "Treats matching processing level as sufficient for cross-date comparability"
+      ]
+    },
     "remote-sensing-analysis/classification-validation": {
       "expected_behavior": [
         "Uses a spatially independent test set (block split), citing the spatial CV protocol",
@@ -1101,6 +1182,16 @@
         "Uses B8/B4 explicitly and warns against hardcoded NDVI thresholds"
       ],
       "forbidden_behavior": []
+    },
+    "remote-sensing-analysis/offset-applied-to-harmonized-source": {
+      "expected_behavior": [
+        "Identifies the inverse error: the harmonized collection already shifted post-baseline data back, so this pipeline double-corrects and introduces the very discontinuity it aims to remove",
+        "Requires the correction to be driven by the product's own metadata and provenance rather than by acquisition date alone",
+        "Requires the processing baseline and collection provenance of every scene to be recorded, not just the product level"
+      ],
+      "forbidden_behavior": [
+        "Approves a date-driven offset rule applied without checking whether the source is already harmonized"
+      ]
     },
     "remote-sensing-analysis/planetary-server-workflow": {
       "expected_behavior": [

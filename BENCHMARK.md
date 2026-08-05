@@ -48,6 +48,34 @@ Note what this table does *not* say. It does not say routing improved. Until
 the v0.4 run lands, the honest position is that the repository has no current
 measurement of itself.
 
+## What the v0.4 run will and will not be able to show
+
+Nine boundary probes were added for it, taking the suite to **167 cases**, and
+the split was rebuilt (assignment `b2ab0305ffc8…`, 105 dev / 62 held-out).
+They are deliberately adversarial: three present a comparability blocker
+disguised as a clean change question, two guard against over-correction by
+wrapping a genuine change question in the vocabulary of a blocker, and four
+probe the baseline-offset content in both error directions — failing to apply
+the offset, and applying it twice on an already-harmonised collection.
+
+All nine are declared in `analysed_before_split` and forced to **dev**. They
+were written by the same author who diagnosed the defect and made the fix, so
+they cannot be independent evidence and are not offered as any. Three
+previously blind cases were moved to dev for the same reason: they were read
+while narrowing the boundary.
+
+The 62 held-out cases are a weaker instrument than the label implies. They were
+blind when authored and were not consulted while making these changes, but the
+`f03e327a57d2…` run measured the full suite, so their outcomes are known. They
+can therefore detect a **regression** caused by the narrowing — which is the
+real risk here, and worth measuring — but they cannot confirm an
+**improvement**, because a case whose result you already know cannot surprise
+you. The v0.4 report must state them that way.
+
+Independence returns only when cases are written by an author who has not seen
+these results. That is a v0.5 problem, and pretending otherwise now would cost
+more than the missing evidence does.
+
 ## Headline results
 
 | Condition | TP | FN | FP | TN | Precision | Recall | Accuracy | Route accuracy |

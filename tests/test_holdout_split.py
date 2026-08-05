@@ -304,6 +304,45 @@ def test_a_disclosure_for_a_different_split_is_refused(gate_c) -> None:
     assert any("made against a different split" in f for f in failures)
 
 
+def test_a_retired_run_may_keep_the_disclosure_it_actually_made(gate_c) -> None:
+    """The equality check binds live packages only.
+
+    A retired package's disclosure names the split it ran against, which is the
+    only true statement it can make. Requiring it to name the *current*
+    assignment would force a choice between rewriting history and failing
+    forever, so the check is bound to `suite_is_current`. What is not relaxed
+    is the requirement that the line exist — see the test below.
+    """
+    failures = gate_c(
+        {
+            "scope": "full",
+            "evaluation_scope": "routing",
+            "suite_sha256": "9" * 64,
+            "case_mix": {"total": 1},
+        },
+        readme="# Retired run\n\n- Held-out disclosure: `" + "0" * 64 + "`\n",
+    )
+
+    assert failures == []
+
+
+def test_a_retired_run_still_needs_a_disclosure_at_all(gate_c) -> None:
+    """The exemption above is about *which* split, never about whether one was
+    named. A held-out spend has to stay visible in the file that made it, and
+    superseding a package must not become a way to erase that."""
+    failures = gate_c(
+        {
+            "scope": "full",
+            "evaluation_scope": "routing",
+            "suite_sha256": "9" * 64,
+            "case_mix": {"total": 1},
+        },
+        readme="# Retired run\n\nNothing declared.\n",
+    )
+
+    assert any("must carry a line reading" in f for f in failures)
+
+
 # --- Gate C: scope and kind cut the suite along different axes ------------
 
 

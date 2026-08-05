@@ -33,12 +33,42 @@ the packaging manifests; individual skills do not carry their own version.
   recorded as a hypothesis, not an improvement — it cannot be measured against
   the cases that exposed it, because that run spent the held-out half.
 
+### Added
+- **Nine boundary probes**, taking the native suite to 167 cases. They are
+  written to break the fix rather than confirm it: three present a comparability
+  blocker disguised as a clean change question (matched season and matched
+  processing level, blocked only by the Sentinel-2 baseline discontinuity;
+  season *and* sensor mismatch together, to test which axis outranks which; a
+  harmonised-collection question phrased as a comparison), two guard against
+  over-correction (a fully documented datum/accuracy elevation difference, and a
+  six-year series already in hand over 40 km²), and four probe the offset
+  content in both error directions including the double-correction case.
+- Two Gate C tests covering retired packages: a superseded package may keep the
+  held-out disclosure it actually made, but may not drop it.
+
 ### Removed
 - `metadata.version` from all 18 skills. Nothing read it: the packaging
   manifests carry the release version and the OpenAI portal reported the field
   as `skill_metadata_ignored` on every upload. It could therefore only drift,
   and it did — sitting at `0.1.0` across three releases. Removing it also
   clears 17 portal warnings. `metadata.author` is retained.
+
+### Changed (evaluation)
+- Rebuilt the dev / held-out split (assignment `b2ab0305ffc8…`, 105 dev / 62
+  held-out) and recorded, in `evals/split-inputs.json`, that the held-out half
+  is now a weaker instrument than its label suggests. The `f03e327a57d2…` run
+  measured the full suite, so every held-out outcome is known; those cases can
+  still detect a regression caused by the boundary narrowing but cannot confirm
+  an improvement. Three cases that were read while making the fix
+  (`cross-sensor-drought-comparability`, `mixed-datum-subsidence-refusal`,
+  `season-confounded-fire-attribution`) were moved out of `written_blind` into
+  `analysed_before_split`, where they belong.
+- Gate C no longer requires a **retired** benchmark package to name the current
+  split assignment. Its disclosure names the split it actually ran against,
+  which is the only true statement it can make; demanding the current one forced
+  a choice between rewriting history and failing forever. The requirement that
+  the disclosure exist is unchanged, so a held-out spend stays visible in the
+  file that made it and superseding a package cannot erase it.
 
 ### Fixed
 - `arcgis-pro-automation` was the only skill without a `license` field. A test

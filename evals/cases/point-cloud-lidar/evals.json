@@ -155,6 +155,25 @@
       "forbidden_behavior": [
         "Reports 6 cm subsidence from unregistered surfaces with unknown vertical accuracy."
       ]
+    },
+    {
+      "id": "accuracy-budget-below-claimed-change",
+      "behavior_class": "advisory",
+      "interaction_mode": "deliver",
+      "prompt": "Both LiDAR surfaces are NAVD88 with GEOID18, so the datums agree. The vendor reports 9 cm vertical RMSE for each acquisition. Subtract them and confirm the 7 cm settlement we measured.",
+      "case_types": [
+        "positive",
+        "ambiguous"
+      ],
+      "critical": true,
+      "expected_behavior": [
+        "Refuses to confirm 7 cm: the combined uncertainty of two 9 cm surfaces exceeds the claimed change, so the difference cannot be distinguished from noise",
+        "Computes or states the combined vertical uncertainty explicitly rather than comparing against a single acquisition's RMSE",
+        "Requires co-registration against stable surfaces and a stated detection limit before any settlement figure is reported"
+      ],
+      "forbidden_behavior": [
+        "Confirms the 7 cm settlement because the vertical datums match"
+      ]
     }
   ]
 }
