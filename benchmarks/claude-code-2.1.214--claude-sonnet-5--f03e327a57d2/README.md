@@ -24,10 +24,12 @@ Held-out disclosure: a82ce97903b20f7c6e8fa998afbac564069077fbc115846f10d03c04b7c
 ### What `superseded` means here
 
 This run described suite `f03e327a57d2…`. Every `SKILL.md` in the repository has
-since been edited, so the current suite is `76eaab51b3e3…` and this package no
+since been edited, so the current suite is `efe27d8c1736…` and this package no
 longer describes the skills that ship here. The figures remain valid evidence
 **for the suite they were computed against** and remain reproducible from the
 recorded hash, but they must not be cited as if they described the current tree.
+The current measurement is
+[`efe27d8c1736`](../claude-code-2.1.214--claude-sonnet-5--efe27d8c1736/).
 
 The edits that retired it were deliberate, and one of them targets a defect this
 very run exposed:
@@ -42,12 +44,21 @@ very run exposed:
 - `metadata.version` was removed from every skill and `arcgis-pro-automation`
   gained its missing `license` field.
 
-**None of that has been measured.** The boundary fix is a hypothesis until a
-fresh run tests it, and it cannot honestly be tested against the cases in this
-package: this run spent the held-out half, so re-scoring the same 158 cases
-after editing the descriptions they exposed would be iteration presented as
-confirmation. The v0.4 run requires cases written for the boundary, and a fresh
-dev / held-out split.
+**None of that had been measured when this package was published.** The boundary
+fix was a hypothesis, and it could not honestly be tested against the cases in
+this package: this run spent the held-out half, so re-scoring the same 158 cases
+after editing the descriptions they exposed would have been iteration presented
+as confirmation. The v0.4 run therefore required cases written for the boundary
+and a fresh dev / held-out split.
+
+It has since been measured. The
+[`efe27d8c1736` run](../claude-code-2.1.214--claude-sonnet-5--efe27d8c1736/) of
+2026-08-05 added nine adversarial boundary probes and rebuilt the split. All
+four annexed cases returned to their own skills, both over-correction guards
+held, and the control arm stayed clean. That run also recorded one false
+positive on a new probe and two previously passing cases that moved to failing
+without an established cause. This paragraph is a pointer, not a summary: read
+the [current card](../../BENCHMARK.md).
 
 ### The held-out half was spent here
 

@@ -1,5 +1,5 @@
 {
-  "revision": "branded-logo-and-social-preview",
+  "revision": "routing-v04-20260805-154217",
   "canvas": [
     960,
     540
@@ -13,15 +13,29 @@
     2400,
     1900
   ],
+  "regenerated_frames": [
+    1,
+    6,
+    7
+  ],
+  "preserved_frames": [
+    2,
+    3,
+    4,
+    5
+  ],
   "supplied_sources": {
     "logo": "geoai-skills-logo.png",
     "visual_reference": "social-preview.jpg"
   },
   "accuracy": {
-    "cases": 158,
-    "routing_precision": "100%",
-    "routing_recall_exact": "92.37%",
-    "routing_recall_display": "92.4%",
+    "suite_sha256_prefix": "efe27d8c1736",
+    "run_date": "2026-08-05",
+    "cases": 167,
+    "routing_precision": "99.17%",
+    "routing_precision_display": "99.2%",
+    "routing_recall_exact": "96.77%",
+    "routing_recall_display": "96.8%",
     "disabled_control_activations": 0,
     "qualifier": "Routing only. Answer quality is not claimed."
   },

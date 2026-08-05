@@ -18,23 +18,22 @@ of the deliverable.
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Skills](https://img.shields.io/badge/skills-18-brightgreen.svg)](#the-18-skill-stack)
 [![Evaluation corpus](https://img.shields.io/badge/evaluation-167_native_%2B_5_external_cases-2ea44f.svg)](#evidence-with-boundaries)
-[![Routing precision](https://img.shields.io/badge/routing_precision-100%25-9e9e9e.svg)](BENCHMARK.md)
-[![Routing recall](https://img.shields.io/badge/routing_recall-92.37%25-9e9e9e.svg)](BENCHMARK.md)
-[![Control activations](https://img.shields.io/badge/disabled_control-0_activations-9e9e9e.svg)](BENCHMARK.md)
-[![Suite](https://img.shields.io/badge/suite-retired_awaiting_remeasurement-orange.svg)](BENCHMARK.md)
+[![Routing precision](https://img.shields.io/badge/routing_precision-99.17%25-2ea44f.svg)](BENCHMARK.md)
+[![Routing recall](https://img.shields.io/badge/routing_recall-96.77%25-2ea44f.svg)](BENCHMARK.md)
+[![Control activations](https://img.shields.io/badge/disabled_control-0_activations-2ea44f.svg)](BENCHMARK.md)
+[![Suite](https://img.shields.io/badge/suite-current-2ea44f.svg)](BENCHMARK.md)
 [![Behavior](https://img.shields.io/badge/behavior_quality-not_evaluated-lightgrey.svg)](BENCHMARK.md)
 [![Browse on skills.sh](https://img.shields.io/badge/skills.sh-browse-111111.svg)](https://www.skills.sh/muend/geoai-skills)
 [![Spec](https://img.shields.io/badge/agentskills.io-compliant-orange.svg)](https://agentskills.io)
 
-<sub>**These figures describe a retired suite.** They were measured on one
-runtime/model pair — Claude Code `2.1.214` with `claude-sonnet-5`, 158-case
-suite `f03e327a57d2…`, 2026-08-04 — and are not universal or
-model-independent claims. Every `SKILL.md` has since been edited, including a
-fix to the boundary defect that run exposed, so the shipped tree is **awaiting
-remeasurement** and those edits are hypotheses rather than results. Routing
-measures which skill activates, not whether the answer is correct. See
-[BENCHMARK.md](BENCHMARK.md) for the full card, the reviewed failures, and what
-retired the suite.</sub>
+<sub>**These figures describe the shipped tree, on one runtime/model pair** —
+Claude Code `2.1.214` with `claude-sonnet-5`, 167-case suite `efe27d8c1736…`,
+2026-08-05 — and are not universal or model-independent claims. Routing measures
+which skill activates, not whether the answer is correct; **answer quality has
+never been measured.** The run that produced these numbers also recorded one
+false positive and two cases that moved from pass to fail without an
+established cause. See [BENCHMARK.md](BENCHMARK.md) for the full card, the
+reviewed failures, and what the run does not show.</sub>
 
 <p align="center">
   <img
@@ -147,22 +146,26 @@ Results follow the
 which reports skill activation, runtime completion, artifact-contract compliance,
 and overall success as separate measures.
 
-An 18-skill, 158-case Claude Code run recorded **100% routing precision,
-92.37% routing recall, and 93.67% full-route accuracy** on suite
-`f03e327a57d2…` under Claude Code `2.1.214` with `claude-sonnet-5` (2026-08-04).
-The paired skills-disabled control produced zero activations across all 158
-cases. All nine false negatives and all seven `max_turns` execution errors were
-inspected; the four enabled errors had already recorded their correct target
-activation, so the enabled routing metrics are unaffected. Behavior quality
-remains **unclaimed** until independent-family judging and the manual-review
-protocol are complete.
+An 18-skill, 167-case Claude Code run recorded **99.17% routing precision,
+96.77% routing recall, and 96.41% full-route accuracy** on suite
+`efe27d8c1736…` under Claude Code `2.1.214` with `claude-sonnet-5` (2026-08-05).
+The paired skills-disabled control produced zero activations across all 167
+cases. All four false negatives, the one false positive, and all eleven
+`max_turns` execution errors were inspected; every enabled error had its
+activation recovered from the raw trace, none lost, so the enabled routing
+metrics are unaffected. Behavior quality remains **unclaimed** until
+independent-family judging and the manual-review protocol are complete.
 
-**That suite is now retired.** The skill descriptions have since been edited —
-including the `change-detection` boundary responsible for four of those nine
-false negatives — so the figures above describe the tree that was measured, not
-the tree that ships today. The fix is unmeasured and is not presented as an
-improvement. Until the v0.4 run, the repository has no current measurement of
-itself, and says so rather than reusing the old number.
+**This run was bought to test a published defect, and it also found new ones.**
+The previous card attributed four of its nine false negatives to one clause in
+the `change-detection` description and shipped the fix as a hypothesis. All four
+of those cases now route correctly, both over-correction guards held, and the
+control arm is clean. Against that: one boundary probe still misroutes, and two
+cases that previously passed now fail without a cause the diff can explain —
+run-to-run variance and a real regression are indistinguishable from a single
+run. The suites are also different populations (158 → 167 cases), so the
+figures above are **not** a before/after ratio; the honest comparison is
+case-level and is in the card.
 
 Read [BENCHMARK.md](BENCHMARK.md) for the full result card and
 [EVALUATION.md](EVALUATION.md) for the provider-neutral protocol, suite hashes,
