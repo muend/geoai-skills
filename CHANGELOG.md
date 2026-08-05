@@ -4,9 +4,49 @@ All notable changes to this repository are documented here.
 Versioning follows [SemVer](https://semver.org). The release version lives in
 the packaging manifests; individual skills do not carry their own version.
 
-## [Unreleased]
+## [0.4.0] — 2026-08-05
 
 ### Changed
+- **Measured the boundary fix the previous release published as a hypothesis,
+  and it held.** An 18-skill, 167-case routing run on 2026-08-05 under Claude
+  Code `2.1.214` with `claude-sonnet-5` recorded **99.17% precision, 96.77%
+  recall, 96.41% full-route accuracy**, suite `efe27d8c1736…`, split
+  `b2ab0305ffc8…`. The paired skills-disabled control recorded zero activations
+  across all 167 cases. All three checks written before the run passed: the
+  control arm is clean, all four cases `change-detection` had annexed returned
+  to their own skills, and both over-correction guards stayed put, so the
+  boundary was narrowed without being cut too deep. `remote-sensing-analysis`
+  and `point-cloud-lidar` moved from 71.4% and 85.7% per-skill recall to 100%.
+- **The same run produced three results that went the wrong way, and they are
+  published with the same weight.** `change-detection/season-and-sensor-conflict`
+  is a false positive: `change-detection` fires alongside the correct
+  `remote-sensing-analysis` route on a prompt carrying both a cross-sensor
+  blocker and a phenology confounder. `geo-data-engineering/scale-strategy` and
+  `postgis-spatial-sql/predicate-audit` moved from `tp` to `fn` with **no
+  established cause** — those three descriptions are byte-identical apart from
+  the removed `metadata.version` line, which routing does not read, so
+  run-to-run variance and a real regression cannot be told apart from one run.
+  Recorded as an unresolved finding, not a hypothesis. Separating them needs a
+  replicate run.
+- **The shared-boundary-pattern hypothesis was tested and is not supported.**
+  `remote-sensing-analysis/cross-sensor-drought-comparability` has the same
+  cross-sensor, cross-season shape as the failing probe and passed cleanly. The
+  probe was deliberately not tuned; whether the case is too strict or the
+  boundary still leaks stays open for v0.5.
+- **The two suites are not compared as a ratio.** The suite grew from 158 to 167
+  cases and the nine additions were written to break the fix, so comparing the
+  headline percentages would let the author of the new cases pick the
+  denominator. The comparison in `BENCHMARK.md` is case-level across the 158
+  shared cases: seven of the nine previous false negatives closed, three
+  failures persist, two new ones appeared. Three of the seven closures
+  (`live-parcel-repair-refusal`, `map-series`,
+  `ambulance-siting-equity-scope`) were not targets of these edits and **why
+  they closed was not measured.**
+- Enabled-condition execution errors rose from 4 to 9, all `max_turns`. Every
+  one had its activation recovered from the pre-parse trace and none was lost,
+  so routing is unaffected; **why the count rose was not measured.** It would
+  matter for behavior scoring, where a truncated answer is a real failure.
+- Answer quality remains unmeasured, as in every release before this one.
 - **Revised the boundary after a pilot disproved the first attempt.** An
   eight-case pilot (USD 1.33) ran six of the nine probes before the full run.
   Three failed in both directions: `change-detection` still took both negative
@@ -50,11 +90,11 @@ the packaging manifests; individual skills do not carry their own version.
   double-correction trap is covered too: harmonised collections such as
   `COPERNICUS/S2_SR_HARMONIZED` have already removed the offset, and applying
   it again inverts the error instead of removing it.
-- Marked `BENCHMARK.md`, the README badges and both affected benchmark packages
-  as **superseded**. The published figures describe suite `f03e327a57d2…`; the
-  shipped tree is now `76eaab51b3e3…` and is unmeasured. The boundary fix is
-  recorded as a hypothesis, not an improvement — it cannot be measured against
-  the cases that exposed it, because that run spent the held-out half.
+- Retired the `f03e327a57d2…` benchmark and republished `BENCHMARK.md`, the
+  README badges and both affected packages against `efe27d8c1736…`. Between the
+  two states the repository carried no current measurement of itself and said
+  so, in the card and on the badges, rather than reusing the old number. The
+  archived packages now point at the run that superseded them.
 
 ### Added
 - **Nine boundary probes**, taking the native suite to 167 cases. They are
@@ -110,6 +150,11 @@ the packaging manifests; individual skills do not carry their own version.
 - Added `assets/demo/asset-manifest.json` recording what the frames assert, and
   a test pinning those assertions to `BENCHMARK.md`. A future benchmark run can
   no longer leave stale numbers animating at the top of the README.
+- Regenerated frames 1, 6 and 7 of the demo animation for the 167-case figures
+  and recorded which frames were regenerated and which preserved. Assembly moved
+  from hand steps into `private-planning/build_demo_assets.py`, so the frame
+  durations live in code rather than in a planning note and the artefacts are
+  reproducible from the seven source frames.
 
 ## [0.3.0] — 2026-08-04
 
