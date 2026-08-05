@@ -10,7 +10,6 @@ description: >-
   when those skills own the scientific method.
 license: MIT
 metadata:
-  version: "0.1.0"
   author: Muhammed Enes Duran
 ---
 

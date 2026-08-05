@@ -11,7 +11,10 @@ and real-world failure reports all count.
 2. **Frontmatter** must pass `python tools/validate_skills.py`:
    `name` (kebab-case, identical to the folder name, ≤ 64 chars, no
    "claude"/"anthropic"), `description` (what it does AND when to trigger,
-   ≤ 1024 chars — aim for 400–700), plus `license` and `metadata.version`.
+   ≤ 1024 chars — aim for 400–700), plus `license: MIT` and `metadata.author`.
+   Do **not** add a per-skill `metadata.version`: the release version lives in
+   the packaging manifests, no consumer reads the per-skill field, and it drifted
+   at `0.1.0` for three releases before it was removed. A test enforces this.
 3. **Progressive disclosure.** Keep `SKILL.md` under ~200 lines. Long tables,
    reference material, and code > 15 lines belong in `references/` and
    `scripts/`, linked from the body. Unloaded files cost zero tokens.

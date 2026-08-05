@@ -11,7 +11,6 @@ description: >-
   add this skill as a layer around one specialist.
 license: MIT
 metadata:
-  version: "0.1.0"
   author: Muhammed Enes Duran
 ---
 

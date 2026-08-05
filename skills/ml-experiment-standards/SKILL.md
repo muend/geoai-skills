@@ -9,7 +9,6 @@ description: >-
   EDA or non-predictive statistical inference.
 license: MIT
 metadata:
-  version: "0.1.0"
   author: Muhammed Enes Duran
 ---
 

@@ -1,17 +1,18 @@
 ---
 name: change-detection
 description: >-
-  Invoke whenever the primary question is what, where, or how much changed
-  between times, including two-scene comparisons, deforestation, urban growth,
-  disaster damage, and parcel-change audits. Covers bi-temporal differencing,
-  post-classification comparison, adjusted area, and time-series trend/break
-  analysis (BFAST/LandTrendr/CCDC-style). Invoke even when seasons, sensors,
-  or processing levels are not comparable; diagnosing an invalid comparison
-  is part of change analysis. Use remote-sensing-analysis for single-date
-  preparation and add google-earth-engine only when GEE executes the work.
+  Invoke when the question is what, where, or how much changed between times:
+  two-scene comparison, deforestation, urban growth, disaster damage,
+  parcel-change audits, bi-temporal differencing, post-classification
+  comparison, adjusted area, and trend or break detection in a series already
+  in hand (BFAST/LandTrendr/CCDC-style). Seasonal and
+  phenological mismatch between dates is this skill's own confounder; keep
+  those here. Do not take cases whose blocker is comparability itself: mixed
+  sensors or processing levels go to remote-sensing-analysis, mismatched
+  vertical datums to point-cloud-lidar, multi-decade archive trends over large
+  areas to google-earth-engine. Invoke once those are settled.
 license: MIT
 metadata:
-  version: "0.1.0"
   author: Muhammed Enes Duran
 ---
 
@@ -24,12 +25,23 @@ produces confident maps of nothing.
 
 ## Preconditions (where change detection is won or lost)
 
+Preconditions 1 and 2 are *checked* here but *established* elsewhere. When
+either fails, the owning skill leads and this skill resumes once comparable
+observations exist. Precondition 3 is this skill's own problem and is never a
+reason to route away.
+
 1. **Co-registration**: sub-pixel alignment between dates (AROSICS or
    manual tie-points). Half a pixel of shift creates edge-shaped phantom
-   change everywhere. Verify: flicker-compare crisp features.
+   change everywhere. Verify: flicker-compare crisp features. For elevation
+   surfaces or point clouds, vertical datum agreement, co-registration and
+   the vertical-accuracy budget belong to `point-cloud-lidar` — a datum
+   offset is not subsidence.
 2. **Radiometric consistency**: same processing level (surface
-   reflectance), same sensor if possible; if mixing sensors, harmonize
-   (e.g., Landsat↔Sentinel-2 HLS) or use relative normalization (PIFs).
+   reflectance), same sensor, same processing baseline. If any of the three
+   differ, this is a harmonization problem, not a thresholding one: hand it
+   to `remote-sensing-analysis` (HLS for Landsat↔Sentinel-2, relative
+   normalization with PIFs, `BOA_ADD_OFFSET` across the Sentinel-2 2022
+   baseline change).
 3. **Same season / phenological stage** for bi-temporal work — a May vs
    September pair "detects" summer. If season can't be matched, use
    composites or time-series methods instead.

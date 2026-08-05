@@ -5,7 +5,7 @@ two conditions on the same cases. Behaviour is **not** evaluated here.
 
 ## Provenance
 
-- Suite state: `current`
+- Suite state: `superseded`
 - Split scope: `dev` (96 of 158 cases)
 - Evaluation scope: `all` (every case in the half; routing is observable on all of them)
 - Runtime: `claude-code-2.1.214`
@@ -17,8 +17,18 @@ two conditions on the same cases. Behaviour is **not** evaluated here.
 - Behavior judgments: none; behavior status is `not_evaluated`
 
 The 62 held-out cases were **not** measured for this release, so no held-out
-disclosure applies. They remain available as an independent check on a future
-release candidate.
+disclosure applies. They were subsequently spent by the `f03e327a57d2…` full
+run, so that statement describes this package only, not the repository's
+current position.
+
+### What `superseded` means here
+
+This run described suite `25a2abef7664…`. Every `SKILL.md` has since been
+edited — most consequentially the `change-detection` routing boundary — so the
+current suite is `76eaab51b3e3…`. These figures remain valid for the suite they
+were computed against and remain reproducible from the recorded hash, but they
+do not describe the skills currently shipped here and must not be cited as if
+they did.
 
 ## Result
 

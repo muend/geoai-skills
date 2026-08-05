@@ -1,13 +1,18 @@
 # Routing Benchmark
 
-GeoAI Skills reaches **100% routing precision**, **92.37% routing recall**, and
-**93.67% full-route accuracy** on its current 158-case suite for the exact
-runtime/model pair below. These are routing results, not claims about answer
-quality.
+**This suite is superseded.** The figures on this card — **100% routing
+precision**, **92.37% routing recall**, **93.67% full-route accuracy** — were
+measured on suite `f03e327a57d2…`. Every `SKILL.md` has since been edited, so
+the repository's current suite is different and **has not been measured**.
+These are routing results, not claims about answer quality.
+
+Read the numbers below as evidence about the tree that was measured, not about
+the tree you are downloading. What changed and why is in
+[What retired this suite](#what-retired-this-suite).
 
 | Field | Value |
 |---|---|
-| Suite state | `current` — matches the shipped source tree |
+| Suite state | `superseded` — the shipped source tree has moved on |
 | Runtime | Claude Code `2.1.214` |
 | Model | `claude-sonnet-5` |
 | Skills | 18 |
@@ -19,6 +24,29 @@ quality.
 | Retry policy | Primary records retained; no retry replacement |
 | Human review | All 9 false negatives, the 1 incomplete-route case, and all 7 execution errors inspected |
 | Evidence | [Sanitized run package](benchmarks/claude-code-2.1.214--claude-sonnet-5--f03e327a57d2/) |
+
+## What retired this suite
+
+Five deliberate edits, made together so a single paid run can measure them all.
+Four of the five exist because this run found them.
+
+| Change | Why | Measured? |
+|---|---|---|
+| `change-detection` no longer claims prompts whose blocker is sensor or processing-level comparability | Its description read "Invoke even when seasons, sensors, or processing levels are not comparable" — that one conjunction caused 4 of the 9 false negatives below | **No** |
+| `point-cloud-lidar` now owns cross-acquisition vertical datum comparability | The datum axis had no owner, so `change-detection` took it by default | **No** |
+| `remote-sensing-analysis` encodes the Sentinel-2 Baseline 04.00 `BOA_ADD_OFFSET` discontinuity | Two L2A scenes across 2022-01-25 pass the existing L1C/L2A check while their DNs sit 1000 apart | **No** |
+| `metadata.version` removed from all 18 skills | Read by nothing, reported as `skill_metadata_ignored` by the OpenAI portal, and drifted at `0.1.0` across three releases | n/a |
+| `arcgis-pro-automation` gained its missing `license` field | The only skill without one | n/a |
+
+The first three are **hypotheses, not results.** A boundary fix is not fixed
+until it is measured, and it cannot be measured against the cases below: this
+run spent the held-out half, so re-scoring the same 158 cases after editing the
+descriptions they exposed would be iteration presented as confirmation. The
+v0.4 run needs cases written for the boundary and a fresh dev / held-out split.
+
+Note what this table does *not* say. It does not say routing improved. Until
+the v0.4 run lands, the honest position is that the repository has no current
+measurement of itself.
 
 ## Headline results
 

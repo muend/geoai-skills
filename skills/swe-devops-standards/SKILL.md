@@ -10,7 +10,6 @@ description: >-
   unrelated software or analysis requesting no code or repository artifact.
 license: MIT
 metadata:
-  version: "0.1.0"
   author: Muhammed Enes Duran
 ---
 

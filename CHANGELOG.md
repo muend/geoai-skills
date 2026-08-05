@@ -1,12 +1,51 @@
 # Changelog
 
 All notable changes to this repository are documented here.
-Versioning follows [SemVer](https://semver.org). Each skill also carries its
-own `metadata.version` in its frontmatter.
+Versioning follows [SemVer](https://semver.org). The release version lives in
+the packaging manifests; individual skills do not carry their own version.
 
 ## [Unreleased]
 
 ### Changed
+- **Narrowed the `change-detection` routing boundary.** Its description read
+  "Invoke even when seasons, sensors, or processing levels are not comparable",
+  which claimed prompts belonging to three other skills and caused four of the
+  nine false negatives in the `f03e327a57d2…` run. The defect was written, not
+  emergent. Seasonal and phenological mismatch stays here — it is one of this
+  skill's four named impostors and two of its own critical cases are season
+  traps — while sensor and processing-level mismatch route to
+  `remote-sensing-analysis` and vertical-datum mismatch to `point-cloud-lidar`.
+  The preconditions section now states which conditions this skill *checks*
+  versus which it *establishes*.
+- **`point-cloud-lidar` now owns cross-acquisition vertical comparability.**
+  Vertical datum agreement, co-registration and the vertical-accuracy budget
+  had no declared owner, so `change-detection` took them by default.
+- **Encoded the Sentinel-2 Processing Baseline 04.00 discontinuity** in
+  `remote-sensing-analysis`. From 2022-01-25 L2A products carry a constant
+  `BOA_ADD_OFFSET`; two scenes across that date are *both* L2A, so the existing
+  processing-level check passes while their digital numbers sit 1000 apart. The
+  double-correction trap is covered too: harmonised collections such as
+  `COPERNICUS/S2_SR_HARMONIZED` have already removed the offset, and applying
+  it again inverts the error instead of removing it.
+- Marked `BENCHMARK.md`, the README badges and both affected benchmark packages
+  as **superseded**. The published figures describe suite `f03e327a57d2…`; the
+  shipped tree is now `76eaab51b3e3…` and is unmeasured. The boundary fix is
+  recorded as a hypothesis, not an improvement — it cannot be measured against
+  the cases that exposed it, because that run spent the held-out half.
+
+### Removed
+- `metadata.version` from all 18 skills. Nothing read it: the packaging
+  manifests carry the release version and the OpenAI portal reported the field
+  as `skill_metadata_ignored` on every upload. It could therefore only drift,
+  and it did — sitting at `0.1.0` across three releases. Removing it also
+  clears 17 portal warnings. `metadata.author` is retained.
+
+### Fixed
+- `arcgis-pro-automation` was the only skill without a `license` field. A test
+  now asserts every skill declares MIT, an author, and no version.
+- Added description-contract tests pinning the `change-detection` and
+  `point-cloud-lidar` boundaries to the cases on both sides of them, so the
+  annexation cannot silently return.
 - Replaced the demo animation. Its fourth frame previously showed
   `change-detection` and `remote-sensing-analysis` activating together on a
   multi-date prompt — a routing behaviour the 2026-08-04 benchmark disproved in

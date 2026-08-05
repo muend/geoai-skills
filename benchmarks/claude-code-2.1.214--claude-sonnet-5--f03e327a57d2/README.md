@@ -6,7 +6,7 @@ here.
 
 ## Provenance
 
-- Suite state: `current`
+- Suite state: `superseded`
 - Split scope: `full` (all 158 cases: 96 dev + 62 held-out)
 - Evaluation scope: `routing`
 - Runtime: `claude-code-2.1.214`
@@ -20,6 +20,34 @@ here.
 - Retry policy: primary records retained; no error was replaced by a retry
 
 Held-out disclosure: a82ce97903b20f7c6e8fa998afbac564069077fbc115846f10d03c04b7ca2301
+
+### What `superseded` means here
+
+This run described suite `f03e327a57d2…`. Every `SKILL.md` in the repository has
+since been edited, so the current suite is `76eaab51b3e3…` and this package no
+longer describes the skills that ship here. The figures remain valid evidence
+**for the suite they were computed against** and remain reproducible from the
+recorded hash, but they must not be cited as if they described the current tree.
+
+The edits that retired it were deliberate, and one of them targets a defect this
+very run exposed:
+
+- `change-detection` no longer claims prompts whose blocker is sensor or
+  processing-level comparability. That clause caused four of the nine false
+  negatives recorded here.
+- `point-cloud-lidar` now owns cross-acquisition vertical datum comparability,
+  which previously had no owner.
+- `remote-sensing-analysis` now encodes the Sentinel-2 Baseline 04.00
+  `BOA_ADD_OFFSET` discontinuity.
+- `metadata.version` was removed from every skill and `arcgis-pro-automation`
+  gained its missing `license` field.
+
+**None of that has been measured.** The boundary fix is a hypothesis until a
+fresh run tests it, and it cannot honestly be tested against the cases in this
+package: this run spent the held-out half, so re-scoring the same 158 cases
+after editing the descriptions they exposed would be iteration presented as
+confirmation. The v0.4 run requires cases written for the boundary, and a fresh
+dev / held-out split.
 
 ### The held-out half was spent here
 

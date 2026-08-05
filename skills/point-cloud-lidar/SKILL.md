@@ -4,12 +4,14 @@ description: >-
   LiDAR and point cloud processing: PDAL pipelines, LAS/LAZ/COPC handling,
   ground classification, DTM/DSM/CHM generation, canopy and building
   metrics, and photogrammetric (SfM) point clouds. Use when the primary input
-  is LAS, LAZ, COPC, LiDAR, or an unstructured 3D point cloud. Route analysis
-  of an already derived DEM, DTM, DSM, or CHM to terrain-hydrology unless
-  point-level classification or metrics remain in scope.
+  is LAS, LAZ, COPC, LiDAR, or an unstructured 3D point cloud. This skill owns
+  vertical datum agreement, co-registration, and vertical-accuracy budgets
+  whenever two acquisitions are differenced, including subsidence and
+  elevation-change claims. Route analysis of an already derived DEM, DTM, DSM,
+  or CHM to terrain-hydrology unless point-level classification, comparability,
+  or metrics remain in scope.
 license: MIT
 metadata:
-  version: "0.1.0"
   author: Muhammed Enes Duran
 ---
 

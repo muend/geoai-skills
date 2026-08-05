@@ -10,6 +10,9 @@ description: >-
   gates, or sketch-to-GIS extraction. Do not trigger for ArcGIS Online or
   Enterprise administration, QGIS or PyQGIS, generic open-source GIS, or
   live GUI control of an already-open ArcGIS Pro session.
+license: MIT
+metadata:
+  author: Muhammed Enes Duran
 ---
 
 # ArcGIS Pro Automation
