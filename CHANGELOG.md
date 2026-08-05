@@ -7,6 +7,29 @@ the packaging manifests; individual skills do not carry their own version.
 ## [Unreleased]
 
 ### Changed
+- **Revised the boundary after a pilot disproved the first attempt.** An
+  eight-case pilot (USD 1.33) ran six of the nine probes before the full run.
+  Three failed in both directions: `change-detection` still took both negative
+  probes, and `point-cloud-lidar` took a positive one it should have left alone.
+  Three specific causes, each fixed:
+  - **Routing sees descriptions, not bodies.** The Sentinel-2 baseline
+    discontinuity was documented in `remote-sensing-analysis`'s body and kept
+    out of its description because no case needed it yet. A case was then
+    written for it, and its prompt ("same tile, same month, both L2A") carries
+    no surface mismatch at all — so nothing matched and `change-detection` took
+    it on "two scenes". The baseline is now named in the description.
+  - **Placement is contract, not style.** The exclusion clause sat behind a long
+    list of positive triggers; the router matched the triggers and never reached
+    it. The comparability precondition now leads `change-detection`'s
+    description, and a test pins it to the first 120 characters.
+  - **Unscoped ownership over-corrects.** `point-cloud-lidar` claimed the datum
+    axis "whenever two acquisitions are differenced", sweeping up a case where
+    datum, geoid model and accuracy budget were all documented. Ownership is now
+    bound to *unestablished* comparability, with an explicit hand-back.
+- `change-detection`'s description is 776 chars and trips the advisory W1
+  threshold (>700). Getting under it means deleting trigger tokens that this
+  skill's own positive cases depend on, so the warning is accepted rather than
+  paid for with routing signal. W1 is advisory; CI does not fail on it.
 - **Narrowed the `change-detection` routing boundary.** Its description read
   "Invoke even when seasons, sensors, or processing levels are not comparable",
   which claimed prompts belonging to three other skills and caused four of the

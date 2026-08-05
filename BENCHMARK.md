@@ -76,6 +76,40 @@ Independence returns only when cases are written by an author who has not seen
 these results. That is a v0.5 problem, and pretending otherwise now would cost
 more than the missing evidence does.
 
+### The first attempt at the fix failed, and the probes caught it
+
+An eight-case pilot on 2026-08-05 (USD 1.33) ran six of the nine probes before
+the full run. Three failed, in both directions:
+
+| Probe | Expected | Observed |
+|---|---|---|
+| `baseline-discontinuity-handoff` | not `change-detection`; route to `remote-sensing-analysis` | `change-detection` alone |
+| `season-and-sensor-conflict` | not `change-detection` | `change-detection` **and** `remote-sensing-analysis` |
+| `documented-datum-elevation-change` | `change-detection` | `point-cloud-lidar` alone |
+
+Two diagnoses, both concrete:
+
+**A blocker the router cannot see is not a boundary.** The baseline probe says
+"same tile, same month, both L2A" and carries no surface mismatch at all.
+`change-detection`'s exclusion clause was keyed on features the prompt does not
+contain, so it excluded nothing. The discontinuity had been documented in
+`remote-sensing-analysis`'s *body* and deliberately kept out of its
+*description*, on the reasoning that no case needed it yet — and routing only
+ever sees descriptions. It is now in the description.
+
+**Placement is part of a description, not styling.** The exclusion sat behind a
+long list of positive triggers. The router matched the triggers and never
+reached it. The precondition now leads, and a test pins it there.
+
+**Unscoped ownership over-corrects.** `point-cloud-lidar` claimed the datum
+axis "whenever two acquisitions are differenced", which swept up a case where
+datum, geoid model and accuracy budget were all stated. Ownership is now bound
+to *unestablished* comparability, with an explicit hand-back.
+
+This is what the adversarial probes were for. A confirmatory case set would
+have reported green and the failure would have surfaced after the full run
+instead of for a dollar and change.
+
 ## Headline results
 
 | Condition | TP | FN | FP | TN | Precision | Recall | Accuracy | Route accuracy |

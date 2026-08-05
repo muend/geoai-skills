@@ -1,16 +1,17 @@
 ---
 name: change-detection
 description: >-
-  Invoke when the question is what, where, or how much changed between times:
-  two-scene comparison, deforestation, urban growth, disaster damage,
-  parcel-change audits, bi-temporal differencing, post-classification
-  comparison, adjusted area, and trend or break detection in a series already
-  in hand (BFAST/LandTrendr/CCDC-style). Seasonal and
-  phenological mismatch between dates is this skill's own confounder; keep
-  those here. Do not take cases whose blocker is comparability itself: mixed
-  sensors or processing levels go to remote-sensing-analysis, mismatched
-  vertical datums to point-cloud-lidar, multi-decade archive trends over large
-  areas to google-earth-engine. Invoke once those are settled.
+  Change analysis, once the observations are comparable. Not for cases whose
+  blocker is comparability itself: mixed sensors, product levels or processing
+  baselines to remote-sensing-analysis, undocumented vertical datums to
+  point-cloud-lidar, multi-decade archive trends over large areas to
+  google-earth-engine. Matching product level does not prove comparability.
+  Otherwise invoke for what, where or how much changed: two-scene comparison,
+  deforestation, urban growth, disaster damage, parcel-change audits,
+  bi-temporal differencing, post-classification comparison, adjusted area,
+  break detection in a series in hand (BFAST/LandTrendr/CCDC). Seasonal
+  mismatch is this skill's own confounder; a documented datum with a stated
+  accuracy budget is settled comparability. Keep both.
 license: MIT
 metadata:
   author: Muhammed Enes Duran

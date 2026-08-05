@@ -101,10 +101,33 @@ def test_change_detection_yields_comparability_but_keeps_phenology() -> None:
     assert "not comparable" not in description, (
         "the retired clause that annexed remote-sensing-analysis has returned"
     )
-    assert "mixed sensors or processing levels go to remote-sensing-analysis" in description
-    assert "vertical datums to point-cloud-lidar" in description
+
+    # Ordering is part of the contract, not style. The first attempt at this
+    # boundary put the hand-off last, behind a long list of positive triggers,
+    # and the 2026-08-05 pilot showed the router matching the triggers and never
+    # reaching the exclusion: change-detection fired on both negative probes.
+    # The precondition now leads, and this assertion is what keeps it there.
+    head = description[:120]
+    assert "comparab" in head, (
+        "the comparability precondition must lead; burying it behind the "
+        f"positive triggers is what failed in the pilot. Head was: {head!r}"
+    )
+
+    assert (
+        "mixed sensors, product levels or processing baselines "
+        "to remote-sensing-analysis"
+    ) in description
+    assert "undocumented vertical datums to point-cloud-lidar" in description
     assert "multi-decade archive trends over large areas to google-earth-engine" in description
-    assert "phenological mismatch between dates is this skill's own confounder" in description
+    assert "Matching product level does not prove comparability" in description
+
+    # Both halves of the phenology carve-out: season stays, and a settled datum
+    # stays too. The second half exists because narrowing the boundary cost this
+    # skill a case it should have kept.
+    assert "Seasonal mismatch is this skill's own confounder" in description
+    assert (
+        "a documented datum with a stated accuracy budget is settled comparability"
+    ) in description
 
 
 def test_change_detection_keeps_its_season_cases_and_claims_no_others() -> None:
@@ -130,12 +153,43 @@ def test_change_detection_keeps_its_season_cases_and_claims_no_others() -> None:
 
 
 def test_point_cloud_lidar_owns_cross_acquisition_vertical_comparability() -> None:
-    """The datum axis had no owner, so change-detection took it by default."""
+    """The datum axis had no owner, so change-detection took it by default.
+
+    The scope clause matters as much as the claim. The first version read
+    "whenever two acquisitions are differenced", which swept up cases where the
+    datum, geoid and accuracy budget were all stated — the pilot showed this
+    skill taking a case that was pure change estimation. Ownership is now bound
+    to *unestablished* comparability and hands back once it is documented.
+    """
     description = description_of("point-cloud-lidar")
 
     assert "vertical datum agreement" in description
     assert "differenced" in description
     assert "subsidence" in description
+    assert "comparability not yet established" in description, (
+        "unscoped ownership is what caused the over-correction"
+    )
+    assert "is change-detection's" in description, (
+        "the hand-back has to be explicit or the boundary only works one way"
+    )
+
+
+def test_remote_sensing_analysis_description_carries_the_baseline_signal() -> None:
+    """Routing sees descriptions, not bodies.
+
+    The baseline discontinuity was documented in the body and left out of the
+    description on the grounds that no case needed it yet. A case was then
+    written for it, and the pilot showed why that was wrong: the prompt says
+    "same tile, same month, both L2A" and carries no surface mismatch at all, so
+    nothing in any description matched and change-detection took it on the
+    strength of "two scenes". A blocker the router cannot see is not a boundary.
+    """
+    description = description_of("remote-sensing-analysis")
+
+    assert "processing-baseline" in description
+    assert "Processing Baseline 04.00" in description
+    assert "January 2022" in description
+    assert "same product level are not" in description
 
 
 def test_remote_sensing_analysis_encodes_the_baseline_discontinuity() -> None:
