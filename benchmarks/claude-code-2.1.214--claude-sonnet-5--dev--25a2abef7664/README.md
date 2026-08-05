@@ -25,10 +25,11 @@ current position.
 
 This run described suite `25a2abef7664…`. Every `SKILL.md` has since been
 edited — most consequentially the `change-detection` routing boundary — so the
-current suite is `76eaab51b3e3…`. These figures remain valid for the suite they
+current suite is `efe27d8c1736…`. These figures remain valid for the suite they
 were computed against and remain reproducible from the recorded hash, but they
 do not describe the skills currently shipped here and must not be cited as if
-they did.
+they did. The current measurement is
+[`efe27d8c1736`](../claude-code-2.1.214--claude-sonnet-5--efe27d8c1736/).
 
 ## Result
 

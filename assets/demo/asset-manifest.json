@@ -18,10 +18,11 @@
     "visual_reference": "social-preview.jpg"
   },
   "accuracy": {
-    "cases": 158,
-    "routing_precision": "100%",
-    "routing_recall_exact": "92.37%",
-    "routing_recall_display": "92.4%",
+    "cases": 167,
+    "routing_precision": "99.17%",
+    "routing_precision_display": "99.2%",
+    "routing_recall_exact": "96.77%",
+    "routing_recall_display": "96.8%",
     "disabled_control_activations": 0,
     "qualifier": "Routing only. Answer quality is not claimed."
   },
