@@ -4,6 +4,28 @@ All notable changes to this repository are documented here.
 Versioning follows [SemVer](https://semver.org). The release version lives in
 the packaging manifests; individual skills do not carry their own version.
 
+## [Unreleased]
+
+### Fixed
+- **Corrected a claim in the `[0.4.0]` entry below.** It said removing
+  `metadata.version` "clears 17 portal warnings". Measured on the 0.4.0 bundle
+  at upload: the OpenAI portal emits **18** warnings, one per skill, and they
+  are unchanged. The warning is not about `version` — it is about the presence
+  of a `metadata` block at all: *"`metadata` in `SKILL.md` does not configure
+  the skill interface. Put supported interface settings under `interface` in
+  `agents/openai.yaml`."* Emptying `version` out of the block left `author`
+  behind, so every skill still trips it. The `[0.4.0]` text is left as
+  published; a released changelog entry is not rewritten.
+
+  The warnings are informational and the interface is configured correctly:
+  all 18 skills ship `agents/openai.yaml` with `display_name`,
+  `short_description` and `default_prompt`. Upload is not blocked.
+
+  `metadata.author` is deliberately kept. Removing it would edit all 18
+  `SKILL.md` files, change `suite_sha256`, and retire the routing benchmark
+  published the same day — paying a measured result for a cosmetic warning.
+  Same trade, same answer as the W1 description-length decision.
+
 ## [0.4.0] — 2026-08-05
 
 ### Changed
