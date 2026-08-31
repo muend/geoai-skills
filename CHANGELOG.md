@@ -6,6 +6,60 @@ the packaging manifests; individual skills do not carry their own version.
 
 ## [Unreleased]
 
+### Added
+- **First behaviour measurement.** A paired run over the 93 behaviour-evaluable
+  cases of the shipped suite (`--scope behavior`, suite `520bc41dd4c0…`), both
+  skills-enabled and a skills-disabled control, on Claude Code `2.1.222` with
+  `claude-sonnet-5`. 92 clean matched pairs; the control arm recorded **zero
+  activations across all 92**; expected route satisfied 92/92.
+
+  Criterion coverage **145/302 (48.0%)** enabled against **85/302 (28.1%)**
+  control; matched sign test over 70 discordant criteria p = 2.2e-14. Critical
+  spatial failures **4/92 against 13/92**. Cases meeting every criterion 18/92
+  against 6/92.
+
+  **The Phase 3 gate fails on both of its conditions** (>=85% pass rate, <2%
+  critical spatial failure) and stays open. The result is published as measured.
+
+  Judgments come from a single model judge of a different family
+  (`gpt-5.6-sol`, reasoning `low`, prompt `geoai-behavior-judge-v6`). They are
+  **uncalibrated and not human-verified**, and the judge calibration gate
+  recorded in the project roadmap remains fail-closed. Human blind adjudication
+  of 47 arm-blinded cases is prepared and pending reviewers.
+
+  The run was pre-registered and sealed by SHA-256 before the first model call,
+  with three dated addenda recording every deviation — including one taken after
+  partial data was seen, disclosed as such.
+
+  Evidence: [`benchmarks/claude-code-2.1.222--claude-sonnet-5--520bc41dd4c0/`](benchmarks/claude-code-2.1.222--claude-sonnet-5--520bc41dd4c0/).
+  Response text is not published; only per-response SHA-256 and size, so that the
+  pending human review is not contaminated by a readable corpus.
+
+- `tools/paired_analysis.py` and its tests. `eval_runner.py score` scores one
+  condition; nothing joined the two arms, so the matched comparison the
+  measurement rests on had no implementation. The tool reports case- and
+  criterion-level win/loss/tie with exact two-sided binomial sign tests, a
+  per-skill breakdown, and the count of cases whose criteria are too few to
+  separate the arms at all.
+
+### Fixed
+- `paired_analysis.run_dir` matched run directories with a trailing wildcard and
+  took `sorted()[-1]`, so a retry directory holding one case was selected over
+  the completed 93-case run and the execution block reported zero matched pairs.
+  The judgment block happened to produce correct numbers anyway, which is worse.
+  Matching is now exact, ambiguity is refused rather than resolved by guessing,
+  and a `--runtime` filter separates directories prepared under different CLI
+  versions. Three regression tests pin the behaviour.
+
+### Known limitations
+- One runtime/model pair; run-to-run variance on this suite is unmeasured.
+- 18 of 93 cases carry only two criteria and cannot separate the arms by
+  construction; the reported delta is diluted by them.
+- On `swe-devops-standards/review-mode` the skills-enabled arm produced every
+  required artifact but did not terminate within the frozen six-turn budget, in
+  three attempts at two budgets. Documented, excluded from the matched pairs,
+  not fixed by relaxing the budget.
+
 ### Fixed
 - **Corrected a claim in the `[0.4.0]` entry below.** It said removing
   `metadata.version` "clears 17 portal warnings". Measured on the 0.4.0 bundle

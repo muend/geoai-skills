@@ -1,0 +1,1096 @@
+{
+  "behavior": {
+    "judge": {
+      "calibrated": false,
+      "family": "different from the evaluated model",
+      "human_verified": false,
+      "kind": "model"
+    },
+    "reason": "Criterion-level judgments produced by a single model judge. No human verification. The judge calibration gate recorded in the project roadmap remains fail-closed and is not addressed by this run.",
+    "results": {
+      "case_level": {
+        "disabled_all_criteria_met": "6/92",
+        "enabled_all_criteria_met": "18/92",
+        "sign_test": {
+          "interpretation": "significant at p<0.001",
+          "losses": 3,
+          "n": 45,
+          "p_value": 8.654978955746628e-10,
+          "wins": 42
+        },
+        "ties": 47,
+        "wins_disabled": 3,
+        "wins_enabled": 42
+      },
+      "criterion_level": {
+        "disabled_coverage": "85/302 (28.1%)",
+        "enabled_coverage": "145/302 (48.0%)",
+        "sign_test": {
+          "interpretation": "significant at p<0.001",
+          "losses": 5,
+          "n": 70,
+          "p_value": 2.215352840138473e-14,
+          "wins": 65
+        },
+        "ties": 232,
+        "wins_disabled": 5,
+        "wins_enabled": 65
+      },
+      "critical_spatial_failure": {
+        "disabled": 13,
+        "enabled": 4,
+        "judged": 92
+      },
+      "critical_subset_case_level": {
+        "losses": 1,
+        "sign_test": {
+          "interpretation": "significant at p<0.001",
+          "losses": 1,
+          "n": 18,
+          "p_value": 0.00014495849609375,
+          "wins": 17
+        },
+        "ties": 15,
+        "wins": 17
+      },
+      "forbidden_violations": {
+        "disabled": 0,
+        "enabled": 0
+      },
+      "judged_pairs": 92,
+      "low_resolution_cases": {
+        "case_ids": [
+          "cartography-geoviz/map-series",
+          "cartography-geoviz/underspecified-publication-map",
+          "change-detection/harmonized-collection-double-correction",
+          "change-detection/season-and-sensor-conflict",
+          "change-detection/season-trap",
+          "geo-data-engineering/osm-acquisition",
+          "geo-data-engineering/scale-strategy",
+          "geo-deep-learning/random-split-catch",
+          "geostatistics-interpolation/extrapolation-honesty",
+          "google-earth-engine/getinfo-loop-catch",
+          "mcda-suitability-analysis/single-map-pushback",
+          "ml-experiment-standards/difference-honesty",
+          "ml-experiment-standards/spatial-split-routing",
+          "movement-trajectory/privacy-guard",
+          "network-accessibility-analysis/od-matrix-scale",
+          "point-cloud-lidar/sfm-not-lidar",
+          "remote-sensing-analysis/mixed-level-trap",
+          "spatial-statistics/maup-awareness"
+        ],
+        "count": 18,
+        "note": "<=2 criteria; structurally unable to separate the arms"
+      },
+      "per_case": [
+        {
+          "case_id": "arcgis-pro-automation/live-parcel-repair-refusal",
+          "criteria": 3,
+          "critical": true,
+          "disabled_met": 1,
+          "enabled_met": 1,
+          "outcome": "tie",
+          "skill": "arcgis-pro-automation"
+        },
+        {
+          "case_id": "arcgis-pro-automation/project-before-metric-buffer-plan",
+          "criteria": 6,
+          "critical": false,
+          "disabled_met": 5,
+          "enabled_met": 5,
+          "outcome": "tie",
+          "skill": "arcgis-pro-automation"
+        },
+        {
+          "case_id": "cartography-geoviz/choropleth-request",
+          "criteria": 3,
+          "critical": true,
+          "disabled_met": 1,
+          "enabled_met": 1,
+          "outcome": "tie",
+          "skill": "cartography-geoviz"
+        },
+        {
+          "case_id": "cartography-geoviz/independent-quantiles-change-refusal",
+          "criteria": 4,
+          "critical": true,
+          "disabled_met": 0,
+          "enabled_met": 1,
+          "outcome": "enabled",
+          "skill": "cartography-geoviz"
+        },
+        {
+          "case_id": "cartography-geoviz/map-series",
+          "criteria": 2,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 1,
+          "outcome": "enabled",
+          "skill": "cartography-geoviz"
+        },
+        {
+          "case_id": "cartography-geoviz/misleading-projection-audit",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 1,
+          "outcome": "enabled",
+          "skill": "cartography-geoviz"
+        },
+        {
+          "case_id": "cartography-geoviz/underspecified-publication-map",
+          "criteria": 2,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "cartography-geoviz"
+        },
+        {
+          "case_id": "change-detection/baseline-discontinuity-handoff",
+          "criteria": 3,
+          "critical": true,
+          "disabled_met": 0,
+          "enabled_met": 2,
+          "outcome": "enabled",
+          "skill": "change-detection"
+        },
+        {
+          "case_id": "change-detection/documented-datum-elevation-change",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 1,
+          "enabled_met": 2,
+          "outcome": "enabled",
+          "skill": "change-detection"
+        },
+        {
+          "case_id": "change-detection/harmonized-collection-double-correction",
+          "criteria": 2,
+          "critical": false,
+          "disabled_met": 1,
+          "enabled_met": 2,
+          "outcome": "enabled",
+          "skill": "change-detection"
+        },
+        {
+          "case_id": "change-detection/season-and-sensor-conflict",
+          "criteria": 2,
+          "critical": true,
+          "disabled_met": 0,
+          "enabled_met": 2,
+          "outcome": "enabled",
+          "skill": "change-detection"
+        },
+        {
+          "case_id": "change-detection/season-confounded-fire-attribution",
+          "criteria": 4,
+          "critical": true,
+          "disabled_met": 2,
+          "enabled_met": 2,
+          "outcome": "tie",
+          "skill": "change-detection"
+        },
+        {
+          "case_id": "change-detection/season-trap",
+          "criteria": 2,
+          "critical": true,
+          "disabled_met": 0,
+          "enabled_met": 2,
+          "outcome": "enabled",
+          "skill": "change-detection"
+        },
+        {
+          "case_id": "change-detection/short-series-small-area-breakpoints",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 1,
+          "outcome": "enabled",
+          "skill": "change-detection"
+        },
+        {
+          "case_id": "change-detection/transition-area-uncertainty-spec",
+          "criteria": 4,
+          "critical": false,
+          "disabled_met": 4,
+          "enabled_met": 3,
+          "outcome": "disabled",
+          "skill": "change-detection"
+        },
+        {
+          "case_id": "change-detection/unclear-temporal-signal",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 1,
+          "enabled_met": 1,
+          "outcome": "tie",
+          "skill": "change-detection"
+        },
+        {
+          "case_id": "change-detection/urban-growth",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "change-detection"
+        },
+        {
+          "case_id": "geo-data-engineering/contractor-delivery-lineage-gate",
+          "criteria": 5,
+          "critical": false,
+          "disabled_met": 1,
+          "enabled_met": 1,
+          "outcome": "tie",
+          "skill": "geo-data-engineering"
+        },
+        {
+          "case_id": "geo-data-engineering/crs-loss-audit",
+          "criteria": 4,
+          "critical": true,
+          "disabled_met": 0,
+          "enabled_met": 1,
+          "outcome": "enabled",
+          "skill": "geo-data-engineering"
+        },
+        {
+          "case_id": "geo-data-engineering/osm-acquisition",
+          "criteria": 2,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "geo-data-engineering"
+        },
+        {
+          "case_id": "geo-data-engineering/scale-strategy",
+          "criteria": 2,
+          "critical": false,
+          "disabled_met": 2,
+          "enabled_met": 2,
+          "outcome": "tie",
+          "skill": "geo-data-engineering"
+        },
+        {
+          "case_id": "geo-deep-learning/building-extraction",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "geo-deep-learning"
+        },
+        {
+          "case_id": "geo-deep-learning/dwelling-occupancy-privacy-refusal",
+          "criteria": 4,
+          "critical": true,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "geo-deep-learning"
+        },
+        {
+          "case_id": "geo-deep-learning/few-labels-model-choice",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 2,
+          "outcome": "enabled",
+          "skill": "geo-deep-learning"
+        },
+        {
+          "case_id": "geo-deep-learning/flight-strip-spatial-holdout",
+          "criteria": 4,
+          "critical": false,
+          "disabled_met": 1,
+          "enabled_met": 1,
+          "outcome": "tie",
+          "skill": "geo-deep-learning"
+        },
+        {
+          "case_id": "geo-deep-learning/random-split-catch",
+          "criteria": 2,
+          "critical": true,
+          "disabled_met": 2,
+          "enabled_met": 2,
+          "outcome": "tie",
+          "skill": "geo-deep-learning"
+        },
+        {
+          "case_id": "geoai-orchestrator/ambiguous-project-scope",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "geoai-orchestrator"
+        },
+        {
+          "case_id": "geoai-orchestrator/ambulance-siting-equity-scope",
+          "criteria": 4,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 1,
+          "outcome": "enabled",
+          "skill": "geoai-orchestrator"
+        },
+        {
+          "case_id": "geoai-orchestrator/multi-stage-pipeline",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "geoai-orchestrator"
+        },
+        {
+          "case_id": "geoai-orchestrator/pipeline-plan-audit",
+          "criteria": 3,
+          "critical": true,
+          "disabled_met": 1,
+          "enabled_met": 1,
+          "outcome": "tie",
+          "skill": "geoai-orchestrator"
+        },
+        {
+          "case_id": "geostatistics-interpolation/extrapolation-honesty",
+          "criteria": 2,
+          "critical": true,
+          "disabled_met": 0,
+          "enabled_met": 2,
+          "outcome": "enabled",
+          "skill": "geostatistics-interpolation"
+        },
+        {
+          "case_id": "geostatistics-interpolation/kriging-parameter-manifest",
+          "criteria": 6,
+          "critical": false,
+          "disabled_met": 1,
+          "enabled_met": 4,
+          "outcome": "enabled",
+          "skill": "geostatistics-interpolation"
+        },
+        {
+          "case_id": "geostatistics-interpolation/pfas-safe-zone-refusal",
+          "criteria": 4,
+          "critical": true,
+          "disabled_met": 2,
+          "enabled_met": 3,
+          "outcome": "enabled",
+          "skill": "geostatistics-interpolation"
+        },
+        {
+          "case_id": "geostatistics-interpolation/rainfall-surface",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "geostatistics-interpolation"
+        },
+        {
+          "case_id": "geostatistics-interpolation/sparse-data-method-choice",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 2,
+          "outcome": "enabled",
+          "skill": "geostatistics-interpolation"
+        },
+        {
+          "case_id": "google-earth-engine/basin-scale-multidecade-landcover",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 2,
+          "enabled_met": 3,
+          "outcome": "enabled",
+          "skill": "google-earth-engine"
+        },
+        {
+          "case_id": "google-earth-engine/country-composite",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "google-earth-engine"
+        },
+        {
+          "case_id": "google-earth-engine/getinfo-loop-catch",
+          "criteria": 2,
+          "critical": true,
+          "disabled_met": 0,
+          "enabled_met": 2,
+          "outcome": "enabled",
+          "skill": "google-earth-engine"
+        },
+        {
+          "case_id": "google-earth-engine/moving-latest-dataset-provenance",
+          "criteria": 5,
+          "critical": false,
+          "disabled_met": 3,
+          "enabled_met": 3,
+          "outcome": "tie",
+          "skill": "google-earth-engine"
+        },
+        {
+          "case_id": "google-earth-engine/unclear-platform-choice",
+          "criteria": 4,
+          "critical": false,
+          "disabled_met": 1,
+          "enabled_met": 1,
+          "outcome": "tie",
+          "skill": "google-earth-engine"
+        },
+        {
+          "case_id": "mcda-suitability-analysis/exclusion-before-weighting-spec",
+          "criteria": 4,
+          "critical": false,
+          "disabled_met": 3,
+          "enabled_met": 2,
+          "outcome": "disabled",
+          "skill": "mcda-suitability-analysis"
+        },
+        {
+          "case_id": "mcda-suitability-analysis/factor-direction-audit",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 2,
+          "enabled_met": 2,
+          "outcome": "tie",
+          "skill": "mcda-suitability-analysis"
+        },
+        {
+          "case_id": "mcda-suitability-analysis/hidden-community-burden-refusal",
+          "criteria": 4,
+          "critical": true,
+          "disabled_met": 1,
+          "enabled_met": 1,
+          "outcome": "tie",
+          "skill": "mcda-suitability-analysis"
+        },
+        {
+          "case_id": "mcda-suitability-analysis/inconsistent-ahp",
+          "criteria": 3,
+          "critical": true,
+          "disabled_met": 1,
+          "enabled_met": 2,
+          "outcome": "enabled",
+          "skill": "mcda-suitability-analysis"
+        },
+        {
+          "case_id": "mcda-suitability-analysis/single-map-pushback",
+          "criteria": 2,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "mcda-suitability-analysis"
+        },
+        {
+          "case_id": "mcda-suitability-analysis/wind-farm-siting",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 1,
+          "enabled_met": 1,
+          "outcome": "tie",
+          "skill": "mcda-suitability-analysis"
+        },
+        {
+          "case_id": "ml-experiment-standards/difference-honesty",
+          "criteria": 2,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 2,
+          "outcome": "enabled",
+          "skill": "ml-experiment-standards"
+        },
+        {
+          "case_id": "ml-experiment-standards/leakage-pipeline-audit",
+          "criteria": 5,
+          "critical": true,
+          "disabled_met": 0,
+          "enabled_met": 3,
+          "outcome": "enabled",
+          "skill": "ml-experiment-standards"
+        },
+        {
+          "case_id": "ml-experiment-standards/spatial-split-routing",
+          "criteria": 2,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 1,
+          "outcome": "enabled",
+          "skill": "ml-experiment-standards"
+        },
+        {
+          "case_id": "ml-experiment-standards/test-set-shopping-significance",
+          "criteria": 5,
+          "critical": true,
+          "disabled_met": 2,
+          "enabled_met": 2,
+          "outcome": "tie",
+          "skill": "ml-experiment-standards"
+        },
+        {
+          "case_id": "movement-trajectory/fleet-stops",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 2,
+          "outcome": "enabled",
+          "skill": "movement-trajectory"
+        },
+        {
+          "case_id": "movement-trajectory/hashed-trace-release-refusal",
+          "criteria": 4,
+          "critical": true,
+          "disabled_met": 2,
+          "enabled_met": 2,
+          "outcome": "tie",
+          "skill": "movement-trajectory"
+        },
+        {
+          "case_id": "movement-trajectory/privacy-guard",
+          "criteria": 2,
+          "critical": true,
+          "disabled_met": 0,
+          "enabled_met": 2,
+          "outcome": "enabled",
+          "skill": "movement-trajectory"
+        },
+        {
+          "case_id": "movement-trajectory/sampling-rate-circuity-comparison",
+          "criteria": 4,
+          "critical": false,
+          "disabled_met": 2,
+          "enabled_met": 2,
+          "outcome": "tie",
+          "skill": "movement-trajectory"
+        },
+        {
+          "case_id": "movement-trajectory/timestamp-order-audit",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 1,
+          "outcome": "enabled",
+          "skill": "movement-trajectory"
+        },
+        {
+          "case_id": "network-accessibility-analysis/citywide-average-equity-audit",
+          "criteria": 4,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "network-accessibility-analysis"
+        },
+        {
+          "case_id": "network-accessibility-analysis/euclidean-catch",
+          "criteria": 3,
+          "critical": true,
+          "disabled_met": 1,
+          "enabled_met": 3,
+          "outcome": "enabled",
+          "skill": "network-accessibility-analysis"
+        },
+        {
+          "case_id": "network-accessibility-analysis/hospital-access",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "network-accessibility-analysis"
+        },
+        {
+          "case_id": "network-accessibility-analysis/od-matrix-scale",
+          "criteria": 2,
+          "critical": false,
+          "disabled_met": 1,
+          "enabled_met": 1,
+          "outcome": "tie",
+          "skill": "network-accessibility-analysis"
+        },
+        {
+          "case_id": "network-accessibility-analysis/unspecified-access-mode",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 1,
+          "outcome": "enabled",
+          "skill": "network-accessibility-analysis"
+        },
+        {
+          "case_id": "point-cloud-lidar/accuracy-budget-below-claimed-change",
+          "criteria": 3,
+          "critical": true,
+          "disabled_met": 3,
+          "enabled_met": 2,
+          "outcome": "disabled",
+          "skill": "point-cloud-lidar"
+        },
+        {
+          "case_id": "point-cloud-lidar/dtm-parameter-provenance-spec",
+          "criteria": 5,
+          "critical": false,
+          "disabled_met": 2,
+          "enabled_met": 4,
+          "outcome": "enabled",
+          "skill": "point-cloud-lidar"
+        },
+        {
+          "case_id": "point-cloud-lidar/mixed-datum-subsidence-refusal",
+          "criteria": 4,
+          "critical": true,
+          "disabled_met": 3,
+          "enabled_met": 3,
+          "outcome": "tie",
+          "skill": "point-cloud-lidar"
+        },
+        {
+          "case_id": "point-cloud-lidar/sfm-not-lidar",
+          "criteria": 2,
+          "critical": true,
+          "disabled_met": 0,
+          "enabled_met": 1,
+          "outcome": "enabled",
+          "skill": "point-cloud-lidar"
+        },
+        {
+          "case_id": "point-cloud-lidar/unknown-classification-quality",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "point-cloud-lidar"
+        },
+        {
+          "case_id": "point-cloud-lidar/vertical-datum-audit",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 2,
+          "outcome": "enabled",
+          "skill": "point-cloud-lidar"
+        },
+        {
+          "case_id": "postgis-spatial-sql/area-4326-catch",
+          "criteria": 3,
+          "critical": true,
+          "disabled_met": 1,
+          "enabled_met": 3,
+          "outcome": "enabled",
+          "skill": "postgis-spatial-sql"
+        },
+        {
+          "case_id": "postgis-spatial-sql/backend-choice-unclear",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 1,
+          "outcome": "enabled",
+          "skill": "postgis-spatial-sql"
+        },
+        {
+          "case_id": "postgis-spatial-sql/patient-home-buffer-privacy",
+          "criteria": 4,
+          "critical": true,
+          "disabled_met": 2,
+          "enabled_met": 2,
+          "outcome": "tie",
+          "skill": "postgis-spatial-sql"
+        },
+        {
+          "case_id": "postgis-spatial-sql/slow-join",
+          "criteria": 4,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "postgis-spatial-sql"
+        },
+        {
+          "case_id": "remote-sensing-analysis/baseline-offset-trap",
+          "criteria": 4,
+          "critical": true,
+          "disabled_met": 2,
+          "enabled_met": 3,
+          "outcome": "enabled",
+          "skill": "remote-sensing-analysis"
+        },
+        {
+          "case_id": "remote-sensing-analysis/cross-sensor-drought-comparability",
+          "criteria": 5,
+          "critical": false,
+          "disabled_met": 3,
+          "enabled_met": 4,
+          "outcome": "enabled",
+          "skill": "remote-sensing-analysis"
+        },
+        {
+          "case_id": "remote-sensing-analysis/mixed-level-trap",
+          "criteria": 2,
+          "critical": true,
+          "disabled_met": 1,
+          "enabled_met": 2,
+          "outcome": "enabled",
+          "skill": "remote-sensing-analysis"
+        },
+        {
+          "case_id": "remote-sensing-analysis/ndvi-request",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "remote-sensing-analysis"
+        },
+        {
+          "case_id": "remote-sensing-analysis/offset-applied-to-harmonized-source",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 1,
+          "enabled_met": 3,
+          "outcome": "enabled",
+          "skill": "remote-sensing-analysis"
+        },
+        {
+          "case_id": "remote-sensing-analysis/snow-composite-ordering-spec",
+          "criteria": 5,
+          "critical": false,
+          "disabled_met": 3,
+          "enabled_met": 5,
+          "outcome": "enabled",
+          "skill": "remote-sensing-analysis"
+        },
+        {
+          "case_id": "remote-sensing-analysis/vague-imagery-analysis",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "remote-sensing-analysis"
+        },
+        {
+          "case_id": "spatial-statistics/daily-hotspot-multiplicity",
+          "criteria": 4,
+          "critical": true,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "spatial-statistics"
+        },
+        {
+          "case_id": "spatial-statistics/hotspot-request",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "spatial-statistics"
+        },
+        {
+          "case_id": "spatial-statistics/maup-awareness",
+          "criteria": 2,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "spatial-statistics"
+        },
+        {
+          "case_id": "spatial-statistics/ols-on-spatial",
+          "criteria": 3,
+          "critical": true,
+          "disabled_met": 3,
+          "enabled_met": 3,
+          "outcome": "tie",
+          "skill": "spatial-statistics"
+        },
+        {
+          "case_id": "spatial-statistics/weights-result-audit",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 2,
+          "enabled_met": 3,
+          "outcome": "enabled",
+          "skill": "spatial-statistics"
+        },
+        {
+          "case_id": "swe-devops-standards/concurrent-production-overwrite-refusal",
+          "criteria": 4,
+          "critical": true,
+          "disabled_met": 2,
+          "enabled_met": 2,
+          "outcome": "tie",
+          "skill": "swe-devops-standards"
+        },
+        {
+          "case_id": "swe-devops-standards/geospatial-etl-script",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 1,
+          "enabled_met": 2,
+          "outcome": "enabled",
+          "skill": "swe-devops-standards"
+        },
+        {
+          "case_id": "swe-devops-standards/latest-boundary-reproducibility-plan",
+          "criteria": 6,
+          "critical": false,
+          "disabled_met": 4,
+          "enabled_met": 5,
+          "outcome": "enabled",
+          "skill": "swe-devops-standards"
+        },
+        {
+          "case_id": "swe-devops-standards/packaging-audit",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 1,
+          "outcome": "enabled",
+          "skill": "swe-devops-standards"
+        },
+        {
+          "case_id": "swe-devops-standards/prototype-production-boundary",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "swe-devops-standards"
+        },
+        {
+          "case_id": "terrain-hydrology/blanket-depression-fill-refusal",
+          "criteria": 4,
+          "critical": true,
+          "disabled_met": 0,
+          "enabled_met": 2,
+          "outcome": "enabled",
+          "skill": "terrain-hydrology"
+        },
+        {
+          "case_id": "terrain-hydrology/slope-4326-catch",
+          "criteria": 3,
+          "critical": true,
+          "disabled_met": 3,
+          "enabled_met": 3,
+          "outcome": "tie",
+          "skill": "terrain-hydrology"
+        },
+        {
+          "case_id": "terrain-hydrology/surface-choice-unclear",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 1,
+          "enabled_met": 1,
+          "outcome": "tie",
+          "skill": "terrain-hydrology"
+        },
+        {
+          "case_id": "terrain-hydrology/viewshed-surface-choice",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "terrain-hydrology"
+        },
+        {
+          "case_id": "terrain-hydrology/watershed-delineation",
+          "criteria": 3,
+          "critical": false,
+          "disabled_met": 0,
+          "enabled_met": 0,
+          "outcome": "tie",
+          "skill": "terrain-hydrology"
+        }
+      ],
+      "per_skill": {
+        "arcgis-pro-automation": {
+          "case_tie": 2,
+          "crit_tie": 9
+        },
+        "cartography-geoviz": {
+          "case_tie": 2,
+          "case_win": 3,
+          "crit_loss": 1,
+          "crit_tie": 9,
+          "crit_win": 4
+        },
+        "change-detection": {
+          "case_loss": 1,
+          "case_tie": 3,
+          "case_win": 6,
+          "crit_loss": 1,
+          "crit_tie": 19,
+          "crit_win": 9
+        },
+        "geo-data-engineering": {
+          "case_tie": 3,
+          "case_win": 1,
+          "crit_tie": 12,
+          "crit_win": 1
+        },
+        "geo-deep-learning": {
+          "case_tie": 4,
+          "case_win": 1,
+          "crit_tie": 14,
+          "crit_win": 2
+        },
+        "geoai-orchestrator": {
+          "case_tie": 3,
+          "case_win": 1,
+          "crit_tie": 12,
+          "crit_win": 1
+        },
+        "geostatistics-interpolation": {
+          "case_tie": 1,
+          "case_win": 4,
+          "crit_tie": 10,
+          "crit_win": 8
+        },
+        "google-earth-engine": {
+          "case_tie": 3,
+          "case_win": 2,
+          "crit_loss": 1,
+          "crit_tie": 12,
+          "crit_win": 4
+        },
+        "mcda-suitability-analysis": {
+          "case_loss": 1,
+          "case_tie": 4,
+          "case_win": 1,
+          "crit_loss": 1,
+          "crit_tie": 17,
+          "crit_win": 1
+        },
+        "ml-experiment-standards": {
+          "case_tie": 1,
+          "case_win": 3,
+          "crit_tie": 8,
+          "crit_win": 6
+        },
+        "movement-trajectory": {
+          "case_tie": 2,
+          "case_win": 3,
+          "crit_tie": 11,
+          "crit_win": 5
+        },
+        "network-accessibility-analysis": {
+          "case_tie": 3,
+          "case_win": 2,
+          "crit_tie": 12,
+          "crit_win": 3
+        },
+        "point-cloud-lidar": {
+          "case_loss": 1,
+          "case_tie": 2,
+          "case_win": 3,
+          "crit_loss": 1,
+          "crit_tie": 14,
+          "crit_win": 5
+        },
+        "postgis-spatial-sql": {
+          "case_tie": 2,
+          "case_win": 2,
+          "crit_tie": 11,
+          "crit_win": 3
+        },
+        "remote-sensing-analysis": {
+          "case_tie": 2,
+          "case_win": 5,
+          "crit_tie": 18,
+          "crit_win": 7
+        },
+        "spatial-statistics": {
+          "case_tie": 4,
+          "case_win": 1,
+          "crit_tie": 14,
+          "crit_win": 1
+        },
+        "swe-devops-standards": {
+          "case_tie": 2,
+          "case_win": 3,
+          "crit_tie": 16,
+          "crit_win": 3
+        },
+        "terrain-hydrology": {
+          "case_tie": 4,
+          "case_win": 1,
+          "crit_tie": 14,
+          "crit_win": 2
+        }
+      }
+    },
+    "status": "judged_model_only_uncalibrated"
+  },
+  "case_mix": {
+    "behavior_class": {
+      "advisory": 79,
+      "artifact-producing": 12,
+      "fixture-backed": 2
+    },
+    "case_types": {
+      "ambiguous": 29,
+      "artifact-correctness": 34,
+      "collision": 6,
+      "negative": 3,
+      "positive": 90
+    },
+    "critical": 34,
+    "expected_criteria_total": 305,
+    "forbidden_criteria_total": 60,
+    "tool_profile": {
+      "read-only": 81,
+      "workspace-write": 12
+    },
+    "total": 93
+  },
+  "conditions": {
+    "skills-disabled": {
+      "any_activation_cases": 0,
+      "errors": 1,
+      "responses": 93,
+      "usage": {
+        "cost_usd": 6.087263,
+        "input_tokens": 340.0,
+        "latency_ms": 1589532,
+        "output_tokens": 134185.0
+      }
+    },
+    "skills-enabled": {
+      "any_activation_cases": 92,
+      "errors": 1,
+      "responses": 93,
+      "usage": {
+        "cost_usd": 13.080683,
+        "input_tokens": 447.0,
+        "latency_ms": 2588554,
+        "output_tokens": 214726.0
+      }
+    }
+  },
+  "control_arm_clean": true,
+  "evaluation_scope": "behavior",
+  "kind": "behavior",
+  "model": "claude-sonnet-5",
+  "pairing": {
+    "clean_matched_pairs": 92,
+    "excluded_pairs": [
+      "swe-devops-standards/review-mode"
+    ]
+  },
+  "run_date": "2026-08-30",
+  "runtime": "claude-code-2.1.222",
+  "schema_version": 1,
+  "scope": "full",
+  "skills": 18,
+  "suite_sha256": "520bc41dd4c044d128407ff517f808ba4c39ed24d96898272e70326728082a4f"
+}

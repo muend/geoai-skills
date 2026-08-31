@@ -1,0 +1,369 @@
+{
+  "model": "claude-sonnet-5",
+  "runtime": "claude-code-2.1.222",
+  "schema_version": 1,
+  "skills-disabled": [
+    {
+      "activation_cases": 0,
+      "cases": 2,
+      "cost_usd": 0.116549,
+      "critical_cases": 1,
+      "errors": 0,
+      "latency_ms": 27700,
+      "output_tokens": 2164,
+      "skill": "arcgis-pro-automation"
+    },
+    {
+      "activation_cases": 0,
+      "cases": 5,
+      "cost_usd": 0.543965,
+      "critical_cases": 2,
+      "errors": 0,
+      "latency_ms": 158822,
+      "output_tokens": 16352,
+      "skill": "cartography-geoviz"
+    },
+    {
+      "activation_cases": 0,
+      "cases": 10,
+      "cost_usd": 0.624575,
+      "critical_cases": 4,
+      "errors": 0,
+      "latency_ms": 164880,
+      "output_tokens": 13465,
+      "skill": "change-detection"
+    },
+    {
+      "activation_cases": 0,
+      "cases": 4,
+      "cost_usd": 0.182708,
+      "critical_cases": 1,
+      "errors": 0,
+      "latency_ms": 30388,
+      "output_tokens": 2109,
+      "skill": "geo-data-engineering"
+    },
+    {
+      "activation_cases": 0,
+      "cases": 5,
+      "cost_usd": 0.286604,
+      "critical_cases": 2,
+      "errors": 0,
+      "latency_ms": 63861,
+      "output_tokens": 4883,
+      "skill": "geo-deep-learning"
+    },
+    {
+      "activation_cases": 0,
+      "cases": 4,
+      "cost_usd": 0.257076,
+      "critical_cases": 1,
+      "errors": 0,
+      "latency_ms": 72011,
+      "output_tokens": 5713,
+      "skill": "geoai-orchestrator"
+    },
+    {
+      "activation_cases": 0,
+      "cases": 5,
+      "cost_usd": 0.248847,
+      "critical_cases": 2,
+      "errors": 0,
+      "latency_ms": 48594,
+      "output_tokens": 3142,
+      "skill": "geostatistics-interpolation"
+    },
+    {
+      "activation_cases": 0,
+      "cases": 5,
+      "cost_usd": 0.270416,
+      "critical_cases": 1,
+      "errors": 0,
+      "latency_ms": 57253,
+      "output_tokens": 4128,
+      "skill": "google-earth-engine"
+    },
+    {
+      "activation_cases": 0,
+      "cases": 6,
+      "cost_usd": 0.438333,
+      "critical_cases": 2,
+      "errors": 0,
+      "latency_ms": 124895,
+      "output_tokens": 10859,
+      "skill": "mcda-suitability-analysis"
+    },
+    {
+      "activation_cases": 0,
+      "cases": 4,
+      "cost_usd": 0.191897,
+      "critical_cases": 2,
+      "errors": 0,
+      "latency_ms": 34265,
+      "output_tokens": 2404,
+      "skill": "ml-experiment-standards"
+    },
+    {
+      "activation_cases": 0,
+      "cases": 5,
+      "cost_usd": 0.340893,
+      "critical_cases": 2,
+      "errors": 0,
+      "latency_ms": 88910,
+      "output_tokens": 7114,
+      "skill": "movement-trajectory"
+    },
+    {
+      "activation_cases": 0,
+      "cases": 5,
+      "cost_usd": 0.288806,
+      "critical_cases": 1,
+      "errors": 0,
+      "latency_ms": 77006,
+      "output_tokens": 5613,
+      "skill": "network-accessibility-analysis"
+    },
+    {
+      "activation_cases": 0,
+      "cases": 6,
+      "cost_usd": 0.351082,
+      "critical_cases": 3,
+      "errors": 0,
+      "latency_ms": 89272,
+      "output_tokens": 6794,
+      "skill": "point-cloud-lidar"
+    },
+    {
+      "activation_cases": 0,
+      "cases": 4,
+      "cost_usd": 0.19382,
+      "critical_cases": 2,
+      "errors": 0,
+      "latency_ms": 44230,
+      "output_tokens": 3340,
+      "skill": "postgis-spatial-sql"
+    },
+    {
+      "activation_cases": 0,
+      "cases": 7,
+      "cost_usd": 0.440533,
+      "critical_cases": 2,
+      "errors": 0,
+      "latency_ms": 111094,
+      "output_tokens": 9166,
+      "skill": "remote-sensing-analysis"
+    },
+    {
+      "activation_cases": 0,
+      "cases": 5,
+      "cost_usd": 0.260296,
+      "critical_cases": 2,
+      "errors": 0,
+      "latency_ms": 63214,
+      "output_tokens": 4519,
+      "skill": "spatial-statistics"
+    },
+    {
+      "activation_cases": 0,
+      "cases": 6,
+      "cost_usd": 0.743487,
+      "critical_cases": 2,
+      "errors": 1,
+      "latency_ms": 259712,
+      "output_tokens": 26364,
+      "skill": "swe-devops-standards"
+    },
+    {
+      "activation_cases": 0,
+      "cases": 5,
+      "cost_usd": 0.307374,
+      "critical_cases": 2,
+      "errors": 0,
+      "latency_ms": 73425,
+      "output_tokens": 6056,
+      "skill": "terrain-hydrology"
+    }
+  ],
+  "skills-enabled": [
+    {
+      "activation_cases": 2,
+      "cases": 2,
+      "cost_usd": 0.407005,
+      "critical_cases": 1,
+      "errors": 0,
+      "latency_ms": 78779,
+      "output_tokens": 6710,
+      "skill": "arcgis-pro-automation"
+    },
+    {
+      "activation_cases": 5,
+      "cases": 5,
+      "cost_usd": 0.82474,
+      "critical_cases": 2,
+      "errors": 0,
+      "latency_ms": 167255,
+      "output_tokens": 15725,
+      "skill": "cartography-geoviz"
+    },
+    {
+      "activation_cases": 10,
+      "cases": 10,
+      "cost_usd": 1.285572,
+      "critical_cases": 4,
+      "errors": 0,
+      "latency_ms": 247696,
+      "output_tokens": 18987,
+      "skill": "change-detection"
+    },
+    {
+      "activation_cases": 4,
+      "cases": 4,
+      "cost_usd": 0.455789,
+      "critical_cases": 1,
+      "errors": 0,
+      "latency_ms": 81069,
+      "output_tokens": 5798,
+      "skill": "geo-data-engineering"
+    },
+    {
+      "activation_cases": 5,
+      "cases": 5,
+      "cost_usd": 0.811442,
+      "critical_cases": 2,
+      "errors": 0,
+      "latency_ms": 153874,
+      "output_tokens": 12236,
+      "skill": "geo-deep-learning"
+    },
+    {
+      "activation_cases": 4,
+      "cases": 4,
+      "cost_usd": 0.788522,
+      "critical_cases": 1,
+      "errors": 0,
+      "latency_ms": 139797,
+      "output_tokens": 11354,
+      "skill": "geoai-orchestrator"
+    },
+    {
+      "activation_cases": 5,
+      "cases": 5,
+      "cost_usd": 0.609925,
+      "critical_cases": 2,
+      "errors": 0,
+      "latency_ms": 100278,
+      "output_tokens": 7138,
+      "skill": "geostatistics-interpolation"
+    },
+    {
+      "activation_cases": 5,
+      "cases": 5,
+      "cost_usd": 0.826259,
+      "critical_cases": 1,
+      "errors": 0,
+      "latency_ms": 183659,
+      "output_tokens": 14682,
+      "skill": "google-earth-engine"
+    },
+    {
+      "activation_cases": 6,
+      "cases": 6,
+      "cost_usd": 0.824975,
+      "critical_cases": 2,
+      "errors": 0,
+      "latency_ms": 165963,
+      "output_tokens": 13900,
+      "skill": "mcda-suitability-analysis"
+    },
+    {
+      "activation_cases": 4,
+      "cases": 4,
+      "cost_usd": 0.445022,
+      "critical_cases": 2,
+      "errors": 0,
+      "latency_ms": 64340,
+      "output_tokens": 4716,
+      "skill": "ml-experiment-standards"
+    },
+    {
+      "activation_cases": 5,
+      "cases": 5,
+      "cost_usd": 0.695734,
+      "critical_cases": 2,
+      "errors": 0,
+      "latency_ms": 156557,
+      "output_tokens": 12327,
+      "skill": "movement-trajectory"
+    },
+    {
+      "activation_cases": 5,
+      "cases": 5,
+      "cost_usd": 0.534518,
+      "critical_cases": 1,
+      "errors": 0,
+      "latency_ms": 75430,
+      "output_tokens": 5345,
+      "skill": "network-accessibility-analysis"
+    },
+    {
+      "activation_cases": 6,
+      "cases": 6,
+      "cost_usd": 0.810842,
+      "critical_cases": 3,
+      "errors": 0,
+      "latency_ms": 160990,
+      "output_tokens": 12226,
+      "skill": "point-cloud-lidar"
+    },
+    {
+      "activation_cases": 4,
+      "cases": 4,
+      "cost_usd": 0.474311,
+      "critical_cases": 2,
+      "errors": 0,
+      "latency_ms": 68892,
+      "output_tokens": 5412,
+      "skill": "postgis-spatial-sql"
+    },
+    {
+      "activation_cases": 7,
+      "cases": 7,
+      "cost_usd": 0.955667,
+      "critical_cases": 2,
+      "errors": 0,
+      "latency_ms": 172531,
+      "output_tokens": 14522,
+      "skill": "remote-sensing-analysis"
+    },
+    {
+      "activation_cases": 5,
+      "cases": 5,
+      "cost_usd": 0.576787,
+      "critical_cases": 2,
+      "errors": 0,
+      "latency_ms": 90176,
+      "output_tokens": 6705,
+      "skill": "spatial-statistics"
+    },
+    {
+      "activation_cases": 5,
+      "cases": 6,
+      "cost_usd": 1.074256,
+      "critical_cases": 2,
+      "errors": 1,
+      "latency_ms": 346273,
+      "output_tokens": 35724,
+      "skill": "swe-devops-standards"
+    },
+    {
+      "activation_cases": 5,
+      "cases": 5,
+      "cost_usd": 0.679317,
+      "critical_cases": 2,
+      "errors": 0,
+      "latency_ms": 134995,
+      "output_tokens": 11219,
+      "skill": "terrain-hydrology"
+    }
+  ]
+}
