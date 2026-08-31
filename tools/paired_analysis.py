@@ -107,7 +107,8 @@ def load_responses(directory: Path) -> dict[str, dict]:
     path = directory / "adapter" / "claude-code.responses.jsonl"
     if not path.exists():
         raise SystemExit(f"missing response checkpoint: {path}")
-    rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    lines = path.read_text(encoding="utf-8").splitlines()
+    rows = [json.loads(line) for line in lines if line.strip()]
     return {row["case_id"]: row for row in rows}
 
 
@@ -115,8 +116,9 @@ def load_judgments(path: Path | None, suite_sha: str) -> dict[str, dict] | None:
     if path is None:
         return None
     payload = json.loads(Path(path).read_text(encoding="utf-8"))
-    if payload.get("suite_sha256", "").startswith(suite_sha) is False and payload.get("suite_sha256") != suite_sha:
-        print(f"WARNING: judgment suite_sha256 {payload.get('suite_sha256')!r} "
+    declared = payload.get("suite_sha256", "")
+    if declared != suite_sha and not declared.startswith(suite_sha):
+        print(f"WARNING: judgment suite_sha256 {declared!r} "
               f"does not match run suite {suite_sha!r}", file=sys.stderr)
     return {row["case_id"]: row for row in payload["judgments"]}
 
@@ -133,9 +135,11 @@ def execution_block(cases: list[dict], en: dict, dis: dict) -> dict[str, Any]:
         if e is None and d is None:
             continue
         if e is None:
-            dis_only.append(cid); continue
+            dis_only.append(cid)
+            continue
         if d is None:
-            en_only.append(cid); continue
+            en_only.append(cid)
+            continue
         if e.get("error") or d.get("error"):
             errored.append({"case_id": cid,
                             "enabled_error": e.get("error"),
@@ -187,8 +191,10 @@ def execution_block(cases: list[dict], en: dict, dis: dict) -> dict[str, Any]:
                      "disabled": agg(d_rows, lambda r: r.get("cost_usd") or 0.0)},
         "latency_s": {"enabled": agg(e_rows, lambda r: (r.get("latency_ms") or 0) / 1000),
                       "disabled": agg(d_rows, lambda r: (r.get("latency_ms") or 0) / 1000)},
-        "output_tokens": {"enabled": agg(e_rows, lambda r: r.get("usage", {}).get("output_tokens", 0)),
-                          "disabled": agg(d_rows, lambda r: r.get("usage", {}).get("output_tokens", 0))},
+        "output_tokens": {
+            "enabled": agg(e_rows, lambda r: r.get("usage", {}).get("output_tokens", 0)),
+            "disabled": agg(d_rows, lambda r: r.get("usage", {}).get("output_tokens", 0)),
+        },
         "response_chars": {"enabled": agg(e_rows, lambda r: len(r.get("response") or "")),
                            "disabled": agg(d_rows, lambda r: len(r.get("response") or ""))},
         "enabled_response_longer": f"{longer}/{len(paired)}",
@@ -229,29 +235,41 @@ def judgment_block(cases: list[dict], en_j: dict, dis_j: dict,
         e_hits = sum(em[c] for c in shared)
         d_hits = sum(dm[c] for c in shared)
         total = len(shared)
-        en_met += e_hits; dis_met += d_hits
-        en_tot += total; dis_tot += total
+        en_met += e_hits
+        dis_met += d_hits
+        en_tot += total
+        dis_tot += total
 
         if total <= 2:
             low_resolution.append(cid)
 
         for c in shared:
             if em[c] and not dm[c]:
-                crit_w += 1; per_skill[case["skill"]]["crit_win"] += 1
+                crit_w += 1
+                per_skill[case["skill"]]["crit_win"] += 1
             elif dm[c] and not em[c]:
-                crit_l += 1; per_skill[case["skill"]]["crit_loss"] += 1
+                crit_l += 1
+                per_skill[case["skill"]]["crit_loss"] += 1
             else:
-                crit_t += 1; per_skill[case["skill"]]["crit_tie"] += 1
+                crit_t += 1
+                per_skill[case["skill"]]["crit_tie"] += 1
 
         e_all = total > 0 and e_hits == total
         d_all = total > 0 and d_hits == total
-        en_pass += int(e_all); dis_pass += int(d_all)
+        en_pass += int(e_all)
+        dis_pass += int(d_all)
         if e_hits > d_hits:
-            outcome = "enabled"; case_w += 1; per_skill[case["skill"]]["case_win"] += 1
+            outcome = "enabled"
+            case_w += 1
+            per_skill[case["skill"]]["case_win"] += 1
         elif d_hits > e_hits:
-            outcome = "disabled"; case_l += 1; per_skill[case["skill"]]["case_loss"] += 1
+            outcome = "disabled"
+            case_l += 1
+            per_skill[case["skill"]]["case_loss"] += 1
         else:
-            outcome = "tie"; case_t += 1; per_skill[case["skill"]]["case_tie"] += 1
+            outcome = "tie"
+            case_t += 1
+            per_skill[case["skill"]]["case_tie"] += 1
 
         if case.get("critical"):
             key = {"enabled": "wins", "disabled": "losses", "tie": "ties"}[outcome]
@@ -318,7 +336,8 @@ def render(report: dict[str, Any]) -> str:
     a("")
     a("EXECUTION")
     a(f"  suite cases              {ex['cases_in_suite']}")
-    a(f"  responded                enabled {ex['responded_enabled']} / disabled {ex['responded_disabled']}")
+    a(f"  responded                enabled {ex['responded_enabled']}"
+      f" / disabled {ex['responded_disabled']}")
     a(f"  clean matched pairs      {ex['clean_matched_pairs']}")
     a(f"  activation (enabled)     {ex['activation']['enabled']}")
     a(f"  activation (control)     {ex['activation']['disabled_control']}"

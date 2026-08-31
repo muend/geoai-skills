@@ -51,9 +51,9 @@ def test_sign_test_is_symmetric():
 
 
 def test_sign_test_never_exceeds_one():
-    for w in range(0, 12):
-        for l in range(0, 12):
-            p = pa.sign_test(w, l)["p_value"]
+    for wins in range(0, 12):
+        for losses in range(0, 12):
+            p = pa.sign_test(wins, losses)["p_value"]
             assert p is None or 0.0 <= p <= 1.0
 
 
@@ -240,13 +240,19 @@ def test_main_writes_json_and_includes_judgment(tmp_path, capsys):
     _write_run(tmp_path, "enabled", suite, cases, [_resp("a/one", 0.1, ["a"])])
     _write_run(tmp_path, "disabled", suite, cases, [_resp("a/one", 0.05, [])])
     full = suite + "0" * (64 - len(suite))
-    ej = tmp_path / "ej.json"; dj = tmp_path / "dj.json"
-    ej.write_text(json.dumps({"schema_version": 1, "suite_sha256": full,
-                              "judge": {"kind": "model", "name": "t"},
-                              "judgments": [_judgment("a/one", [True, True, True])]}), encoding="utf-8")
-    dj.write_text(json.dumps({"schema_version": 1, "suite_sha256": full,
-                              "judge": {"kind": "model", "name": "t"},
-                              "judgments": [_judgment("a/one", [True, False, False])]}), encoding="utf-8")
+    ej = tmp_path / "ej.json"
+    dj = tmp_path / "dj.json"
+
+    def judgment_set(flags):
+        return json.dumps({
+            "schema_version": 1,
+            "suite_sha256": full,
+            "judge": {"kind": "model", "name": "t"},
+            "judgments": [_judgment("a/one", flags)],
+        })
+
+    ej.write_text(judgment_set([True, True, True]), encoding="utf-8")
+    dj.write_text(judgment_set([True, False, False]), encoding="utf-8")
     out_json = tmp_path / "report.json"
     pa.main(["--suite", suite, "--runs-dir", str(tmp_path),
              "--enabled-judgments", str(ej), "--disabled-judgments", str(dj),
