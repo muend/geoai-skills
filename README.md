@@ -153,8 +153,9 @@ Two facts must travel together:
   discordant criterion comparisons, and observed critical spatial failures fall
   from 13 cases to 4.
 - **The absolute quality level is not good enough.** The enabled arm covers 48%
-  of pinned criteria and records a 4.3% critical-failure rate. The repository's
-  Phase 3 gate requires at least 85% pass rate and less than 2% critical
+  of pinned criteria, but only 18/92 cases (19.6%) meet every criterion, and the
+  critical-failure rate is 4.3%. The repository's Phase 3 gate applies to that
+  case-level pass rate: it requires at least 85% plus less than 2% critical
   failures. It fails both conditions.
 
 **We published the gate we failed.**
