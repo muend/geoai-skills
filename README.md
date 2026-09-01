@@ -1,65 +1,60 @@
 # GeoAI Skills
 
-![GeoAI Skills — reliable geospatial intelligence for AI agents](assets/social-preview.jpg)
+![GeoAI Skills — measured guardrails for geospatial AI agents](assets/social-preview.jpg)
 
-## The correctness layer for geospatial AI agents
+## Geospatial AI should know when not to answer
 
-**Stop silent CRS, spatial-leakage, validity, unit, and uncertainty failures before
-they ship.**
+**A command can succeed while the geographic claim is still wrong.**
 
 GeoAI Skills is a vendor-neutral collection of 18
-[Agent Skills](https://agentskills.io) that turns a general-purpose AI agent into a
-more defensible geospatial collaborator. It covers the full workflow—from STAC
-search and PostGIS to spatial statistics, Earth observation, LiDAR, cartography,
-and guarded ArcGIS Pro automation—while making verification and limitations part
-of the deliverable.
+[Agent Skills](https://agentskills.io) for the methodological layer between a
+user request and a geospatial claim. The skills do not replace GDAL, PostGIS,
+Earth Engine, ArcGIS, QGIS, Python libraries, or MCP servers. They tell an agent
+which preconditions must hold, which checks must run, what evidence must be
+reported, and when the available data cannot support the requested conclusion.
 
 [![validate-skills](https://github.com/muend/geoai-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/muend/geoai-skills/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Skills](https://img.shields.io/badge/skills-18-brightgreen.svg)](#the-18-skill-stack)
-[![Evaluation corpus](https://img.shields.io/badge/evaluation-167_native_%2B_5_external_cases-2ea44f.svg)](#evidence-with-boundaries)
 [![Routing precision](https://img.shields.io/badge/routing_precision-99.17%25-2ea44f.svg)](BENCHMARK.md)
 [![Routing recall](https://img.shields.io/badge/routing_recall-96.77%25-2ea44f.svg)](BENCHMARK.md)
-[![Control activations](https://img.shields.io/badge/disabled_control-0_activations-2ea44f.svg)](BENCHMARK.md)
-[![Suite](https://img.shields.io/badge/suite-current-2ea44f.svg)](BENCHMARK.md)
-[![Behavior](https://img.shields.io/badge/behavior_quality-not_evaluated-lightgrey.svg)](BENCHMARK.md)
+[![Behavior pairs](https://img.shields.io/badge/behavior-92_paired_cases-f0ad4e.svg)](benchmarks/claude-code-2.1.222--claude-sonnet-5--520bc41dd4c0/README.md)
+[![Critical failures](https://img.shields.io/badge/critical_failures-14.1%25_%E2%86%92_4.3%25-2ea44f.svg)](benchmarks/claude-code-2.1.222--claude-sonnet-5--520bc41dd4c0/README.md)
 [![Browse on skills.sh](https://img.shields.io/badge/skills.sh-browse-111111.svg)](https://www.skills.sh/muend/geoai-skills)
 [![Spec](https://img.shields.io/badge/agentskills.io-compliant-orange.svg)](https://agentskills.io)
 
-<sub>**These figures describe the shipped tree, on one runtime/model pair** —
-Claude Code `2.1.214` with `claude-sonnet-5`, 167-case suite `efe27d8c1736…`,
-2026-08-05 — and are not universal or model-independent claims. Routing measures
-which skill activates, not whether the answer is correct; **answer quality has
-never been measured.** The run that produced these numbers also recorded one
-false positive and two cases that moved from pass to fail without an
-established cause. See [BENCHMARK.md](BENCHMARK.md) for the full card, the
-reviewed failures, and what the run does not show.</sub>
+Two measurements are shown above and they are deliberately not pooled. The
+routing card covers 167 cases on Claude Code `2.1.214`, `claude-sonnet-5`, suite
+`efe27d8c1736…`. The behavior package covers 92 clean pairs on Claude Code
+`2.1.222`, the same model name, and suite `520bc41dd4c0…`. Both describe **one
+runtime/model pair** and are **not universal or model-independent claims**. The
+behavior figures are model-judged, uncalibrated, and not yet human-verified.
 
 <p align="center">
   <img
-    src="assets/demo/geoai-guardrail-demo.gif"
-    alt="Animated GeoAI Skills demo: a season-mismatched Sentinel-2 request is intercepted before an unsupported changed-hectares claim is reported"
+    src="assets/demo/geoai-claim-gate.gif"
+    alt="Animated claim gate: a successful geospatial command is checked for CRS, comparability, leakage, validity, and uncertainty before its output is allowed to become a claim"
     width="960"
   />
 </p>
 
 <p align="center">
-  <strong>A plausible shortcut is not a defensible result.</strong><br />
-  <a href="assets/demo/geoai-guardrail-demo.mp4">Watch the short MP4</a>
-  ·
-  <a href="assets/demo/geoai-guardrail-demo-poster.png">View the static verdict</a>
-  ·
+  <strong>Success is a defensible claim — or a justified stop.</strong><br />
   <a href="#quick-start">Install</a>
   ·
+  <a href="#what-makes-this-different">See the boundary</a>
+  ·
   <a href="#evidence-with-boundaries">Inspect the evidence</a>
+  ·
+  <a href="assets/demo/geoai-claim-gate-poster.png">Static poster</a>
 </p>
 
-The demo uses a public, synthetic prompt. It shows the intended guardrail behavior,
-not a claim that every model or runtime will produce identical wording.
+The animation uses a public, synthetic request. It demonstrates the method the
+skills encode; it does not claim that every runtime will produce identical text.
 
 ## Quick start
 
-Install the complete suite for Codex:
+Install all 18 skills for Codex:
 
 ```bash
 npx skills add muend/geoai-skills --skill '*' -a codex
@@ -78,10 +73,40 @@ Then ask naturally:
 > Can May 2024 and September 2025 Sentinel-2 scenes support a defensible
 > changed-hectares claim?
 
-The relevant skills should activate automatically. Instead of blindly subtracting
-two rasters, the agent is instructed to test comparability, identify the
-phenological mismatch, withhold an unsupported area claim, and specify the evidence
-needed to proceed.
+The relevant specialist should test observation comparability before proposing
+pixel arithmetic. In this example the season mismatch blocks a defensible
+two-date area claim, so the useful answer is not a fabricated number: it is the
+reason to stop and the evidence needed to continue.
+
+## What makes this different
+
+There are real neighboring projects. The difference is center of gravity, not a
+claim that every other skill collection is interchangeable or inferior.
+
+| Public project | Its strongest center of gravity | How GeoAI Skills differs |
+|---|---|---|
+| [OpenMapStack](https://github.com/jaakla/openmapstack) | An open-first, reproducible GIS project contract with a CLI, templates, artifact validation, and worked output | GeoAI Skills is not an execution framework. It supplies separately routed method specialists across proprietary and open stacks, with claim-narrowing and refusal conditions before or around execution. |
+| [geospatial-skills](https://github.com/isaaccorley/geospatial-skills) | Separately installable skills for tools, formats, catalogues, viewers, and large-scale pipelines | GeoAI Skills organizes around analytical decisions and failure modes—leakage, comparability, inference, uncertainty, measurement, and safe mutation—rather than a tool catalogue. |
+| [GIS Agent Skills](https://github.com/danmaps/gis-agent-skills) | Practical ArcGIS/GIS workflow, readiness, schema, publishing, and post-run checklists | GeoAI Skills spans the full data-to-claim lifecycle and evaluates cross-skill routing boundaries as well as behavior. |
+| [MapLibre Agent Skills](https://github.com/maplibre/maplibre-agent-skills) and [Mapbox Agent Skills](https://github.com/mapbox/mapbox-agent-skills) | Deep platform-specific mapping implementation; MapLibre also distinguishes eval-verified and provisional skills | GeoAI Skills is platform-neutral and extends beyond application delivery into remote sensing, spatial inference, geostatistics, accessibility, ML validation, LiDAR, terrain, and databases. |
+| [GeoMaster](https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/geomaster) | One broad, example-rich geospatial science skill | GeoAI Skills splits ownership across 18 narrow specialists so activation, collisions, negative routes, and domain boundaries can be tested independently. |
+
+What is unusual here is the combination:
+
+1. **Claim preconditions, not only API knowledge.** A result must survive CRS,
+   unit, validity, comparability, leakage, uncertainty, and provenance checks.
+2. **A safe failure mode.** Missing evidence produces a narrower claim,
+   clarification, provisional plan, or refusal—not invented certainty.
+3. **Routed specialists.** One large geospatial prompt is not loaded for every
+   task; domain ownership and collisions are explicit and tested.
+4. **Published misses.** Routing evidence, paired behavior evidence, known
+   regressions, execution errors, costs, suite hashes, and the failed quality
+   gate remain visible.
+
+Choose OpenMapStack when you want its executable open-stack project contract.
+Choose a platform collection when that platform is the problem. Use GeoAI Skills
+when the hard question is whether the method and evidence can support the claim
+at all. These projects can complement one another.
 
 ## What changes when the skills are present
 
@@ -94,82 +119,88 @@ needed to proceed.
 | Render a map and assume it communicates honestly. | Check projection, classification, palette accessibility, legend semantics, uncertainty, and export metadata. |
 | Run a destructive local GIS mutation immediately. | Inspect first, plan the mutation, require an explicit gate, verify outputs, and retain recovery evidence. |
 
-These skills complement MCP servers, GIS libraries, and hosted tools. They are the
-method and verification layer that tells an agent **when not to trust an apparently
-successful operation**.
-
-## Why this exists
-
-Spatial bugs are unusually quiet:
-
-- a buffer computed in degrees still returns numbers;
-- a random spatial train/test split still produces a beautiful learning curve;
-- a misregistered change map still shows crisp-looking boundaries;
-- overlapping polygons can silently inflate an area total;
-- an attractive choropleth can still encode the wrong class semantics.
-
-General-purpose models often know the APIs. The harder problem is knowing which
-preconditions, controls, and refusal conditions make a geospatial claim defensible.
-GeoAI Skills encodes that discipline:
-
-- **CRS and units are explicit.**
-- **Spatial leakage is treated as a default risk.**
-- **Every stage ends with numeric and visual verification.**
-- **Uncertainty and sensitivity are outputs, not optional footnotes.**
-- **Missing evidence narrows or blocks the claim instead of being guessed.**
+The skills complement tools and runtimes. They are the method and verification
+layer that tells an agent **when not to trust an apparently successful
+operation**.
 
 ## Evidence with boundaries
 
-The current source tree contains two deliberately separate evaluation layers:
+<p align="center">
+  <img
+    src="assets/demo/geoai-behavior-evidence.gif"
+    alt="Animated summary of the first paired behavior measurement: 92 clean pairs, higher criterion coverage and fewer critical spatial failures with skills, while the repository's own Phase 3 gate still fails"
+    width="960"
+  />
+</p>
+
+### First paired behavior measurement
+
+The first behavior package compares skills enabled and disabled under the same
+runtime, model, prompts, and non-skill tool configuration. Of 93 responses in
+each arm, 92 formed clean matched pairs.
+
+| Measure | Skills enabled | Control | Paired result |
+|---|---:|---:|---|
+| Criterion coverage | **145/302 (48.0%)** | **85/302 (28.1%)** | 65 wins / 5 losses / 232 ties; `p = 2.2e-14` |
+| Cases meeting every criterion | **18/92** | **6/92** | 42 wins / 3 losses / 47 ties; `p = 8.7e-10` |
+| Critical spatial failures | **4/92 (4.3%)** | **13/92 (14.1%)** | 3.25× fewer observed failures |
+| Forbidden-behavior violations | **0** | **0** | no separation |
+| Skill activation | **92/92** | **0/92** | clean control arm |
+
+Two facts must travel together:
+
+- **The paired effect is large in this run.** The enabled arm wins 65 of the 70
+  discordant criterion comparisons, and observed critical spatial failures fall
+  from 13 cases to 4.
+- **The absolute quality level is not good enough.** The enabled arm covers 48%
+  of pinned criteria and records a 4.3% critical-failure rate. The repository's
+  Phase 3 gate requires at least 85% pass rate and less than 2% critical
+  failures. It fails both conditions.
+
+**We published the gate we failed.**
+
+This is a single, different-family model judgment (`gpt-5.6-sol`, low reasoning)
+of responses from `claude-sonnet-5`. It is uncalibrated and has no completed
+human verification. Forty-seven arm-blinded human review packets are prepared;
+until adjudication lands, these figures are evidence about this run, not a claim
+of human-verified overall answer quality. Raw response text remains unpublished
+to avoid contaminating that review; hashes and lengths preserve identity.
+
+Read the
+[behavior evidence package](benchmarks/claude-code-2.1.222--claude-sonnet-5--520bc41dd4c0/README.md)
+for provenance, ties, criterion structure, the excluded termination case, cost,
+tokens, and limitations. The historical routing-only label
+`behavior_quality-not_evaluated` applies to the earlier routing card—not to the
+repository's current evidence inventory.
+
+### Four evidence layers, kept separate
 
 | Evidence layer | Current coverage | What it supports |
 |---|---:|---|
-| Native skill suite | **167 cases** across 18 skills; 105 development and 62 held-out | Routing boundaries, negative activation, collisions, interaction modes, and artifact requirements |
+| Routing benchmark | **167 cases** across 18 skills; 105 development and 62 held-out | Activation precision/recall, negative routes, collisions, and known boundary defects |
+| Paired behavior measurement | **92 clean pairs**, 302 pinned criteria | Model-judged criterion coverage and critical failures for one runtime/model/run |
 | GeoAnalystBench-derived external subset | **5 executable cases** with deterministic synthetic fixtures and artifact validators | Transfer checks for network analysis, facility coverage, vegetation change, urban heat/kriging, and spatial regression |
-| Platform verification | Windows, macOS, and Linux CI; clean installs for Codex, Claude, Skills CLI, and GitHub Copilot | Packaging, portability, runtime-file isolation, and deterministic archives |
+| Platform and package verification | Windows, macOS, and Linux CI; clean installs for Codex, Claude, Skills CLI, and GitHub Copilot | Packaging, portability, runtime-file isolation, and deterministic archives |
 
-The external subset is independently authored and reported separately. It does not
-copy upstream datasets, prompts, or reference implementations, and its outcomes must
-not be pooled with native routing metrics. Its five-case v1 source population is
-frozen under suite hash `c99563100cac…`; a separate v2 contract freeze distinguishes
-semantic correctness, evidence sufficiency, and exact representation compliance
-without changing those cases. Frozen producer interface v1 preserves the first
-shape-only condition; v2 adds answer-safe method, serialization, UTF-8, and
-workspace execution guidance after observed cross-runtime ambiguities, without
-exposing reference values. The separately frozen v3 condition pairs a semantic
-validator with fully disclosed nested output structures, bounded floating-point
-tolerance, exact inventory checks, and representation-independent map checks;
-historical v1/v2 evidence remains unchanged. Every deterministically rendered
-prompt is hashed.
-Results follow the
-[offline run and result protocol](evals/external/geoanalystbench/README.md#external-run-protocol),
-which reports skill activation, runtime completion, artifact-contract compliance,
-and overall success as separate measures.
+The routing card and behavior package use different Claude Code versions and
+different suite hashes; do not combine their metrics. The external subset is
+independently authored and reported separately. It does not copy upstream
+datasets, prompts, or reference implementations, and its results are never
+pooled with native metrics. See its
+[frozen suite and offline result protocol](evals/external/geoanalystbench/README.md).
 
-An 18-skill, 167-case Claude Code run recorded **99.17% routing precision,
-96.77% routing recall, and 96.41% full-route accuracy** on suite
-`efe27d8c1736…` under Claude Code `2.1.214` with `claude-sonnet-5` (2026-08-05).
-The paired skills-disabled control produced zero activations across all 167
-cases. All four false negatives, the one false positive, and all eleven
-`max_turns` execution errors were inspected; every enabled error had its
-activation recovered from the raw trace, none lost, so the enabled routing
-metrics are unaffected. Behavior quality remains **unclaimed** until
-independent-family judging and the manual-review protocol are complete.
+The routing-only run recorded **99.17% precision, 96.77% recall, and 96.41%
+full-route accuracy** on suite `efe27d8c1736…`, with zero control activations.
+It also recorded one false positive, four false negatives, one incomplete route,
+and eleven execution errors; all remain in the card. Routing says which skill
+loaded, not whether the answer was correct.
 
-**This run was bought to test a published defect, and it also found new ones.**
-The previous card attributed four of its nine false negatives to one clause in
-the `change-detection` description and shipped the fix as a hypothesis. All four
-of those cases now route correctly, both over-correction guards held, and the
-control arm is clean. Against that: one boundary probe still misroutes, and two
-cases that previously passed now fail without a cause the diff can explain —
-run-to-run variance and a real regression are indistinguishable from a single
-run. The suites are also different populations (158 → 167 cases), so the
-figures above are **not** a before/after ratio; the honest comparison is
-case-level and is in the card.
+Read [BENCHMARK.md](BENCHMARK.md) for routing and known defects, and
+[EVALUATION.md](EVALUATION.md) for the provider-neutral prepare → execute →
+judge → score → compare protocol and publication gates.
 
-Read [BENCHMARK.md](BENCHMARK.md) for the full result card and
-[EVALUATION.md](EVALUATION.md) for the provider-neutral protocol, suite hashes,
-split rules, judge boundaries, and publication gates.
+If you want measured, pre-registered evidence like this to keep being published,
+star the repository so the work is easier to find and sustain.
 
 ## The 18-skill stack
 
@@ -181,9 +212,9 @@ split rules, judge boundaries, and publication gates.
 | Analyze and decide | [`spatial-statistics`](skills/spatial-statistics/SKILL.md), [`geostatistics-interpolation`](skills/geostatistics-interpolation/SKILL.md), [`mcda-suitability-analysis`](skills/mcda-suitability-analysis/SKILL.md), [`network-accessibility-analysis`](skills/network-accessibility-analysis/SKILL.md), [`postgis-spatial-sql`](skills/postgis-spatial-sql/SKILL.md) | Weights, inference, multiple testing, kriging uncertainty, AHP consistency, routing barriers, overlap, SQL correctness, and performance |
 | Deliver and operate | [`cartography-geoviz`](skills/cartography-geoviz/SKILL.md), [`swe-devops-standards`](skills/swe-devops-standards/SKILL.md), [`arcgis-pro-automation`](skills/arcgis-pro-automation/SKILL.md) | Honest visual encoding, production code, test/transaction discipline, and gated local ArcGIS mutations |
 
-Install the full suite for cross-skill routing, or cherry-pick a specialist. Every
-skill must remain safe and useful alone; sibling references are advisory and
-critical safeguards have local fallbacks.
+Install the full suite for cross-skill routing, or cherry-pick one specialist.
+Every skill must remain safe and useful alone; sibling references are advisory
+and critical safeguards have local fallbacks.
 
 ## Installation
 
@@ -195,7 +226,7 @@ Choose the surface you already use.
 | Claude Code | `claude plugin marketplace add muend/geoai-skills` then `claude plugin install geoai@geoai-skills` |
 | GitHub Copilot | `gh skill install muend/geoai-skills remote-sensing-analysis` |
 | Skills CLI / compatible agents | `npx skills add muend/geoai-skills` |
-| ChatGPT | Install **GeoAI Skills** from the OpenAI Plugins Directory |
+| ChatGPT | Install **GeoAI Skills** from the OpenAI Plugins Directory when available to your account |
 | Claude.ai / Claude desktop | Upload one or more release ZIP files from the latest GitHub Release |
 
 <details>
@@ -228,9 +259,9 @@ and skill picker.
 <details>
 <summary><strong>OpenAI Codex / ChatGPT plugin</strong></summary>
 
-Version `0.2.0` is published in the OpenAI Plugins Directory as **GeoAI Skills**.
-The repository is a skills-only plugin: it adds no hosted service, authentication
-flow, or MCP server.
+The repository's OpenAI plugin manifest is version `0.4.0`. The repository is a
+skills-only plugin: it adds no hosted service, authentication flow, or MCP
+server. Directory rollout can lag the source manifest.
 
 Build the deterministic upload archive:
 
@@ -238,9 +269,9 @@ Build the deterministic upload archive:
 python tools/build_openai_plugin_bundle.py
 ```
 
-The ignored `dist/` output contains only the plugin manifest, public policy pages,
-logo, and runtime skill files. Evaluation cases, benchmark traces, repository
-automation, and private development material are excluded.
+The ignored `dist/` output contains only the plugin manifest, public policy
+pages, logo, and runtime skill files. Evaluation cases, benchmark traces,
+repository automation, and private development material are excluded.
 
 </details>
 
@@ -305,7 +336,7 @@ python tools/build_skill_archives.py
 ```
 
 Any Agent-Skills-compatible runtime can instead copy directories from `skills/`
-into its skills directory. Real `arcgis-pro-automation` execution additionally
+into its skill directory. Real `arcgis-pro-automation` execution additionally
 requires Windows, licensed ArcGIS Pro, and a configured local
 [`arcgis-mcp-bridge`](https://github.com/muend/arcgis-mcp-bridge).
 
@@ -372,7 +403,7 @@ judgments, require revision, and preserve sensitivity analysis as a deliverable.
 5. **Progressive disclosure.** Long references and scripts cost no context until
    the task actually needs them.
 6. **Measured, not assumed.** Source cases, run evidence, suite hashes, errors,
-   costs, limitations, and superseded results are kept distinguishable.
+   costs, limitations, and superseded results remain distinguishable.
 
 <details>
 <summary><strong>Repository structure</strong></summary>
@@ -390,7 +421,7 @@ geoai-skills/
 ├── benchmarks/                # immutable published evidence packages
 ├── .codex-plugin/             # OpenAI skills-only plugin manifest
 ├── .claude-plugin/            # Claude marketplace and plugin manifests
-├── BENCHMARK.md               # published result card and limitations
+├── BENCHMARK.md               # routing card and limitations
 ├── EVALUATION.md              # provider-neutral evaluation protocol
 ├── CASE_STUDIES.md            # evidence policy and accepted cases
 └── RELEASING.md               # release and rollback runbook
@@ -415,5 +446,4 @@ method, and limitations.
 
 ## License
 
-[MIT](LICENSE) — use it, fork it, and ship it. If GeoAI Skills prevented a
-silent spatial failure, a ⭐ helps the next practitioner find it.
+[MIT](LICENSE) — use it, fork it, and ship it.

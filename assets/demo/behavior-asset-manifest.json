@@ -1,0 +1,56 @@
+{
+  "revision": "behavior-first-paired-20260830",
+  "canvas": [
+    960,
+    540
+  ],
+  "source": {
+    "package": "benchmarks/claude-code-2.1.222--claude-sonnet-5--520bc41dd4c0",
+    "suite_sha256": "520bc41dd4c044d128407ff517f808ba4c39ed24d96898272e70326728082a4f",
+    "run_date": "2026-08-30"
+  },
+  "claim_gate": {
+    "kind": "public_synthetic_intended_behavior",
+    "frames": 6,
+    "durations_ms": [
+      1600,
+      1700,
+      1900,
+      1900,
+      2300,
+      2200
+    ],
+    "claims": [
+      "Successful execution is not proof of a defensible geographic claim.",
+      "The skills require claim preconditions and can narrow or stop an unsupported claim."
+    ],
+    "gif_sha256": "63fcbf57023c02210c446fc0f7b22fbce3c1e4b2e80cb4e2452bf99f122bc872",
+    "poster_sha256": "74b3340d007fd0b308f5d7c17def3af1a6722b3a30f27de28a6b6b540c3ee9a4"
+  },
+  "behavior_evidence": {
+    "kind": "model_judged_uncalibrated_measurement",
+    "frames": 5,
+    "durations_ms": [
+      1700,
+      2300,
+      2300,
+      2300,
+      2600
+    ],
+    "responses_per_condition": 93,
+    "clean_pairs": 92,
+    "criteria": 302,
+    "enabled_criteria_met": 145,
+    "control_criteria_met": 85,
+    "enabled_criterion_coverage": "48.0%",
+    "control_criterion_coverage": "28.1%",
+    "criterion_wins_losses_ties": "65/5/232",
+    "criterion_sign_test_p": "2.2e-14",
+    "enabled_critical_failures": "4/92 (4.3%)",
+    "control_critical_failures": "13/92 (14.1%)",
+    "phase_3_gate": "failed",
+    "qualifier": "One runtime, one model, one run; different-family model judge; uncalibrated; no completed human verification.",
+    "gif_sha256": "bed6005e08a62e412ef7119aa5e22752e082cea6206cb8919f4a6ca60bdad5e9",
+    "poster_sha256": "04156f6b6103e7108f7a41b9570d67b780a1b95dc94d220bbf7a5e0aa9b0670e"
+  }
+}
