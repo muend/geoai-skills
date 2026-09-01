@@ -33,7 +33,7 @@ behavior figures are model-judged, uncalibrated, and not yet human-verified.
 <p align="center">
   <img
     src="assets/demo/geoai-claim-gate.gif"
-    alt="Animated claim gate: a successful geospatial command is checked for CRS, comparability, leakage, validity, and uncertainty before its output is allowed to become a claim"
+    alt="Animated claim gate: a successful geospatial command is checked for comparability, CRS and units, mutual masks and registration, validity, and uncertainty before its output is allowed to become a claim"
     width="960"
   />
 </p>

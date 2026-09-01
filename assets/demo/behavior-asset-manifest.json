@@ -1,15 +1,25 @@
 {
-  "revision": "behavior-first-paired-20260830-v2",
+  "revision": "behavior-first-paired-20260830-editorial-v3",
   "canvas": [
     1200,
     675
   ],
   "animation": {
     "format": "GIF89a",
-    "transition": "four-frame cross-fade",
-    "transition_frame_duration_ms": 70,
+    "transition": "three-frame cross-fade",
+    "transition_frame_duration_ms": 80,
     "palette_colors": 128,
     "disposal": 2
+  },
+  "visual_generation": {
+    "mode": "OpenAI built-in image generation",
+    "model_identifier": "not exposed by the built-in tool",
+    "style_reference": "assets/demo/geoai-guardrail-demo-poster.png",
+    "generated_claim_base_sha256": "84c3c7695ba9e084f7fd46cc9d9d079be1e2a93cc6e6868ba9ec7f0a581e9c67",
+    "generated_behavior_base_sha256": "7ff45e0479927174e82352f17dd3354f1090708560fdde1f84d9a2efcd333c22",
+    "generated_base_role": "text-free cartographic illustration only",
+    "exact_text_generated_by_model": false,
+    "deterministic_overlay": "All typography, metrics, rules, spacing, and GIF timing were rendered programmatically."
   },
   "source": {
     "package": "benchmarks/claude-code-2.1.222--claude-sonnet-5--520bc41dd4c0",
@@ -19,35 +29,35 @@
   "claim_gate": {
     "kind": "public_synthetic_intended_behavior",
     "scenes": 5,
-    "frames": 21,
+    "frames": 17,
     "hold_durations_ms": [
-      2200,
-      2200,
-      2600,
-      2600,
-      2600
+      2400,
+      2700,
+      2700,
+      3200,
+      2800
     ],
-    "total_duration_ms": 13320,
+    "total_duration_ms": 14760,
     "claims": [
       "Successful execution is not proof of a defensible geographic claim.",
       "The skills require claim preconditions and can narrow or stop an unsupported claim."
     ],
-    "gif_sha256": "a10e5a789365ac8acc16042915e436c3eb7e42f9d6046974ba1acf59f00bf55b",
-    "poster_sha256": "e6c3ed63d1af7f669cc7e5412e471689a3126a176c41c1e768d59d04f27e4589"
+    "gif_sha256": "e55b6eb101f816298fa8576ecfa6168e567af65439fcf080bde03c66731ade72",
+    "poster_sha256": "f8884b64829c722b980e1ef3090eed8f817ae2f054e7122017a65ced7b87ef20"
   },
   "behavior_evidence": {
     "kind": "model_judged_uncalibrated_measurement",
     "scenes": 6,
-    "frames": 26,
+    "frames": 21,
     "hold_durations_ms": [
-      2100,
       2500,
-      2500,
-      2400,
-      2900,
-      2900
+      2800,
+      2800,
+      2700,
+      3300,
+      3300
     ],
-    "total_duration_ms": 16700,
+    "total_duration_ms": 18600,
     "responses_per_condition": 93,
     "clean_pairs": 92,
     "criteria": 302,
@@ -66,7 +76,7 @@
     "phase_3_gate": "failed",
     "phase_3_gate_basis": ">=85% cases meeting every criterion and <2% critical failures",
     "qualifier": "One runtime, one model, one run; different-family model judge; uncalibrated; no completed human verification.",
-    "gif_sha256": "659ebe0647c13ce4a847bf77c560f9579e09086833b45eda406412b80aead69a",
-    "poster_sha256": "dee75feab2181392633ed34367f63878f989ce05123dd3198023c7088d7bf70f"
+    "gif_sha256": "f35835bc72eb81bca790f78ba2eeba55daaf8ff2d63b8705201337d0ea4cbed9",
+    "poster_sha256": "266e50916aa8aded5c02690fdd8d6e38b8fe97cf7f603749fc8aeeec05f989ae"
   }
 }
