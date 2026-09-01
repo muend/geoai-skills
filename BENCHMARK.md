@@ -7,7 +7,10 @@ activations across all 167 cases.
 
 These are routing results, not claims about answer quality. They record which
 skill activated, and say nothing about whether the answer that followed was
-correct. **Behavior quality has still never been measured.**
+correct. This card did not measure behavior. The repository's later, separate
+[first paired behavior measurement](benchmarks/claude-code-2.1.222--claude-sonnet-5--520bc41dd4c0/README.md)
+uses a different Claude Code version and suite hash and must not be pooled with
+the routing figures below.
 
 This run exists to test the boundary defect the previous card published. That
 test is the subject of [What this run was for](#what-this-run-was-for), and it
@@ -328,11 +331,13 @@ consumption, not an invoice.
 
 ## What this run does not show
 
-- **Answer quality.** Never measured, in this release or any before it. Routing
-  says a skill activated; it says nothing about whether the answer that followed
-  was correct, safe, or complete. This remains the largest open item in the
-  project and requires a disclosed independent-family judge and the manual
-  review protocol in [EVALUATION.md](EVALUATION.md).
+- **Answer quality.** Routing says a skill activated; it says nothing about
+  whether the answer that followed was correct, safe, or complete. A later
+  package reports a different-family, model-judged paired behavior screen, but
+  it is uncalibrated and has no completed human verification. It therefore does
+  not turn this routing card into an answer-quality benchmark. See the
+  [behavior package](benchmarks/claude-code-2.1.222--claude-sonnet-5--520bc41dd4c0/README.md)
+  and the manual-review protocol in [EVALUATION.md](EVALUATION.md).
 - **That routing improved as a ratio.** The suites are different populations.
   What is shown is case-level: seven previous failures closed, three persist,
   two new ones appeared.
@@ -375,10 +380,12 @@ closed if behavior judgments are present.
 - The held-out half was already spent by the `f03e327a57d2…` run, so it can detect
   a regression but cannot confirm an improvement. Only the 24 blind-authored cases
   are independent in the usual sense.
-- **Behavior quality is not evaluated in this release.** Same-family preliminary
-  judgments are excluded from headline evidence. Behavior metrics require a
-  disclosed independent-family judge and the manual review protocol in
-  [EVALUATION.md](EVALUATION.md).
+- **Behavior quality is not evaluated in this release.** Here, "this release"
+  means this routing card dated 2026-08-05. The separately published 2026-08-30
+  behavior package uses Claude Code `2.1.222`, suite `520bc41dd4c0…`, and a
+  disclosed different-family model judge. Its judgments remain uncalibrated and
+  not human-verified; read them under their own stated limits rather than as an
+  extension of this card.
 - Per-skill samples are small (8–14 cases), so use them as diagnostics rather than
   population estimates. A single miss moves a per-skill recall figure by 11–14
   points.

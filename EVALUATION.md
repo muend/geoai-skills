@@ -1,6 +1,9 @@
 # Evaluation Protocol
 
-GeoAI Skills uses a provider-neutral, deterministic harness. It separates model execution from scoring so raw evidence stays auditable and no API credential or vendor SDK is required by this repository.
+GeoAI Skills uses a provider-neutral, deterministic harness. It separates model
+execution, judging, single-arm scoring, and paired comparison so raw evidence
+stays auditable and no API credential or vendor SDK is required by this
+repository.
 
 The harness measures:
 
@@ -424,6 +427,41 @@ canonical hashes and normalized result bytes therefore remain identical.
 
 Behavior metrics are also partitioned by interaction mode; do not hide a weak mode inside a pooled pass rate. The critical gate passes only when at least one critical case was evaluated and zero critical failures were observed. When the observed count is zero, `zero_failure_upper_bound_95` reports the exact one-sided 95% Clopper-Pearson upper bound, `1 - 0.05^(1/n)`. This bound must be disclosed with `n`; zero observed failures is not evidence that the true failure rate is zero. No `<2%` critical-failure claim is permitted unless this upper bound is below 0.02, which requires at least 149 independent critical cases with zero observed failures.
 
+## 5. Compare paired conditions
+
+`eval_runner.py score` evaluates one condition. Use `paired_analysis.py` to join
+the skills-enabled and skills-disabled arms only after their suite hash and run
+identity are fixed:
+
+```bash
+python tools/paired_analysis.py \
+  --suite <suite-sha256-prefix> \
+  --runtime <directory-name-runtime-prefix> \
+  --enabled-judgments /path/to/enabled-judgments.json \
+  --disabled-judgments /path/to/disabled-judgments.json \
+  --json /path/to/paired-report.json
+```
+
+Execution comparison is always available and needs no judgment files. Judgment
+comparison activates only when **both** criterion-preserving judgment sets are
+provided. It reports case- and criterion-level win/loss/tie counts, exact
+two-sided binomial sign tests over discordant pairs, and per-skill diagnostics.
+The JSON report is the machine-readable source for published paired figures.
+
+Run-directory matching is exact. A retry or diagnostic directory cannot replace
+a primary run, and an ambiguous match fails closed; pass `--runtime` when more
+than one runtime prepared the same suite. The analysis is read-only over run
+directories and writes only the requested report. It does not call a model,
+alter the frozen suite, repair missing judgments, or replace an execution error
+with a retry.
+
+Do not interpret a tie as a pass. Report the number of discordant pairs on which
+the sign test rests, disclose criteria that cannot separate the arms by
+construction, and keep execution, activation, behavior, and critical-failure
+results distinct.
+
+## 6. Publish sanitized evidence
+
 To publish an enabled run and its disabled-skills control without exposing raw
 responses or traces:
 
@@ -452,6 +490,8 @@ routing and behavior claims cannot be accidentally conflated.
 - [ ] Use exact manifest criteria when judging.
 - [ ] Prefer an independent model family and label any same-family judgment preliminary.
 - [ ] Review every critical/error case and at least 20% of the remaining judgments manually.
+- [ ] Compare paired arms by exact suite/runtime identity and retain the JSON paired report.
+- [ ] Report wins, losses, ties, discordant sample size, and errors; never replace a primary error with a retry.
 - [ ] Publish suite hash, judge identity, sample size, and missing/error counts with every metric.
 - [ ] Require zero observed critical failures and disclose the exact one-sided 95% upper bound with its evaluated case count.
 - [ ] Never compare runs whose suite hashes differ without disclosing the suite change.
