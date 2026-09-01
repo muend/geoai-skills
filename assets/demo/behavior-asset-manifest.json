@@ -1,9 +1,16 @@
 {
-  "revision": "behavior-first-paired-20260830",
+  "revision": "behavior-first-paired-20260830-v2",
   "canvas": [
-    960,
-    540
+    1200,
+    675
   ],
+  "animation": {
+    "format": "GIF89a",
+    "transition": "four-frame cross-fade",
+    "transition_frame_duration_ms": 70,
+    "palette_colors": 128,
+    "disposal": 2
+  },
   "source": {
     "package": "benchmarks/claude-code-2.1.222--claude-sonnet-5--520bc41dd4c0",
     "suite_sha256": "520bc41dd4c044d128407ff517f808ba4c39ed24d96898272e70326728082a4f",
@@ -11,32 +18,36 @@
   },
   "claim_gate": {
     "kind": "public_synthetic_intended_behavior",
-    "frames": 6,
-    "durations_ms": [
-      1600,
-      1700,
-      1900,
-      1900,
-      2300,
-      2200
+    "scenes": 5,
+    "frames": 21,
+    "hold_durations_ms": [
+      2200,
+      2200,
+      2600,
+      2600,
+      2600
     ],
+    "total_duration_ms": 13320,
     "claims": [
       "Successful execution is not proof of a defensible geographic claim.",
       "The skills require claim preconditions and can narrow or stop an unsupported claim."
     ],
-    "gif_sha256": "63fcbf57023c02210c446fc0f7b22fbce3c1e4b2e80cb4e2452bf99f122bc872",
-    "poster_sha256": "74b3340d007fd0b308f5d7c17def3af1a6722b3a30f27de28a6b6b540c3ee9a4"
+    "gif_sha256": "a10e5a789365ac8acc16042915e436c3eb7e42f9d6046974ba1acf59f00bf55b",
+    "poster_sha256": "e6c3ed63d1af7f669cc7e5412e471689a3126a176c41c1e768d59d04f27e4589"
   },
   "behavior_evidence": {
     "kind": "model_judged_uncalibrated_measurement",
-    "frames": 5,
-    "durations_ms": [
-      1700,
-      2300,
-      2300,
-      2300,
-      2600
+    "scenes": 6,
+    "frames": 26,
+    "hold_durations_ms": [
+      2100,
+      2500,
+      2500,
+      2400,
+      2900,
+      2900
     ],
+    "total_duration_ms": 16700,
     "responses_per_condition": 93,
     "clean_pairs": 92,
     "criteria": 302,
@@ -46,11 +57,16 @@
     "control_criterion_coverage": "28.1%",
     "criterion_wins_losses_ties": "65/5/232",
     "criterion_sign_test_p": "2.2e-14",
+    "enabled_all_criteria_met": "18/92 (19.6%)",
+    "control_all_criteria_met": "6/92 (6.5%)",
+    "all_criteria_wins_losses_ties": "42/3/47",
+    "all_criteria_sign_test_p": "8.7e-10",
     "enabled_critical_failures": "4/92 (4.3%)",
     "control_critical_failures": "13/92 (14.1%)",
     "phase_3_gate": "failed",
+    "phase_3_gate_basis": ">=85% cases meeting every criterion and <2% critical failures",
     "qualifier": "One runtime, one model, one run; different-family model judge; uncalibrated; no completed human verification.",
-    "gif_sha256": "bed6005e08a62e412ef7119aa5e22752e082cea6206cb8919f4a6ca60bdad5e9",
-    "poster_sha256": "04156f6b6103e7108f7a41b9570d67b780a1b95dc94d220bbf7a5e0aa9b0670e"
+    "gif_sha256": "659ebe0647c13ce4a847bf77c560f9579e09086833b45eda406412b80aead69a",
+    "poster_sha256": "dee75feab2181392633ed34367f63878f989ce05123dd3198023c7088d7bf70f"
   }
 }
