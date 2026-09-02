@@ -37,6 +37,7 @@ def test_runtime_hash_documents_are_lf_normalized_on_every_checkout() -> None:
     """Pinned manifest bytes must not vary between Windows and POSIX checkouts."""
     attributes = (ROOT / ".gitattributes").read_text(encoding="utf-8")
 
+    assert "LICENSE text eol=lf" in attributes.splitlines()
     assert "evals/runtime-hashes/*.json text eol=lf" in attributes.splitlines()
 
 
