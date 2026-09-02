@@ -16,6 +16,7 @@ support, what they do not support, and what must happen next.
 | Paired behavior measurement | 92 clean pairs and 302 pinned criteria, suite `520bc41dd4c0…` | Skills improved the measured run, but the project quality gate failed; model-judged and not human-verified |
 | External transfer suite | 5 frozen GeoAnalystBench-derived synthetic cases | Deterministic fixtures and artifact validators; reported separately from native metrics |
 | Packaging | Codex, Claude, GitHub Copilot, Skills CLI, per-skill release ZIPs | Windows, macOS, and Linux CI; deterministic archives and checksum manifest |
+| Runtime integrity | Immutable schema-v2 full-tree registry | `runtime-v1` covers all packaged skill bytes while retaining the legacy native suite SHA unchanged |
 | Real-world evidence | No accepted reproducible case | Open gap; illustrative examples are not testimonials |
 
 Routing and behavior are different measurements on different runtime versions
@@ -27,6 +28,9 @@ and suite hashes. They must not be pooled. Read [BENCHMARK.md](BENCHMARK.md) and
 The next release is an evidence and reliability release, not a collection-size
 release.
 
+- [x] Freeze the complete runtime skill tree independently of the legacy native
+  suite identity; future skill changes append a parent-linked freeze rather
+  than rewriting earlier SHA-256 evidence.
 - [ ] Complete the arm-blinded human review and adjudication of the prepared
   47-case behavior sample. Publish agreement and disagreements, not only a
   corrected headline.

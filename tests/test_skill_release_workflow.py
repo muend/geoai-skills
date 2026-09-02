@@ -46,6 +46,9 @@ def test_release_workflow_builds_checksums_without_overwrite() -> None:
     text = workflow_text()
 
     assert "tools/build_skill_archives.py" in text
+    assert text.count(
+        "python tools/build_runtime_hash_registry.py --check-runtime-only"
+    ) == 2
     assert "--expected-version" in text
     assert "sha256sum --check SHA256SUMS" in text
     assert "dist/skills/*.zip" in text

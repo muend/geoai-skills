@@ -39,6 +39,8 @@ jobs:
         run: python tools/validate_skills.py
       - name: Validate evaluation suite
         run: python tools/validate_evals.py
+      - name: Validate immutable runtime hash lineage
+        run: python tools/build_runtime_hash_registry.py --check
       - name: Validate external evaluation suites
         run: python tools/validate_external_evals.py
       - name: Check regression gates

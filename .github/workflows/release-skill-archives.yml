@@ -25,6 +25,8 @@ jobs:
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
+      - name: Verify immutable runtime inputs
+        run: python tools/build_runtime_hash_registry.py --check-runtime-only
       - name: Build deterministic release-candidate archives
         env:
           VERSION: "${{ inputs.version }}"
@@ -59,6 +61,8 @@ jobs:
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
+      - name: Verify immutable runtime inputs
+        run: python tools/build_runtime_hash_registry.py --check-runtime-only
       - name: Build deterministic skill archives
         env:
           TAG: "${{ github.event.release.tag_name }}"

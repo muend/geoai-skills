@@ -27,6 +27,7 @@ def test_runbook_checks_every_evidence_layer_before_release() -> None:
     text = RUNBOOK.read_text(encoding="utf-8")
 
     assert "python tools/validate_external_evals.py" in text
+    assert "python tools/build_runtime_hash_registry.py --check" in text
     assert "ROADMAP.md" in text
     assert "BENCHMARK.md" in text
     assert "BEHAVIOR.md" in text

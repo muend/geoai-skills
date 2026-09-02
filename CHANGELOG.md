@@ -7,6 +7,11 @@ the packaging manifests; individual skills do not carry their own version.
 ## [Unreleased]
 
 ### Added
+- An immutable schema-v2 runtime hash registry covering every file shipped from
+  each skill plus the shared release license. It preserves the existing native
+  suite SHA algorithm, records a byte-level parent lineage for future runtime
+  freezes, refuses to overwrite prior freezes, and is enforced in CI and the
+  release preflight.
 - A canonical public `ROADMAP.md` that replaces stale task counts with the
   shipped 18-skill, 167-case routing state, the separate 92-pair behavior state,
   explicit open evidence gaps, and a fail-closed `v0.5.0` gate.

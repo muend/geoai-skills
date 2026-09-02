@@ -30,6 +30,7 @@ python -m ruff check .
 python -m mypy tools/
 python tools/validate_skills.py
 python tools/validate_evals.py
+python tools/build_runtime_hash_registry.py --check
 python tools/validate_external_evals.py
 python tools/check_links.py
 python tools/build_split.py

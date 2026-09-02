@@ -15,6 +15,42 @@ The harness measures:
 
 No benchmark claim should be published without the raw response cache, the exact suite hash, the runtime and model identifiers, the run condition, and the judge identity.
 
+## Immutable runtime hash lineage
+
+Legacy `skill_sha256`, `case_sha256`, and `suite_sha256` values remain under
+their original algorithm and are never recalculated under a new definition.
+They bind `SKILL.md` to the normalized evaluation contract and fixture bytes.
+
+The separate schema-v2 registry at `evals/runtime-hashes/registry.json` covers
+the wider installation boundary. It hashes the exact per-skill inputs accepted
+by the release archive builder: `SKILL.md` and files under `agents/`, `assets/`,
+`references/`, and `scripts/`. The shared root `LICENSE` is also included in a
+release-input digest. Evaluation sources and private planning material remain
+outside this runtime identity.
+
+Verify the current freeze with:
+
+```bash
+python tools/build_runtime_hash_registry.py --check
+```
+
+The release workflow uses `--check-runtime-only`, which needs only Python's
+standard library and verifies the exact packaged bytes. Full CI uses `--check`
+and additionally recomputes the legacy native suite identity.
+
+A runtime change must append a new freeze on the complete candidate branch; it
+must never rewrite an earlier freeze:
+
+```bash
+python tools/build_runtime_hash_registry.py --write-next runtime-v2
+```
+
+The new freeze records the parent manifest and runtime digests, every changed
+file, and every changed skill. Its canonical manifest SHA must then be added to
+the validator's explicit pin set. CI rejects an unpinned freeze, so the candidate
+branch remains unmergeable until its lineage is reviewed and all benchmark
+gates pass.
+
 ## Contract
 
 The canonical case definitions live outside the runtime skill trees in
