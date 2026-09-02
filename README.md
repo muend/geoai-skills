@@ -18,7 +18,7 @@ reported, and when the available data cannot support the requested conclusion.
 [![Skills](https://img.shields.io/badge/skills-18-brightgreen.svg)](#the-18-skill-stack)
 [![Routing precision](https://img.shields.io/badge/routing_precision-99.17%25-2ea44f.svg)](BENCHMARK.md)
 [![Routing recall](https://img.shields.io/badge/routing_recall-96.77%25-2ea44f.svg)](BENCHMARK.md)
-[![Behavior pairs](https://img.shields.io/badge/behavior-92_paired_cases-f0ad4e.svg)](benchmarks/claude-code-2.1.222--claude-sonnet-5--520bc41dd4c0/README.md)
+[![Behavior pairs](https://img.shields.io/badge/behavior-92_paired_cases-f0ad4e.svg)](BEHAVIOR.md)
 [![Critical failures](https://img.shields.io/badge/critical_failures-14.1%25_%E2%86%92_4.3%25-2ea44f.svg)](benchmarks/claude-code-2.1.222--claude-sonnet-5--520bc41dd4c0/README.md)
 [![Browse on skills.sh](https://img.shields.io/badge/skills.sh-browse-111111.svg)](https://www.skills.sh/muend/geoai-skills)
 [![Spec](https://img.shields.io/badge/agentskills.io-compliant-orange.svg)](https://agentskills.io)
@@ -197,8 +197,10 @@ and eleven execution errors; all remain in the card. Routing says which skill
 loaded, not whether the answer was correct.
 
 Read [BENCHMARK.md](BENCHMARK.md) for routing and known defects, and
+[BEHAVIOR.md](BEHAVIOR.md) for the separate behavior card. See
 [EVALUATION.md](EVALUATION.md) for the provider-neutral prepare → execute →
-judge → score → compare protocol and publication gates.
+judge → score → compare protocol and [ROADMAP.md](ROADMAP.md) for the open
+evidence and release gates.
 
 If you want measured, pre-registered evidence like this to keep being published,
 star the repository so the work is easier to find and sustain.
@@ -416,15 +418,17 @@ geoai-skills/
 │   ├── agents/openai.yaml
 │   ├── scripts/
 │   └── references/
-├── evals/cases/<skill>/       # native development-only cases
+├── evals/cases/<skill>/       # native cases governed by the committed split
 ├── evals/external/            # separately reported transfer suites
 ├── tools/                     # validators, adapters, builders, and gates
 ├── benchmarks/                # immutable published evidence packages
 ├── .codex-plugin/             # OpenAI skills-only plugin manifest
 ├── .claude-plugin/            # Claude marketplace and plugin manifests
 ├── BENCHMARK.md               # routing card and limitations
+├── BEHAVIOR.md                # paired behavior card and open quality gate
 ├── EVALUATION.md              # provider-neutral evaluation protocol
 ├── CASE_STUDIES.md            # evidence policy and accepted cases
+├── ROADMAP.md                 # canonical current priorities and release gate
 └── RELEASING.md               # release and rollback runbook
 ```
 
@@ -433,6 +437,10 @@ geoai-skills/
 ## Contributing
 
 Contributions are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md).
+A current task must also respect [ROADMAP.md](ROADMAP.md), while questions and
+reproducible defects belong in the channels described by
+[SUPPORT.md](SUPPORT.md). Project and evidence decisions follow
+[GOVERNANCE.md](GOVERNANCE.md).
 A skill change should:
 
 - pass the structural and link validators;

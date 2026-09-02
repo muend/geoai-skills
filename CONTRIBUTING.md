@@ -3,6 +3,11 @@
 Contributions are welcome — new skills, fixes to existing ones, better evals,
 and real-world failure reports all count.
 
+Before starting, read [ROADMAP.md](ROADMAP.md). The current priority is behavior
+quality, independent review, real-world evidence, and runtime replication—not
+increasing the skill count. Use [SUPPORT.md](SUPPORT.md) to choose between a
+public issue and a private security report.
+
 ## Ground rules
 
 1. **One skill = one folder** under `skills/`, named in kebab-case, containing
@@ -42,6 +47,23 @@ python tools/validate_skills.py   # must pass with 0 errors
 
 Open a PR describing: what the skill covers, why it is not overlap with an
 existing skill, and one real task where it changed the outcome.
+
+For any repository change, run the checks that apply:
+
+```bash
+python tools/validate_skills.py
+python tools/validate_evals.py
+python tools/validate_external_evals.py
+python tools/check_regression_gates.py
+python tools/check_links.py
+python -m ruff check .
+python -m mypy tools/
+python -m pytest -q
+```
+
+Do not edit a spent held-out case to make a measured result pass. Add a fresh,
+declared development case for a fix and reserve independently authored cases
+for the next preregistered measurement.
 
 ## Testing a skill for real
 

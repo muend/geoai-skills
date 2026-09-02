@@ -30,12 +30,17 @@ python -m ruff check .
 python -m mypy tools/
 python tools/validate_skills.py
 python tools/validate_evals.py
+python tools/validate_external_evals.py
 python tools/check_links.py
 python tools/build_split.py
 python tools/check_regression_gates.py
 python tools/build_openai_plugin_bundle.py
-python tools/build_skill_archives.py --expected-version 0.4.0
+python tools/build_skill_archives.py --expected-version <version>
 ```
+
+Replace `<version>` with the exact SemVer already declared by all four
+manifests. Do not copy a version from the latest tag: a release candidate must
+have its own intended version before it is built.
 
 Record the candidate commit, Python version, operating system, package version,
 test totals, archive count, and `SHA256SUMS` result. A warning, skipped
@@ -101,7 +106,7 @@ Release, or release asset. Only the separate `release: published` job has
 Use a new temporary directory or a disposable user profile for every row.
 Do not reuse an existing skill cache. For pre-release tests, replace
 `<candidate-ref>` with the exact candidate commit SHA; after publication, use
-`v0.4.0`.
+`v<version>`.
 
 Record the installed Skills CLI version and set `DISABLE_TELEMETRY=1` for
 verification runs so the release check does not emit optional usage telemetry.
@@ -171,12 +176,14 @@ Publishing requires explicit maintainer approval after all applicable rows pass.
 Immediately before approval, confirm:
 
 1. the candidate commit is the intended `main` commit;
-2. `v0.4.0` does not already exist;
-3. release notes match `CHANGELOG.md`;
-4. the repository tree and generated archives contain no secrets or private
+2. `v<version>` does not already exist locally or on the remote;
+3. every applicable release gate in `ROADMAP.md` is satisfied or an explicit
+   retained limitation is written into the release notes;
+4. release notes match `CHANGELOG.md`, `BENCHMARK.md`, and `BEHAVIOR.md`;
+5. the repository tree and generated archives contain no secrets or private
    development material;
-5. the GitHub Actions release job will build from the exact tag;
-6. marketplace metadata and public policy URLs are current.
+6. the GitHub Actions release job will build from the exact tag;
+7. marketplace metadata and public policy URLs are current.
 
 Publishing the GitHub Release triggers deterministic archive generation and
 attaches the 18 ZIP files plus `SHA256SUMS`. Do not upload locally rebuilt

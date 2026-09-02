@@ -11,20 +11,25 @@ README = ROOT / "README.md"
 RUNBOOK = ROOT / "RELEASING.md"
 
 
-def test_runbook_tracks_the_current_package_version() -> None:
-    """RELEASING.md must name the version the manifests actually declare.
-
-    The hard-coded `version == "0.2.0"` line was removed: it broke on every
-    release bump and duplicated a check `package_version` already performs. The
-    surviving assertions are the ones that matter — they fail when the runbook
-    is left pointing at a previous release, which is the drift worth catching.
-    """
+def test_runbook_uses_candidate_version_placeholders() -> None:
+    """The reusable runbook must not become false after a release is published."""
     text = RUNBOOK.read_text(encoding="utf-8")
     version = archives.package_version(ROOT)
 
-    assert f"`v{version}` does not already exist" in text
-    assert f"after publication, use\n`v{version}`" in text
-    assert f"--expected-version {version}" in text
+    assert "`v<version>` does not already exist" in text
+    assert "after publication, use\n`v<version>`" in text
+    assert "--expected-version <version>" in text
+    assert f"`v{version}` does not already exist" not in text
+
+
+def test_runbook_checks_every_evidence_layer_before_release() -> None:
+    """Release instructions must include external and behavior evidence."""
+    text = RUNBOOK.read_text(encoding="utf-8")
+
+    assert "python tools/validate_external_evals.py" in text
+    assert "ROADMAP.md" in text
+    assert "BENCHMARK.md" in text
+    assert "BEHAVIOR.md" in text
 
 
 def test_runbook_covers_every_documented_installation_surface() -> None:

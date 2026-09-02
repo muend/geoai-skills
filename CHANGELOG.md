@@ -7,6 +7,21 @@ the packaging manifests; individual skills do not carry their own version.
 ## [Unreleased]
 
 ### Added
+- A canonical public `ROADMAP.md` that replaces stale task counts with the
+  shipped 18-skill, 167-case routing state, the separate 92-pair behavior state,
+  explicit open evidence gaps, and a fail-closed `v0.5.0` gate.
+- Root-level `BEHAVIOR.md`, `SUPPORT.md`, and `GOVERNANCE.md` documents so the
+  behavior boundary, reporting channels, and evidence/release decisions are
+  discoverable without reading private planning history.
+- Cross-document navigation and contribution rules that keep routing, behavior,
+  external transfer, and real-world evidence separate and forbid tuning against
+  spent held-out outcomes.
+- Release instructions now use a candidate-version placeholder instead of
+  becoming false as soon as the current tag is published, validate the external
+  suite, and check the roadmap and behavior card before publication. Tests pin
+  the generated repository counts and published behavior metrics to the new
+  project-state documents.
+
 - **First behaviour measurement.** A paired run over the 93 behaviour-evaluable
   cases of the shipped suite (`--scope behavior`, suite `520bc41dd4c0…`), both
   skills-enabled and a skills-disabled control, on Claude Code `2.1.222` with

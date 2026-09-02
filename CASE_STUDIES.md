@@ -16,11 +16,12 @@ are not published benchmark results or verified user testimonials.
 
 ## Reproducible real-world cases
 
-No cases have been accepted yet. Add a case through a pull request containing:
+**Current accepted count: 0.** No real-world adoption or outcome claim is made
+from the illustrative examples above. Add a case through a pull request
+containing:
 
 1. a dated, privacy-safe problem statement;
 2. a public or synthetic minimal reproducer;
 3. behavior without and with the relevant skill;
 4. the verification method and artifacts;
 5. limitations and environment details.
-
