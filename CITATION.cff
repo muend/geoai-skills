@@ -10,6 +10,13 @@ date-released: "2026-09-03"
 license: MIT
 repository-code: "https://github.com/muend/geoai-skills"
 url: "https://github.com/muend/geoai-skills/releases/tag/v0.4.1"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.22288662"
+    description: "Concept DOI. Resolves to the latest archived version; cite this when referring to the project."
+  - type: doi
+    value: "10.5281/zenodo.22288663"
+    description: "Version DOI for v0.4.1. Cite this when a claim depends on the exact archived artifact."
 keywords:
   - GeoAI
   - geospatial

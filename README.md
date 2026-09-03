@@ -21,6 +21,7 @@ reported, and when the available data cannot support the requested conclusion.
 [![Behavior pairs](https://img.shields.io/badge/behavior-92_paired_cases-f0ad4e.svg)](BEHAVIOR.md)
 [![Critical failures](https://img.shields.io/badge/critical_failures-14.1%25_%E2%86%92_4.3%25-2ea44f.svg)](benchmarks/claude-code-2.1.222--claude-sonnet-5--520bc41dd4c0/README.md)
 [![Browse on skills.sh](https://img.shields.io/badge/skills.sh-browse-111111.svg)](https://www.skills.sh/muend/geoai-skills)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22288662.svg)](https://doi.org/10.5281/zenodo.22288662)
 [![Spec](https://img.shields.io/badge/agentskills.io-compliant-orange.svg)](https://agentskills.io)
 
 Two measurements are shown above and they are deliberately not pooled. The
