@@ -66,6 +66,25 @@ Then: normalize text attributes (trim, collapse whitespace, locale-aware
 casefold — beware Turkish İ/ı, German ß), coerce dtypes explicitly, and show
 `value_counts()` of every categorical you will later filter on.
 
+## Every conversion needs a stage ledger
+
+Format conversion is a data transformation, not a file-copy operation. After
+**every** read, coordinate extraction, geometry reconstruction, reprojection and
+write, record at least:
+
+- row or feature count in and out;
+- null and empty geometry counts;
+- valid and invalid geometry counts;
+- CRS identifier and coordinate units; and
+- numeric extent in that CRS.
+
+Reconcile each stage with the preceding stage and explain every difference.
+CSV coordinates carry no CRS metadata: preserve the verified source CRS in a
+sidecar or require an explicit assignment from authoritative metadata. Never
+infer a CRS from coordinate ranges alone. Reopen the final artifact and repeat
+the ledger checks so a writer that dropped CRS or geometry information cannot
+pass on in-memory state.
+
 ## Scale strategies
 
 - **Fits in RAM**: GeoPandas + Shapely 2 vectorized ops. Ensure the spatial
