@@ -27,6 +27,7 @@ SCHEMA_VERSION = 2
 FREEZE_ID_PATTERN = re.compile(r"^runtime-v[1-9][0-9]*$")
 PINNED_MANIFEST_SHA256 = {
     "runtime-v1": "1948103a38d3b360365249dab5126b74d5c0e733482e7f84aefad72f84810375",
+    "runtime-v2": "3e4f8bb26bc0c131e1890e4b7baa28fda2c3dc090ebc82f3849ea3072c6ebfcc",
 }
 
 
@@ -111,6 +112,7 @@ def lineage(
     candidate_shared: list[dict[str, Any]],
     *,
     parent_manifest_sha256: str,
+    candidate_package_version: str | None = None,
 ) -> dict[str, Any]:
     """Describe every byte-level change from a parent runtime freeze."""
     candidate = {
@@ -152,13 +154,21 @@ def lineage(
         for skill in before_skills.keys() | after_skills.keys()
         if before_skills.get(skill) != after_skills.get(skill)
     )
-    return {
+    result: dict[str, Any] = {
         "changed_files": changes,
         "changed_skills": changed_skills,
         "parent_freeze_id": parent["freeze_id"],
         "parent_manifest_sha256": parent_manifest_sha256,
         "parent_runtime_tree_sha256": parent["runtime_tree_sha256"],
     }
+    if candidate_package_version is not None:
+        parent_version = str(parent.get("package_version", ""))
+        if parent_version != candidate_package_version:
+            result["package_version_change"] = {
+                "after": candidate_package_version,
+                "before": parent_version,
+            }
+    return result
 
 
 def build_freeze(
@@ -205,6 +215,7 @@ def build_freeze(
             skills,
             shared,
             parent_manifest_sha256=parent_manifest_sha256,
+            candidate_package_version=str(payload["package_version"]),
         )
     return payload
 
@@ -430,7 +441,10 @@ def write_next_freeze(root: Path, freeze_id: str) -> None:
         parent=parent,
         parent_manifest_sha256=parent_entry["manifest_sha256"],
     )
-    if not payload["lineage"]["changed_files"]:
+    if (
+        not payload["lineage"]["changed_files"]
+        and "package_version_change" not in payload["lineage"]
+    ):
         raise ValueError("runtime sources are unchanged; a new freeze would add no evidence")
     manifest_path = registry_path.parent / f"{freeze_id}.json"
     if manifest_path.exists():

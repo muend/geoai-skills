@@ -1,11 +1,19 @@
 {
-  "current_freeze_id": "runtime-v1",
+  "current_freeze_id": "runtime-v2",
   "freezes": [
     {
       "freeze_id": "runtime-v1",
       "legacy_native_suite_sha256": "efe27d8c1736c80fd001cfd1e037c8fe5d6f013767d0c710a151250ffeeb8e77",
       "manifest_path": "runtime-v1.json",
       "manifest_sha256": "1948103a38d3b360365249dab5126b74d5c0e733482e7f84aefad72f84810375",
+      "release_input_sha256": "fa0edea169c1e58831d6cfb173fa46aba7afd619e73ca1d67e3868f49ce51f73",
+      "runtime_tree_sha256": "65023155d5324da86ce08f3aafadd9f52a3f9dc5fe7e3b0755aa4baef829a04e"
+    },
+    {
+      "freeze_id": "runtime-v2",
+      "legacy_native_suite_sha256": "efe27d8c1736c80fd001cfd1e037c8fe5d6f013767d0c710a151250ffeeb8e77",
+      "manifest_path": "runtime-v2.json",
+      "manifest_sha256": "3e4f8bb26bc0c131e1890e4b7baa28fda2c3dc090ebc82f3849ea3072c6ebfcc",
       "release_input_sha256": "fa0edea169c1e58831d6cfb173fa46aba7afd619e73ca1d67e3868f49ce51f73",
       "runtime_tree_sha256": "65023155d5324da86ce08f3aafadd9f52a3f9dc5fe7e3b0755aa4baef829a04e"
     }

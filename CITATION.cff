@@ -5,11 +5,11 @@ type: software
 authors:
   - family-names: "Duran"
     given-names: "Muhammed Enes"
-version: "0.4.0"
-date-released: "2026-08-05"
+version: "0.4.1"
+date-released: "2026-09-03"
 license: MIT
 repository-code: "https://github.com/muend/geoai-skills"
-url: "https://github.com/muend/geoai-skills/releases/tag/v0.4.0"
+url: "https://github.com/muend/geoai-skills/releases/tag/v0.4.1"
 keywords:
   - GeoAI
   - geospatial
