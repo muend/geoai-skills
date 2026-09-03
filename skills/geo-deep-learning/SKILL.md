@@ -58,6 +58,23 @@ or thresholded index). If the DL model can't beat it clearly, the problem is
 data, not architecture. `segmentation-models-pytorch` and `torchgeo` cover
 most needs — don't hand-build architectures without a reason.
 
+## Privacy and unsupported inference
+
+A detectable object is not automatically a defensible proxy for a sensitive
+attribute. Roof or dwelling detections establish structures; they do **not**
+establish household occupancy, identity, legal status, health, income or need.
+Refuse to assign or publish such inferred attributes at an identifiable object
+or household level unless direct, consented and validated evidence supports the
+specific inference and release is authorized.
+
+Offer a privacy-preserving product instead: aggregate detections to a declared
+reporting unit, suppress small groups and publish uncertainty. For public
+human-settlement outputs, use at least 10 dwellings per released cell unless a
+documented risk assessment requires a stricter threshold. Record the imagery
+source, acquisition date and licence, the aggregation and suppression rules,
+and the limitations of any remaining proxy. Aid or public-interest framing does
+not remove these requirements.
+
 ## Chipping (dataset construction)
 
 - Chip size: 256–512 px; stride < chip size only for training (overlap

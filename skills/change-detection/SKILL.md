@@ -1,17 +1,16 @@
 ---
 name: change-detection
 description: >-
-  Change analysis, once the observations are comparable. Not for cases whose
-  blocker is comparability itself: mixed sensors, product levels or processing
-  baselines to remote-sensing-analysis, undocumented vertical datums to
-  point-cloud-lidar, multi-decade archive trends over large areas to
-  google-earth-engine. Matching product level does not prove comparability.
-  Otherwise invoke for what, where or how much changed: two-scene comparison,
-  deforestation, urban growth, disaster damage, parcel-change audits,
-  bi-temporal differencing, post-classification comparison, adjusted area,
-  break detection in a series in hand (BFAST/LandTrendr/CCDC). Seasonal
-  mismatch is this skill's own confounder; a documented datum with a stated
-  accuracy budget is settled comparability. Keep both.
+  Change analysis, once observations are comparable. Route blockers: mixed
+  sensors, product levels or processing baselines to remote-sensing-analysis;
+  undocumented vertical datums to point-cloud-lidar; multi-decade archive
+  trends over large areas to google-earth-engine. Matching product level does
+  not prove comparability. Otherwise invoke for what, where or how much changed:
+  two-scene comparison, deforestation, urban growth, disaster damage,
+  parcel-change audits, differencing, post-classification comparison, adjusted
+  area, or break detection in a series in hand. Seasonal mismatch is this
+  skill's own confounder; a documented datum with a stated accuracy budget is
+  settled comparability.
 license: MIT
 metadata:
   author: Muhammed Enes Duran
