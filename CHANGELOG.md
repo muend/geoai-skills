@@ -6,6 +6,22 @@ the packaging manifests; individual skills do not carry their own version.
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-09-03
+
+An evidence and documentation release. No skill file changed: the runtime tree
+hash is byte-identical to `v0.4.0`, and `runtime-v2` records that identity
+alongside the version delta rather than asserting it in prose.
+
+### Fixed
+- The runtime hash preflight could not release an unchanged skill tree. The
+  freeze records `package_version`, so a version bump made the current freeze
+  stale, while `--write-next` refused any candidate whose files were unchanged.
+  Together they blocked every release that did not edit a skill — which is every
+  evidence-only release this project intends to cut. A version-only bump is now
+  recorded as a freeze carrying `package_version_change` and an unchanged
+  `runtime_tree_sha256`; a candidate identical in both files and version is
+  still refused. A test pins both directions.
+
 ### Added
 - An immutable schema-v2 runtime hash registry covering every file shipped from
   each skill plus the shared release license. It preserves the existing native

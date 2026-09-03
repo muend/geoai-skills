@@ -21,6 +21,7 @@ reported, and when the available data cannot support the requested conclusion.
 [![Behavior pairs](https://img.shields.io/badge/behavior-92_paired_cases-f0ad4e.svg)](BEHAVIOR.md)
 [![Critical failures](https://img.shields.io/badge/critical_failures-14.1%25_%E2%86%92_4.3%25-2ea44f.svg)](benchmarks/claude-code-2.1.222--claude-sonnet-5--520bc41dd4c0/README.md)
 [![Browse on skills.sh](https://img.shields.io/badge/skills.sh-browse-111111.svg)](https://www.skills.sh/muend/geoai-skills)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22288662.svg)](https://doi.org/10.5281/zenodo.22288662)
 [![Spec](https://img.shields.io/badge/agentskills.io-compliant-orange.svg)](https://agentskills.io)
 
 Two measurements are shown above and they are deliberately not pooled. The
@@ -87,6 +88,7 @@ claim that every other skill collection is interchangeable or inferior.
 |---|---|---|
 | [OpenMapStack](https://github.com/jaakla/openmapstack) | An open-first, reproducible GIS project contract with a CLI, templates, artifact validation, and worked output | GeoAI Skills is not an execution framework. It supplies separately routed method specialists across proprietary and open stacks, with claim-narrowing and refusal conditions before or around execution. |
 | [geospatial-skills](https://github.com/isaaccorley/geospatial-skills) | Separately installable skills for tools, formats, catalogues, viewers, and large-scale pipelines | GeoAI Skills organizes around analytical decisions and failure modes—leakage, comparability, inference, uncertainty, measurement, and safe mutation—rather than a tool catalogue. |
+| [geoai-skills](https://github.com/opengeos/geoai-skills) (opengeos) | Capability skills over the GeoAI Python library: inspect, search, download, process, and detect | Same repository name, different layer. That project performs geospatial operations; GeoAI Skills governs whether their output may become a claim, and is library-neutral rather than built on one stack. They compose. |
 | [GIS Agent Skills](https://github.com/danmaps/gis-agent-skills) | Practical ArcGIS/GIS workflow, readiness, schema, publishing, and post-run checklists | GeoAI Skills spans the full data-to-claim lifecycle and evaluates cross-skill routing boundaries as well as behavior. |
 | [MapLibre Agent Skills](https://github.com/maplibre/maplibre-agent-skills) and [Mapbox Agent Skills](https://github.com/mapbox/mapbox-agent-skills) | Deep platform-specific mapping implementation; MapLibre also distinguishes eval-verified and provisional skills | GeoAI Skills is platform-neutral and extends beyond application delivery into remote sensing, spatial inference, geostatistics, accessibility, ML validation, LiDAR, terrain, and databases. |
 | [GeoMaster](https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/geomaster) | One broad, example-rich geospatial science skill | GeoAI Skills splits ownership across 18 narrow specialists so activation, collisions, negative routes, and domain boundaries can be tested independently. |
@@ -262,7 +264,7 @@ and skill picker.
 <details>
 <summary><strong>OpenAI Codex / ChatGPT plugin</strong></summary>
 
-The repository's OpenAI plugin manifest is version `0.4.0`. The repository is a
+The repository's OpenAI plugin manifest is version `0.4.1`. The repository is a
 skills-only plugin: it adds no hosted service, authentication flow, or MCP
 server. Directory rollout can lag the source manifest.
 

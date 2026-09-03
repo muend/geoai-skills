@@ -10,7 +10,7 @@ support, what they do not support, and what must happen next.
 
 | Layer | Shipped evidence | Status |
 |---|---|---|
-| Runtime skills | 18 independently installable Agent Skills | Stable at `v0.4.0`; no new skill is required for the next release |
+| Runtime skills | 18 independently installable Agent Skills | Stable at `v0.4.1`; no new skill is required for the next release |
 | Native routing suite | 167 cases: 124 positive, 43 negative, 40 ambiguous, 51 collision-tagged | Current suite validates with zero errors; dev 105 / held-out 62 |
 | Routing measurement | Claude Code `2.1.214`, `claude-sonnet-5`, suite `efe27d8c1736…` | 99.17% precision, 96.77% recall, 96.41% route accuracy; one runtime/model pair only |
 | Paired behavior measurement | 92 clean pairs and 302 pinned criteria, suite `520bc41dd4c0…` | Skills improved the measured run, but the project quality gate failed; model-judged and not human-verified |

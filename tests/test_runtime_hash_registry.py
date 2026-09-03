@@ -151,6 +151,49 @@ def test_lineage_names_changed_skill_and_file_without_mutating_parent() -> None:
     assert parent_path.read_bytes() == parent_bytes
 
 
+def test_version_only_release_is_recorded_as_a_freeze_not_a_deadlock() -> None:
+    """An evidence-only release changes no skill byte and must still be freezable.
+
+    The release preflight compares the package version, so a version bump makes
+    the current freeze stale; if a new freeze also refused an unchanged tree, no
+    release could ever be cut without editing a skill. The freeze records the
+    version delta and the identical tree hash instead.
+    """
+    registry = read_json(REGISTRY_PATH)
+    current = next(
+        entry
+        for entry in registry["freezes"]
+        if entry["freeze_id"] == registry["current_freeze_id"]
+    )
+    parent_path = REGISTRY_PATH.parent / current["manifest_path"]
+    parent = read_json(parent_path)
+
+    delta = lineage(
+        parent,
+        parent["skills"],
+        parent["shared_release_inputs"],
+        parent_manifest_sha256=current["manifest_sha256"],
+        candidate_package_version="99.99.99",
+    )
+
+    assert delta["changed_files"] == []
+    assert delta["changed_skills"] == []
+    assert delta["package_version_change"] == {
+        "after": "99.99.99",
+        "before": parent["package_version"],
+    }
+
+    unchanged = lineage(
+        parent,
+        parent["skills"],
+        parent["shared_release_inputs"],
+        parent_manifest_sha256=current["manifest_sha256"],
+        candidate_package_version=str(parent["package_version"]),
+    )
+
+    assert "package_version_change" not in unchanged
+
+
 def test_registry_records_the_existing_native_suite_hash_unchanged() -> None:
     """Adding runtime provenance must not redefine the legacy native suite SHA."""
     registry = read_json(REGISTRY_PATH)

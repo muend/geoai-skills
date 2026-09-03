@@ -1,0 +1,441 @@
+{
+  "freeze_id": "runtime-v2",
+  "hash_algorithm": "sha256",
+  "hash_material": "sorted '<file-sha256>  <repository-path>\\n' UTF-8 lines",
+  "kind": "geoai-runtime-tree-freeze",
+  "legacy_native_suite_schema_version": 1,
+  "legacy_native_suite_sha256": "efe27d8c1736c80fd001cfd1e037c8fe5d6f013767d0c710a151250ffeeb8e77",
+  "lineage": {
+    "changed_files": [],
+    "changed_skills": [],
+    "package_version_change": {
+      "after": "0.4.1",
+      "before": "0.4.0"
+    },
+    "parent_freeze_id": "runtime-v1",
+    "parent_manifest_sha256": "1948103a38d3b360365249dab5126b74d5c0e733482e7f84aefad72f84810375",
+    "parent_runtime_tree_sha256": "65023155d5324da86ce08f3aafadd9f52a3f9dc5fe7e3b0755aa4baef829a04e"
+  },
+  "package_version": "0.4.1",
+  "release_input_sha256": "fa0edea169c1e58831d6cfb173fa46aba7afd619e73ca1d67e3868f49ce51f73",
+  "runtime_tree_sha256": "65023155d5324da86ce08f3aafadd9f52a3f9dc5fe7e3b0755aa4baef829a04e",
+  "schema_version": 2,
+  "shared_release_inputs": [
+    {
+      "path": "LICENSE",
+      "sha256": "baa83d8fafc601ca07e383347b14551baac4235650a000d3332dfdbefebe352b",
+      "size_bytes": 1076
+    }
+  ],
+  "skills": [
+    {
+      "files": [
+        {
+          "path": "skills/arcgis-pro-automation/SKILL.md",
+          "sha256": "2ba2568f704576602a2176e7f7011e5852050af60a2feaa4b5c590d977602125",
+          "size_bytes": 7042
+        },
+        {
+          "path": "skills/arcgis-pro-automation/agents/openai.yaml",
+          "sha256": "28f46271e98248666b0f04f600987e2dc5ea74cd2b377b90a2cd8eb4862aafbd",
+          "size_bytes": 217
+        },
+        {
+          "path": "skills/arcgis-pro-automation/references/authoritative-sources.md",
+          "sha256": "13962aa1fa305393da471cb1d5a0deb07cc5ffbea5363385c9dc1c7ba4e405e9",
+          "size_bytes": 1612
+        },
+        {
+          "path": "skills/arcgis-pro-automation/references/runtime-and-licensing.md",
+          "sha256": "83274a66ed8d5da14f65c15b0eb0afee2727bf65bf57f9648db9e91d1339a2ec",
+          "size_bytes": 4000
+        },
+        {
+          "path": "skills/arcgis-pro-automation/references/safety-and-validation.md",
+          "sha256": "ba0c451be54f447a6bb00952559737001bfb445ef7926f6fdaa91ddbc7011796",
+          "size_bytes": 4955
+        },
+        {
+          "path": "skills/arcgis-pro-automation/references/tool-routing.md",
+          "sha256": "642d766030a3ad5eddd2ae1a9d445351beda09bbeffc9f8cd1d6e53027588d52",
+          "size_bytes": 5644
+        }
+      ],
+      "runtime_tree_sha256": "ec6c2b49a9452c7b7039fefbaeee9a12ec68d109fa34a07db5694e5341adb41c",
+      "skill": "arcgis-pro-automation"
+    },
+    {
+      "files": [
+        {
+          "path": "skills/cartography-geoviz/SKILL.md",
+          "sha256": "acf568d4ca4da64dcaba0887c6546f022d76867d5516fe6796b204a8bea73004",
+          "size_bytes": 6359
+        },
+        {
+          "path": "skills/cartography-geoviz/agents/openai.yaml",
+          "sha256": "22f392ad2ed8d47b88708ddbdd73f46042f1eff28dfbd6669763d0d6d99b899e",
+          "size_bytes": 224
+        },
+        {
+          "path": "skills/cartography-geoviz/references/authoritative-sources.md",
+          "sha256": "fc19c54efa27e5df4b923956b082c205c6c1ee8e107a2febf2e9dcba57a3db8a",
+          "size_bytes": 793
+        }
+      ],
+      "runtime_tree_sha256": "6df0aedf0e2deaac99e752cde338475a8da128c3d294a03c11c622a1e97702e8",
+      "skill": "cartography-geoviz"
+    },
+    {
+      "files": [
+        {
+          "path": "skills/change-detection/SKILL.md",
+          "sha256": "fd0a6a28083e4c644ff28cc8d3ed72e6297eb3834be16c415f6d6ecec8849ff1",
+          "size_bytes": 7719
+        },
+        {
+          "path": "skills/change-detection/agents/openai.yaml",
+          "sha256": "4635f626b1d2a969c761eec67e1d837d080cdc81c0e2fa8436d49bef20db4b95",
+          "size_bytes": 204
+        },
+        {
+          "path": "skills/change-detection/references/authoritative-sources.md",
+          "sha256": "6ef65870f5ecbfb45d76f10952a61f18d7637f06bffb44f539c28ef09d3b1099",
+          "size_bytes": 854
+        }
+      ],
+      "runtime_tree_sha256": "8d29a6d6420d5a345f1588fa02e98932420c9e49a98ef520b7292e3f70b2c991",
+      "skill": "change-detection"
+    },
+    {
+      "files": [
+        {
+          "path": "skills/geo-data-engineering/SKILL.md",
+          "sha256": "f1c004afc1558361a71a1a7d8567d9a6822cfa989477b23932619626264b7d26",
+          "size_bytes": 5775
+        },
+        {
+          "path": "skills/geo-data-engineering/agents/openai.yaml",
+          "sha256": "08c903f7c84dbbbba53e20d4760b2172375ddc635238c865f7753d2e2deef410",
+          "size_bytes": 220
+        },
+        {
+          "path": "skills/geo-data-engineering/references/authoritative-sources.md",
+          "sha256": "aea0ac624604b0f655257e3080ac33c2be1d3f74aad7728ae9f586866ce3f4d6",
+          "size_bytes": 811
+        },
+        {
+          "path": "skills/geo-data-engineering/scripts/clean_vector.py",
+          "sha256": "9fe937ac0c6774ff2f746c53d89d9b49fcfcebf82bcfacdb9b72ee9cc2881067",
+          "size_bytes": 3639
+        }
+      ],
+      "runtime_tree_sha256": "2a03e796b1f9c711e3c441a4e492b82454ac4d78da62694df82f4a9548764359",
+      "skill": "geo-data-engineering"
+    },
+    {
+      "files": [
+        {
+          "path": "skills/geo-deep-learning/SKILL.md",
+          "sha256": "5d71a76337dc52df949431543c1f75c6caeadf53bd0eb38490e5d49f50414116",
+          "size_bytes": 7507
+        },
+        {
+          "path": "skills/geo-deep-learning/agents/openai.yaml",
+          "sha256": "165a2a2ced9f0f4303299f2f6576f85ef18b0089f5ee3a4562bb5b9e84673e1c",
+          "size_bytes": 224
+        },
+        {
+          "path": "skills/geo-deep-learning/references/authoritative-sources.md",
+          "sha256": "a26b55e6e71d03753721bfc8afabe91b5404f5b16f4221e09ad01e6a03a752e7",
+          "size_bytes": 792
+        }
+      ],
+      "runtime_tree_sha256": "046384b7ef8c3e9268c5dede29541c51b469e8c962d2fc7d73e967eee98f882a",
+      "skill": "geo-deep-learning"
+    },
+    {
+      "files": [
+        {
+          "path": "skills/geoai-orchestrator/SKILL.md",
+          "sha256": "6925301bb4417e9f05ec2026c53dbc97252ffc184b875203b3e4c6b878b4907a",
+          "size_bytes": 10115
+        },
+        {
+          "path": "skills/geoai-orchestrator/agents/openai.yaml",
+          "sha256": "80127c0926680bf198d75dfb6fdb955c36474d85865f82ae3af322e8def970fa",
+          "size_bytes": 207
+        },
+        {
+          "path": "skills/geoai-orchestrator/references/authoritative-sources.md",
+          "sha256": "d64eeed9eb8e382bf9912d37170372d38175454ff8138fe43cf42c14c4a4dd2e",
+          "size_bytes": 740
+        }
+      ],
+      "runtime_tree_sha256": "5399283c177217df79aa915bb34488a3e6e00587c74b5a029536000cb5321930",
+      "skill": "geoai-orchestrator"
+    },
+    {
+      "files": [
+        {
+          "path": "skills/geostatistics-interpolation/SKILL.md",
+          "sha256": "f5d39feca5fa35beb6ffece505e1b2b4fbba023213ddf0ea453b9aa2633e33ec",
+          "size_bytes": 6333
+        },
+        {
+          "path": "skills/geostatistics-interpolation/agents/openai.yaml",
+          "sha256": "f423a20aa7213b56e74483af9c00d921197d35748a70229b55bef368bebd8cc8",
+          "size_bytes": 231
+        },
+        {
+          "path": "skills/geostatistics-interpolation/references/authoritative-sources.md",
+          "sha256": "7abdd8884f7ce97ed8121ecce8b00e31ee30121dfb220eb345ddbdbbeb0fb552",
+          "size_bytes": 800
+        }
+      ],
+      "runtime_tree_sha256": "82329f4705b91f1a8d83a41fc34aac5a9f7ea6733633f319367f6f9951382a16",
+      "skill": "geostatistics-interpolation"
+    },
+    {
+      "files": [
+        {
+          "path": "skills/google-earth-engine/SKILL.md",
+          "sha256": "bb323b7286377577426ac9966b7c00d34de6834920eef4a23c45222d6baf65f9",
+          "size_bytes": 10019
+        },
+        {
+          "path": "skills/google-earth-engine/agents/openai.yaml",
+          "sha256": "32e186fa0217647fbe0a23a623ab0d12dbadf605235d34e6435d73fcfebc6105",
+          "size_bytes": 219
+        },
+        {
+          "path": "skills/google-earth-engine/references/authoritative-sources.md",
+          "sha256": "c4afa61fae9faa86ec01450baef09e5f400eebed10e637a3cc5cf40ad52d73b9",
+          "size_bytes": 920
+        }
+      ],
+      "runtime_tree_sha256": "a348f49ed457c03a3642db994ec59cdaec4f4a9fd14bfe70fdd707cdd9ec9d26",
+      "skill": "google-earth-engine"
+    },
+    {
+      "files": [
+        {
+          "path": "skills/mcda-suitability-analysis/SKILL.md",
+          "sha256": "57b93518aeea15509009e021c8cde35c297c6c3e01eb0abe2c8048b274b2a63c",
+          "size_bytes": 5896
+        },
+        {
+          "path": "skills/mcda-suitability-analysis/agents/openai.yaml",
+          "sha256": "28ffc2a7ca7149a6481652913f73e8b4490911cfe79cd3314bf630ec06e73690",
+          "size_bytes": 229
+        },
+        {
+          "path": "skills/mcda-suitability-analysis/references/authoritative-sources.md",
+          "sha256": "5d764d1392d61dc531330d0085fbb09d998fd9201b9e5878c5f98c26c9ddaaee",
+          "size_bytes": 867
+        },
+        {
+          "path": "skills/mcda-suitability-analysis/scripts/ahp_weights.py",
+          "sha256": "fae9d1ea349aa4dc9aa2e4870a27ea329eae5f46e0618203abda343afc3722ae",
+          "size_bytes": 2846
+        }
+      ],
+      "runtime_tree_sha256": "8e75d87c72d226ed82b0d57c755b00f80815a62364be78c97fc118e10c830214",
+      "skill": "mcda-suitability-analysis"
+    },
+    {
+      "files": [
+        {
+          "path": "skills/ml-experiment-standards/SKILL.md",
+          "sha256": "ee9407d47e45846b7ed275d7e39b69539397ed49bd8ac59537c8312f7eb6333f",
+          "size_bytes": 6320
+        },
+        {
+          "path": "skills/ml-experiment-standards/agents/openai.yaml",
+          "sha256": "d2795defca12faff9b882ddfb6209d7f867be230d9770c399a72814b2ffd44b5",
+          "size_bytes": 232
+        },
+        {
+          "path": "skills/ml-experiment-standards/references/authoritative-sources.md",
+          "sha256": "975fb536963e644de7cc350dc9eb48f49f5cb5898fc1ef397dafa3a9d16d7a50",
+          "size_bytes": 767
+        },
+        {
+          "path": "skills/ml-experiment-standards/references/spatial-cv-protocol.md",
+          "sha256": "f3757f094edc749d6667ab8f3ae12681c51fd89338fdffa84a195028e79fe59b",
+          "size_bytes": 3293
+        }
+      ],
+      "runtime_tree_sha256": "fd3cf9464896e3d6123cedb59dd51610f50ed783e89abe4bf60e996703440368",
+      "skill": "ml-experiment-standards"
+    },
+    {
+      "files": [
+        {
+          "path": "skills/movement-trajectory/SKILL.md",
+          "sha256": "cb33346e42f43587acb631853fd094c608d5e4cbd5f47e5de0e1c63ed40de174",
+          "size_bytes": 8168
+        },
+        {
+          "path": "skills/movement-trajectory/agents/openai.yaml",
+          "sha256": "aacd9165a4289523bf1cec31b103a2f2b90461edede07309ca1fa12a7229b6d3",
+          "size_bytes": 228
+        },
+        {
+          "path": "skills/movement-trajectory/references/authoritative-sources.md",
+          "sha256": "701a083df7a579d4c8785486a0004dda9f0aa71dab60f5c65c58bacd239a0918",
+          "size_bytes": 783
+        }
+      ],
+      "runtime_tree_sha256": "ed2a0243f5dc2f30bd00dafac9d82d4702a0894a80dd4dacc4d60ab494043994",
+      "skill": "movement-trajectory"
+    },
+    {
+      "files": [
+        {
+          "path": "skills/network-accessibility-analysis/SKILL.md",
+          "sha256": "07553d4b6be7e2042341fddb79fd903eede9cf83aeebabb8593458631df2e37b",
+          "size_bytes": 6608
+        },
+        {
+          "path": "skills/network-accessibility-analysis/agents/openai.yaml",
+          "sha256": "5eb76def022d8be4ea30d9b834e4e62d995d5ae81c335de144f76db3e5b3087a",
+          "size_bytes": 237
+        },
+        {
+          "path": "skills/network-accessibility-analysis/references/authoritative-sources.md",
+          "sha256": "49cd117025ef1f7298b14ba82d249fe3505c89a93dcedc861cc962510b059aff",
+          "size_bytes": 755
+        }
+      ],
+      "runtime_tree_sha256": "5ff1d4c9fe849e5b1e7ccc62f72b9b73f2148963d871a62975b83d43c965d485",
+      "skill": "network-accessibility-analysis"
+    },
+    {
+      "files": [
+        {
+          "path": "skills/point-cloud-lidar/SKILL.md",
+          "sha256": "312980ba13d9c9b0be735c3244490017ae48f04d219838c745789b7dbd7a16f2",
+          "size_bytes": 9431
+        },
+        {
+          "path": "skills/point-cloud-lidar/agents/openai.yaml",
+          "sha256": "7db2a8b5034b60dd88cdc3cc043ebdde5f1b4cb54f27ee624411d3235fc2799c",
+          "size_bytes": 207
+        },
+        {
+          "path": "skills/point-cloud-lidar/references/authoritative-sources.md",
+          "sha256": "4fe53c49f84c4fdc1b6b5722c3fe2af64e3f9ecc103c6e4dd1501f654014ca31",
+          "size_bytes": 781
+        }
+      ],
+      "runtime_tree_sha256": "009ad465fffe790924440f56b8b7500f2b5ac18fa217d44635c40a3c61dec067",
+      "skill": "point-cloud-lidar"
+    },
+    {
+      "files": [
+        {
+          "path": "skills/postgis-spatial-sql/SKILL.md",
+          "sha256": "8fb45469e8defb5a358ab7845f15d6b05a0c2ef10698a1e869c5b812d19d095a",
+          "size_bytes": 9592
+        },
+        {
+          "path": "skills/postgis-spatial-sql/agents/openai.yaml",
+          "sha256": "6ff231ccb9755404e3dd521ffec145f021b30f4f585b4f4503a2c48f091cbc70",
+          "size_bytes": 216
+        },
+        {
+          "path": "skills/postgis-spatial-sql/references/authoritative-sources.md",
+          "sha256": "b3e95048285c12afb3e55ebfb3dc4072cde35e6318b833d71df711d59f852419",
+          "size_bytes": 781
+        }
+      ],
+      "runtime_tree_sha256": "891e64c470588f912509a339ce546768e0237b34b6076a197a7b0a7747f8e4b4",
+      "skill": "postgis-spatial-sql"
+    },
+    {
+      "files": [
+        {
+          "path": "skills/remote-sensing-analysis/SKILL.md",
+          "sha256": "e2ad170f6ec0a502e5a92ea286a29327b4d6c85be4ddcd533838562f731d6955",
+          "size_bytes": 8442
+        },
+        {
+          "path": "skills/remote-sensing-analysis/agents/openai.yaml",
+          "sha256": "3084076b5322b74e760f3aa7ce91e1f17343f6d85908de5096622edb7097ff47",
+          "size_bytes": 220
+        },
+        {
+          "path": "skills/remote-sensing-analysis/references/authoritative-sources.md",
+          "sha256": "5e05efe65169f3af2238e641127fb37ce4106f81a858a2388a870b6afaab59e3",
+          "size_bytes": 1382
+        }
+      ],
+      "runtime_tree_sha256": "4b7b737d1b9ee43473c3b0e3f53bbe55ef3b482f076a2adeec3e65b8ca18e592",
+      "skill": "remote-sensing-analysis"
+    },
+    {
+      "files": [
+        {
+          "path": "skills/spatial-statistics/SKILL.md",
+          "sha256": "331ddcc85a58e733ca6d377222daceca5f9961fca521e0435fc41c5bf39f76f1",
+          "size_bytes": 6302
+        },
+        {
+          "path": "skills/spatial-statistics/agents/openai.yaml",
+          "sha256": "07234a37e2e48385213702e30831f4301d5ecda46458ec4304b52007c2faf807",
+          "size_bytes": 214
+        },
+        {
+          "path": "skills/spatial-statistics/references/authoritative-sources.md",
+          "sha256": "4aaa0e9120be4e61300dbbe037c57d6e940886c61a17cc0e7dae11987d3f1f3d",
+          "size_bytes": 750
+        }
+      ],
+      "runtime_tree_sha256": "bf3a6e91b6ce4a824d9c7416a48b49a8f0cf9320d558e9dae27863a1d2d9318f",
+      "skill": "spatial-statistics"
+    },
+    {
+      "files": [
+        {
+          "path": "skills/swe-devops-standards/SKILL.md",
+          "sha256": "34af23292b7ee838256c9a87ec4c6e7c30a9e16cf389f7bbb8e58980b2854298",
+          "size_bytes": 6451
+        },
+        {
+          "path": "skills/swe-devops-standards/agents/openai.yaml",
+          "sha256": "815a48b32df0f37b285c112ad01290e14062a46e1dfcbb162f7c63b18648d5c0",
+          "size_bytes": 215
+        },
+        {
+          "path": "skills/swe-devops-standards/references/authoritative-sources.md",
+          "sha256": "76481f229270dca2d96b2a724fbf15400ddf9d23cd7d9f3a1bbc7f4610ce02d5",
+          "size_bytes": 844
+        }
+      ],
+      "runtime_tree_sha256": "d12f9f5b4214e079b8737af1912e1d69956ae5a7b72f4f122122103ba3444f03",
+      "skill": "swe-devops-standards"
+    },
+    {
+      "files": [
+        {
+          "path": "skills/terrain-hydrology/SKILL.md",
+          "sha256": "391051e89b612760565c758b6e7db0a7a15993e2372c0ba300f8195c487c3304",
+          "size_bytes": 7272
+        },
+        {
+          "path": "skills/terrain-hydrology/agents/openai.yaml",
+          "sha256": "416f99aad664b1c0578f7f075c324f6d3c6aac0db7143585d3e77feb33348f86",
+          "size_bytes": 213
+        },
+        {
+          "path": "skills/terrain-hydrology/references/authoritative-sources.md",
+          "sha256": "d516c6abdb21d06990a4fbe800367c0b84102ebcb6cabe2a5546b18cae99eb8f",
+          "size_bytes": 784
+        }
+      ],
+      "runtime_tree_sha256": "058c404438f88c59d323bb27b57b69641f0b83738831ed0878af8ddade5fde3f",
+      "skill": "terrain-hydrology"
+    }
+  ],
+  "status": "frozen"
+}

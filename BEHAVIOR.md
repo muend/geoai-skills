@@ -2,6 +2,8 @@
 
 Status date: **2026-09-02**
 
+Archived artifact: [10.5281/zenodo.22288663](https://doi.org/10.5281/zenodo.22288663) (v0.4.1 version DOI — the exact tree these figures describe). The concept DOI [10.5281/zenodo.22288662](https://doi.org/10.5281/zenodo.22288662) always resolves to the latest version, which may describe a different tree.
+
 Current status: **model-judged only, uncalibrated, not human-verified**
 
 Routing answers whether the intended specialist activated. This card answers a
