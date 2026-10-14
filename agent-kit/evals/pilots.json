@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "kind": "synthetic-addon-pilots",
+  "limitations": "Synthetic regression fixtures; neither model evaluation nor verified PlaceTwin reproductions.",
+  "cases": [
+    {
+      "id": "walking-valid",
+      "pilot": "walking",
+      "check": "walkability",
+      "spec": {
+        "crs": "EPSG:32635",
+        "route": "route.geojson",
+        "network": "network.geojson",
+        "barriers": "barriers.geojson",
+        "coverage_complete": true,
+        "tolerance_m": 0.1
+      },
+      "expected": "pass"
+    },
+    {
+      "id": "walking-fault",
+      "pilot": "walking",
+      "check": "walkability",
+      "spec": {
+        "crs": "EPSG:32635",
+        "route": "route.geojson",
+        "network": "network.geojson",
+        "barriers": "barriers.geojson",
+        "coverage_complete": true,
+        "tolerance_m": 0.1
+      },
+      "expected": "fail"
+    },
+    {
+      "id": "walking-missing",
+      "pilot": "walking",
+      "check": "walkability",
+      "spec": {
+        "crs": "EPSG:32635",
+        "route": "route.geojson",
+        "network": "network.geojson",
+        "barriers": "barriers.geojson",
+        "coverage_complete": false,
+        "tolerance_m": 0.1
+      },
+      "expected": "abstain"
+    },
+    {
+      "id": "line-meaning-valid",
+      "pilot": "line-meaning",
+      "check": "line-semantics",
+      "spec": {
+        "svg": "map.svg",
+        "join_tolerance": 0.1
+      },
+      "expected": "pass"
+    },
+    {
+      "id": "line-meaning-fault",
+      "pilot": "line-meaning",
+      "check": "line-semantics",
+      "spec": {
+        "svg": "map.svg",
+        "join_tolerance": 0.1
+      },
+      "expected": "fail"
+    },
+    {
+      "id": "line-meaning-missing",
+      "pilot": "line-meaning",
+      "check": "line-semantics",
+      "spec": {
+        "svg": "unavailable.svg",
+        "join_tolerance": 0.1
+      },
+      "expected": "abstain"
+    },
+    {
+      "id": "imagery-valid",
+      "pilot": "imagery",
+      "check": "imagery-comparability",
+      "spec": {
+        "before": "before.json",
+        "after": "after.json",
+        "result": "difference.json"
+      },
+      "expected": "pass"
+    },
+    {
+      "id": "imagery-fault",
+      "pilot": "imagery",
+      "check": "imagery-comparability",
+      "spec": {
+        "before": "before.json",
+        "after": "after.json",
+        "result": "difference.json"
+      },
+      "expected": "fail"
+    },
+    {
+      "id": "imagery-missing",
+      "pilot": "imagery",
+      "check": "imagery-comparability",
+      "spec": {
+        "before": "before.json",
+        "after": "after.json",
+        "result": "difference.json"
+      },
+      "expected": "abstain"
+    },
+    {
+      "id": "terrain-valid",
+      "pilot": "terrain",
+      "check": "terrain-units-nodata",
+      "spec": {
+        "dem": "dem.json",
+        "result": "slope.json"
+      },
+      "expected": "pass"
+    },
+    {
+      "id": "terrain-fault",
+      "pilot": "terrain",
+      "check": "terrain-units-nodata",
+      "spec": {
+        "dem": "dem.json",
+        "result": "slope.json"
+      },
+      "expected": "fail"
+    },
+    {
+      "id": "terrain-missing",
+      "pilot": "terrain",
+      "check": "terrain-units-nodata",
+      "spec": {
+        "dem": "dem.json",
+        "result": "slope.json"
+      },
+      "expected": "abstain"
+    },
+    {
+      "id": "model-split-valid",
+      "pilot": "model-split",
+      "check": "spatial-split",
+      "spec": {
+        "crs": "EPSG:32635",
+        "samples": "samples.json",
+        "minimum_separation_m": 100
+      },
+      "expected": "pass"
+    },
+    {
+      "id": "model-split-fault",
+      "pilot": "model-split",
+      "check": "spatial-split",
+      "spec": {
+        "crs": "EPSG:32635",
+        "samples": "samples.json",
+        "minimum_separation_m": 100
+      },
+      "expected": "fail"
+    },
+    {
+      "id": "model-split-missing",
+      "pilot": "model-split",
+      "check": "spatial-split",
+      "spec": {
+        "crs": "EPSG:32635",
+        "samples": "samples.json",
+        "minimum_separation_m": 100
+      },
+      "expected": "abstain"
+    },
+    {
+      "id": "suitability-valid",
+      "pilot": "suitability",
+      "check": "suitability-sensitivity",
+      "spec": {
+        "criteria": "criteria.json",
+        "result": "ranking.json"
+      },
+      "expected": "pass"
+    },
+    {
+      "id": "suitability-fault",
+      "pilot": "suitability",
+      "check": "suitability-sensitivity",
+      "spec": {
+        "criteria": "criteria.json",
+        "result": "ranking.json"
+      },
+      "expected": "fail"
+    },
+    {
+      "id": "suitability-missing",
+      "pilot": "suitability",
+      "check": "suitability-sensitivity",
+      "spec": {
+        "criteria": "criteria.json",
+        "result": "ranking.json"
+      },
+      "expected": "abstain"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "horizontal_unit": "m",
+  "vertical_unit": "m",
+  "cell_size": 10,
+  "nodata": -9999,
+  "values": [
+    10,
+    20,
+    -9999,
+    30
+  ]
+}

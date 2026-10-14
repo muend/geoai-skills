@@ -1,0 +1,40 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "building-1",
+        "kind": "building",
+        "level": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              40,
+              -5
+            ],
+            [
+              60,
+              -5
+            ],
+            [
+              60,
+              5
+            ],
+            [
+              40,
+              5
+            ],
+            [
+              40,
+              -5
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

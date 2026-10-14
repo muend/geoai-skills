@@ -1,0 +1,1548 @@
+{
+  "commit": "4e48acdf0e63b818ae1b8bd25106a7a568972741",
+  "files": [
+    {
+      "path": ".claude-plugin/marketplace.json",
+      "sha256": "2fc1ac89bea9ec32a774b715e1c542d0c4b51a965f98d8733c8db6c8ddf6b412",
+      "size": 698
+    },
+    {
+      "path": ".claude-plugin/plugin.json",
+      "sha256": "9db27ed96696932e56da1d040c367ef328f416872ca68225fadce12ee447b2e9",
+      "size": 742
+    },
+    {
+      "path": ".codex-plugin/plugin.json",
+      "sha256": "8ab557e010f9d9d8db2df9a8b712983f600c16ebdcab0aa71df64d1b9c8b9f60",
+      "size": 1702
+    },
+    {
+      "path": ".gitattributes",
+      "sha256": "deb00b98b8f24b0d9dd52febac7c1216e4bc1a6c5974e92fcb23be876374b878",
+      "size": 195
+    },
+    {
+      "path": ".github/FUNDING.yml",
+      "sha256": "7e35a3bcf86e95ee206a157cdc2368783e93953b46921829892f46a61cd2f6ab",
+      "size": 16
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.yml",
+      "sha256": "d169e7fb37a389506dded624845e3b7932774b2dd30988e606920caf1d3f9de4",
+      "size": 952
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "sha256": "be529fc5e03fb5c5719740d64beb31e229a8258a55d3c2c6091b85da2742cd85",
+      "size": 226
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/skill_proposal.yml",
+      "sha256": "3fa7ce13a831fe9ab5556e2d3e5f37517d5581572d74fcea71e1b0e0f3520609",
+      "size": 791
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "sha256": "c3f7da2dfe18af643b2750b4f9471f7b4ae3110aeb11978b56c069dc9804b2a6",
+      "size": 678
+    },
+    {
+      "path": ".github/workflows/external-links.yml",
+      "sha256": "ab26272450face65c2c1a4e0f7d9e25a2a2d0e5a3044d8cb5add65af18cb2e20",
+      "size": 1734
+    },
+    {
+      "path": ".github/workflows/release-skill-archives.yml",
+      "sha256": "d6a35acc6a1716f0ea0131f058e29fd4bfdce24a9e487356b90b6e3d58517501",
+      "size": 2906
+    },
+    {
+      "path": ".github/workflows/validate.yml",
+      "sha256": "12b05ccfd0bb3789a2ff49f4124f45ddee4e05a9f6ed9ca039b2f0185d7d8d71",
+      "size": 3678
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "29d062e21630ac637680abee8b91f34f9389649f9d9aa8d9354da3da52d0ae2c",
+      "size": 373
+    },
+    {
+      "path": "BEHAVIOR.md",
+      "sha256": "9b381b07a6f1ac7333987a4622acac33668770777fd975acc573b2b5177c1272",
+      "size": 3491
+    },
+    {
+      "path": "BENCHMARK.md",
+      "sha256": "63ccf0ff2c0a764a4744f166ce2239e21ccfa7653b0103fe6750df3e8dc2db85",
+      "size": 21408
+    },
+    {
+      "path": "CASE_STUDIES.md",
+      "sha256": "1be0c525c98585918ad710a7f42d74b7040e27b7ccfc1d0fba8cde004cca7bd4",
+      "size": 1213
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "02285e90751f9b9e70d2f528e81bd58cd492c39125710e16756d6ae09f844b36",
+      "size": 36229
+    },
+    {
+      "path": "CITATION.cff",
+      "sha256": "dd06ec9d32f34c10359fd1b5f394622d0916b8a20ec91492b63ed8f514c1a5a9",
+      "size": 909
+    },
+    {
+      "path": "CODEOWNERS",
+      "sha256": "f3b92def39916ba08b80ff9b04fda78c4698183865956533a922fb80def2ea40",
+      "size": 9
+    },
+    {
+      "path": "CODE_OF_CONDUCT.md",
+      "sha256": "808fa2d13b5a83c291e5075c1aa8bf1b1876ef51e71214a755bb2493c88bc764",
+      "size": 1009
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "sha256": "597aa3fe4791a40e785fbf27233038aeea07417574244de5cde63c0c119bc337",
+      "size": 3584
+    },
+    {
+      "path": "EVALUATION.md",
+      "sha256": "c84d198b5608e3bfefa98f00f2cb74b2cdd3ebb85be63610049f9a5ec3d621f8",
+      "size": 37930
+    },
+    {
+      "path": "GOVERNANCE.md",
+      "sha256": "2ea94dc8259090fbd6a6f519e5ea504b601fa2e200ff747552d927ee63377811",
+      "size": 2499
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "baa83d8fafc601ca07e383347b14551baac4235650a000d3332dfdbefebe352b",
+      "size": 1076
+    },
+    {
+      "path": "PRIVACY.md",
+      "sha256": "2c560bfec0191ec0ba3674f21d1d40f5c9d33204f99003038c8600b9a7f3fda0",
+      "size": 2276
+    },
+    {
+      "path": "README.md",
+      "sha256": "64688d9342f3d0ab58387b59fc6cdda7be84a013884c25c297550c49379d29ab",
+      "size": 23931
+    },
+    {
+      "path": "RELEASING.md",
+      "sha256": "c261292f2ce8e074f9bbaa7dce76391e474e6b19dc6dd4ec521995ee2a05b0a9",
+      "size": 11243
+    },
+    {
+      "path": "ROADMAP.md",
+      "sha256": "5ca512cc5ffed3efcf35c0152332772a38cc8edbe6a31556b91909396d7e26a3",
+      "size": 5624
+    },
+    {
+      "path": "SECURITY.md",
+      "sha256": "c27f884dd01e7014f13d50c1c69690f2c4f63043d2267d24eed5f743d45d6870",
+      "size": 1056
+    },
+    {
+      "path": "SUPPORT.md",
+      "sha256": "9ac3c011d785d8df890c72789e38be4b88d6e34ea1bb2e8630f0d51813b7fc9b",
+      "size": 1708
+    },
+    {
+      "path": "TERMS.md",
+      "sha256": "0ebf906f260ea343f8391e4e10a442caffd988f3a94d697ebf0832a92535519d",
+      "size": 2229
+    },
+    {
+      "path": "assets/demo/asset-manifest.json",
+      "sha256": "b1066914b95c381409223f43a2aed68197ee444d9bff986b828963184273f7fc",
+      "size": 880
+    },
+    {
+      "path": "assets/demo/behavior-asset-manifest.json",
+      "sha256": "a687789fe332261b5266d75c428b8aa48604701fa1eda3114862f665c17e0cbf",
+      "size": 3023
+    },
+    {
+      "path": "assets/demo/geoai-behavior-evidence-poster.png",
+      "sha256": "266e50916aa8aded5c02690fdd8d6e38b8fe97cf7f603749fc8aeeec05f989ae",
+      "size": 455473
+    },
+    {
+      "path": "assets/demo/geoai-behavior-evidence.gif",
+      "sha256": "f35835bc72eb81bca790f78ba2eeba55daaf8ff2d63b8705201337d0ea4cbed9",
+      "size": 1316170
+    },
+    {
+      "path": "assets/demo/geoai-claim-gate-poster.png",
+      "sha256": "f8884b64829c722b980e1ef3090eed8f817ae2f054e7122017a65ced7b87ef20",
+      "size": 461115
+    },
+    {
+      "path": "assets/demo/geoai-claim-gate.gif",
+      "sha256": "e55b6eb101f816298fa8576ecfa6168e567af65439fcf080bde03c66731ade72",
+      "size": 1091197
+    },
+    {
+      "path": "assets/demo/geoai-guardrail-demo-poster.png",
+      "sha256": "f97c3176a6bfa042182264bcafa363f939032d2f03878985f64f8e504a2a3aca",
+      "size": 166039
+    },
+    {
+      "path": "assets/demo/geoai-guardrail-demo.gif",
+      "sha256": "126c53777971389ddc237c6091a370f2ca24b303d00b65f61e24f36468af75ca",
+      "size": 265414
+    },
+    {
+      "path": "assets/demo/geoai-guardrail-demo.mp4",
+      "sha256": "cf3f6e9beb7f32f08fca89753b2283be8762b22df622507bfd984d23d40f9068",
+      "size": 232074
+    },
+    {
+      "path": "assets/geoai-skills-logo.png",
+      "sha256": "1b68442f45f53e0de4d54d989bafc1eace67de60ab02ab320504038c8e64211f",
+      "size": 1266272
+    },
+    {
+      "path": "assets/social-preview.jpg",
+      "sha256": "c8b72a93d55dbd7bf94e70d250dba2c87cfb129c847bb866ba1f665833426478",
+      "size": 166378
+    },
+    {
+      "path": "benchmarks/claude-code-2.1.214--claude-sonnet-5--d45ad2c82635/README.md",
+      "sha256": "d09b75c434c545805f088d4343881587f5bb88ea47c88a8e05fb172574663d3f",
+      "size": 3330
+    },
+    {
+      "path": "benchmarks/claude-code-2.1.214--claude-sonnet-5--d45ad2c82635/cases.jsonl",
+      "sha256": "b34bfa9427f88d6e33ee09a682e20975b213300e0f1873cc53837868aec1830e",
+      "size": 123645
+    },
+    {
+      "path": "benchmarks/claude-code-2.1.214--claude-sonnet-5--d45ad2c82635/metrics.json",
+      "sha256": "11c846cab1c2f8049c3e971fbe48e9bbbe7f7212ec2c580caa897657a665e866",
+      "size": 1535
+    },
+    {
+      "path": "benchmarks/claude-code-2.1.214--claude-sonnet-5--d45ad2c82635/per-skill.json",
+      "sha256": "ea3d9d5ef2efd8950cc5bb8546e032c066bce25f864797797b0a41357eb1ef00",
+      "size": 12280
+    },
+    {
+      "path": "benchmarks/claude-code-2.1.214--claude-sonnet-5--dev--25a2abef7664/README.md",
+      "sha256": "e8fc4a940d9c5024ad762d84a85ba3c4e7c25c2f0c5ca8b9731d6d6e22a53909",
+      "size": 6560
+    },
+    {
+      "path": "benchmarks/claude-code-2.1.214--claude-sonnet-5--dev--25a2abef7664/cases.jsonl",
+      "sha256": "8e615ee5bb58f20f43487800b05c27220078a52f0ceeb54e4977c738722aaeb4",
+      "size": 99119
+    },
+    {
+      "path": "benchmarks/claude-code-2.1.214--claude-sonnet-5--dev--25a2abef7664/metrics.json",
+      "sha256": "a009938eb4d924b3ad2f6a07a39871c0dac2e7535bad813538c521f105c4f5d4",
+      "size": 1616
+    },
+    {
+      "path": "benchmarks/claude-code-2.1.214--claude-sonnet-5--dev--25a2abef7664/per-skill.json",
+      "sha256": "6eebce6e8ee7a746e71328007edabc7156cc7a94b777b93e4c52977d9e57d8e0",
+      "size": 12766
+    },
+    {
+      "path": "benchmarks/claude-code-2.1.214--claude-sonnet-5--efe27d8c1736/README.md",
+      "sha256": "72619a8dfdba801a58c426617ec563931b45638b1bb252a02945c0cadb5c2eaf",
+      "size": 7186
+    },
+    {
+      "path": "benchmarks/claude-code-2.1.214--claude-sonnet-5--efe27d8c1736/cases.jsonl",
+      "sha256": "13c4cdbae957d4bd6c303ac5fdcc6cada87069cf3c1377370e608d44839dee63",
+      "size": 173771
+    },
+    {
+      "path": "benchmarks/claude-code-2.1.214--claude-sonnet-5--efe27d8c1736/metrics.json",
+      "sha256": "30dd6abf0d81821a8605a455be7784a088d161077cc3e5725aaadeab885670aa",
+      "size": 1634
+    },
+    {
+      "path": "benchmarks/claude-code-2.1.214--claude-sonnet-5--efe27d8c1736/per-skill.json",
+      "sha256": "0cdeb33c674275003c067657501df9f2880f4aa31085564a8a798556ac174fa0",
+      "size": 12870
+    },
+    {
+      "path": "benchmarks/claude-code-2.1.214--claude-sonnet-5--f03e327a57d2/README.md",
+      "sha256": "26efd946786b3e2e968ad7f5f7548894b98ced2b8ba7911589fdae5d80f21927",
+      "size": 6391
+    },
+    {
+      "path": "benchmarks/claude-code-2.1.214--claude-sonnet-5--f03e327a57d2/cases.jsonl",
+      "sha256": "cb5a5532154d2d5732339ba506ee386956d4f0c531d1eae2500e701212f1f7ea",
+      "size": 163775
+    },
+    {
+      "path": "benchmarks/claude-code-2.1.214--claude-sonnet-5--f03e327a57d2/metrics.json",
+      "sha256": "9a5b6b6ebbb84224c2340c8609c101b3584c206b66391bd8bf9a32018bafb3f2",
+      "size": 1618
+    },
+    {
+      "path": "benchmarks/claude-code-2.1.214--claude-sonnet-5--f03e327a57d2/per-skill.json",
+      "sha256": "652f55a4d15c45d5b6b48b600b166f29d6b1ef761cb3d42706171b9af5ebe0ef",
+      "size": 12983
+    },
+    {
+      "path": "benchmarks/claude-code-2.1.222--claude-sonnet-5--520bc41dd4c0/README.md",
+      "sha256": "5db036c44026b4d66dbd89e5df8b6c22d55423810439b5f90af31c85545072b5",
+      "size": 10346
+    },
+    {
+      "path": "benchmarks/claude-code-2.1.222--claude-sonnet-5--520bc41dd4c0/cases.jsonl",
+      "sha256": "07d6ece3f81c2196400e8447e5ba014f5558e0f8799e88aee99413867eb04533",
+      "size": 301471
+    },
+    {
+      "path": "benchmarks/claude-code-2.1.222--claude-sonnet-5--520bc41dd4c0/metrics.json",
+      "sha256": "075e4804e7bcc38985ea8a6199c4cf1a5f490950470b3d6c826baff1ec435833",
+      "size": 32343
+    },
+    {
+      "path": "benchmarks/claude-code-2.1.222--claude-sonnet-5--520bc41dd4c0/per-skill.json",
+      "sha256": "466afee13ee76ad5bf6badf58cab19b0a9ce2aa8ab8b27eba7969a3fb3094052",
+      "size": 8400
+    },
+    {
+      "path": "evals/cases/arcgis-pro-automation/evals.json",
+      "sha256": "df46578cabf94db862dadfdec781a37565645c8c32ec8be8298a667332f1605b",
+      "size": 10406
+    },
+    {
+      "path": "evals/cases/cartography-geoviz/evals.json",
+      "sha256": "a8e5bee92c5d7f9cd6293eba579df38426fb0cdee74c163de2bf0346241ce75d",
+      "size": 5995
+    },
+    {
+      "path": "evals/cases/cartography-geoviz/fixtures/choropleth-request/counties.geojson",
+      "sha256": "14abc253a0aa211ecea5df8840da8b8a7f25868b42df37f6fd0c38ea643bee28",
+      "size": 966
+    },
+    {
+      "path": "evals/cases/cartography-geoviz/fixtures/choropleth-request/covid.csv",
+      "sha256": "798ca18b16cb39ae75a1a641959781afa76b1bdf6e59ee1d181e7fa3203573f0",
+      "size": 230
+    },
+    {
+      "path": "evals/cases/change-detection/evals.json",
+      "sha256": "94e203aad011fa076dd12c9a16b4da979a8f9462e0a4487b27652051be5686a7",
+      "size": 10721
+    },
+    {
+      "path": "evals/cases/geo-data-engineering/evals.json",
+      "sha256": "b516a02dcc4f10e8dfe0ffd6036ea1d4fc499f9ff6b69d5384dffbb31a0a363d",
+      "size": 5207
+    },
+    {
+      "path": "evals/cases/geo-deep-learning/evals.json",
+      "sha256": "f9ac8773464b5eba5209f80e626ed9a9cfa64a48b1553b16a801af9dcc59fdfd",
+      "size": 5789
+    },
+    {
+      "path": "evals/cases/geoai-orchestrator/evals.json",
+      "sha256": "8158224ea175eca70ddbcb53801bea8202c616c9b7f0e5e805a22567af6d3d12",
+      "size": 7223
+    },
+    {
+      "path": "evals/cases/geostatistics-interpolation/evals.json",
+      "sha256": "1db53ef902795511ce8b6258097e9318d56fcc31a019168816af89306fbe47d7",
+      "size": 6156
+    },
+    {
+      "path": "evals/cases/google-earth-engine/evals.json",
+      "sha256": "c217dfb01c1ddf496e7f1ca29ba1f12fd1a394ccb58c1a5c1d6a5808ea22d2a8",
+      "size": 5819
+    },
+    {
+      "path": "evals/cases/mcda-suitability-analysis/evals.json",
+      "sha256": "1ccd18569424286e8731247dc5b9cdeebb83e8deb42256e941fc345698061f09",
+      "size": 7434
+    },
+    {
+      "path": "evals/cases/mcda-suitability-analysis/fixtures/inconsistent-ahp/pairwise-matrix.csv",
+      "sha256": "75e3114c2824b2241dc8e3a2e019fb18268e42f1b5b0001fd21e9e7374bd0ea6",
+      "size": 111
+    },
+    {
+      "path": "evals/cases/ml-experiment-standards/evals.json",
+      "sha256": "bf30c76fc1d2d0531fd41a9a8b364d934822026319b569ba18ae223384f30900",
+      "size": 5312
+    },
+    {
+      "path": "evals/cases/movement-trajectory/evals.json",
+      "sha256": "51eb563c5178eb0aff61e2f38c4b2039302fd3c2775a68f89d9a6626250492e7",
+      "size": 6160
+    },
+    {
+      "path": "evals/cases/network-accessibility-analysis/evals.json",
+      "sha256": "a7decc3e8bfa4ffadf8405edf3933628f5f0a837f78ade64655981848edc2a73",
+      "size": 6055
+    },
+    {
+      "path": "evals/cases/network-accessibility-analysis/fixtures/euclidean-catch/coverage-request.json",
+      "sha256": "10aa80ca56f1a56bb533867fe8c488cc880ce9ea9e5827fd4f4611a89ef9f201",
+      "size": 551
+    },
+    {
+      "path": "evals/cases/network-accessibility-analysis/fixtures/euclidean-catch/fire-stations.geojson",
+      "sha256": "6f1d07a088710a86c518c0b09bf7c537b65aad91df3f7e20419bf793da29305d",
+      "size": 526
+    },
+    {
+      "path": "evals/cases/point-cloud-lidar/evals.json",
+      "sha256": "c6b071318caceca95b0d5be40e4bf70e8f03738f1f1d1f59df0a87a7d9ce2164",
+      "size": 7365
+    },
+    {
+      "path": "evals/cases/postgis-spatial-sql/evals.json",
+      "sha256": "c7de89f11c95ea2baec1d509870a58e34ebee62a2546c899f1311d83f3bd1657",
+      "size": 5931
+    },
+    {
+      "path": "evals/cases/remote-sensing-analysis/evals.json",
+      "sha256": "8580cdf3b0c81750d41edb8d25e065ad5eaa1b75b50dc7ce7ca7423dfc456316",
+      "size": 8431
+    },
+    {
+      "path": "evals/cases/spatial-statistics/evals.json",
+      "sha256": "5795f37f3fa6a003f2e824c3660fd9096a853ea736fd57e628a74fa2094a32b3",
+      "size": 5840
+    },
+    {
+      "path": "evals/cases/spatial-statistics/fixtures/ols-on-spatial/diagnostics.json",
+      "sha256": "a65ddf32b737ed28af81dc8313710850fb33bb24965f78edb2d5f542d1fabcc5",
+      "size": 807
+    },
+    {
+      "path": "evals/cases/swe-devops-standards/evals.json",
+      "sha256": "b29aa119913debd19240e130f5127ecdd9d0dc9dd7385bc02f260d9ad066e7a6",
+      "size": 7886
+    },
+    {
+      "path": "evals/cases/swe-devops-standards/fixtures/review-mode/contract.json",
+      "sha256": "ec0de91d5f5dade2e1b32e107b1a127b67273dfa964e4517a0d972496cd8cdae",
+      "size": 526
+    },
+    {
+      "path": "evals/cases/swe-devops-standards/fixtures/review-mode/ingest_source.txt",
+      "sha256": "c527fe3f63930e8cc49a31e804737bb05a76817af775ee7f15cb7507acf76bf8",
+      "size": 295
+    },
+    {
+      "path": "evals/cases/terrain-hydrology/evals.json",
+      "sha256": "c8875bdc5a75b72ca3bc0dd32934bd2652f65f2de31f3daee0e06fdfe64aae9f",
+      "size": 6391
+    },
+    {
+      "path": "evals/cases/terrain-hydrology/fixtures/slope-4326-catch/dem-metadata.json",
+      "sha256": "aed8a95dcd43ee455f657ee35c3a5a3b6215fdf039acc88c83f44422a446ddea",
+      "size": 402
+    },
+    {
+      "path": "evals/external/geoanalystbench/LICENSE-APACHE-2.0",
+      "sha256": "5c9817c129b98e7bb966bca028c43c19107102ef8e03fe799bffb4354f4ef015",
+      "size": 11356
+    },
+    {
+      "path": "evals/external/geoanalystbench/MINIMAX-CODE.md",
+      "sha256": "53410f52856718e49815b8d168387896d4ad20e7d8eaaf00f6945041b3e68333",
+      "size": 5071
+    },
+    {
+      "path": "evals/external/geoanalystbench/NOTICE",
+      "sha256": "b6a0c797d6138722a9cc8bde13d947ff3f08220492b92934c63e602dc9602353",
+      "size": 698
+    },
+    {
+      "path": "evals/external/geoanalystbench/README.md",
+      "sha256": "faa27223aab2aa1e016ec746e9ad47218d7325ba778046152d8cf21e6c316f05",
+      "size": 11786
+    },
+    {
+      "path": "evals/external/geoanalystbench/RESULTS-TEMPLATE.md",
+      "sha256": "59397c2deaafa90ac4c92ba893184090210639fe23a5ae956cfd292368e25ed3",
+      "size": 3027
+    },
+    {
+      "path": "evals/external/geoanalystbench/cases/gab-01-urban-heat/case.json",
+      "sha256": "7c0ffd635f32fdfe3650e15d40c145b1bcfce48ffb953999c95b25f94c5e9934",
+      "size": 2206
+    },
+    {
+      "path": "evals/external/geoanalystbench/cases/gab-01-urban-heat/generate_fixture.py",
+      "sha256": "ba2952bfd5fb25a65c82c0600b3fc9e9f5333b23fe243a7ab86e786821ab8543",
+      "size": 4853
+    },
+    {
+      "path": "evals/external/geoanalystbench/cases/gab-01-urban-heat/reference.py",
+      "sha256": "f25a82d0c091e747ccc08bb5575f9a4a0dd179b4e249d32d2dc7b8f6e9103110",
+      "size": 23598
+    },
+    {
+      "path": "evals/external/geoanalystbench/cases/gab-01-urban-heat/validate_artifacts.py",
+      "sha256": "0700f6c683dc63eb9e62a46db36e064a4c20ef62463469af4f5caf644eed6569",
+      "size": 9729
+    },
+    {
+      "path": "evals/external/geoanalystbench/cases/gab-08-facility-coverage/case.json",
+      "sha256": "6671c709786e930239a4a3a746c033810a158970acbe6c7e9999a5d22ff6fbcd",
+      "size": 1809
+    },
+    {
+      "path": "evals/external/geoanalystbench/cases/gab-08-facility-coverage/generate_fixture.py",
+      "sha256": "c96aac05f4c3bdf406b53011a2608bd2f89118082ffdd8421baa48365fa2fc03",
+      "size": 3028
+    },
+    {
+      "path": "evals/external/geoanalystbench/cases/gab-08-facility-coverage/reference.py",
+      "sha256": "a440a62a2b0646f3c78fa2afc67b9dfc9bb9ba06ca4ee2680d9c0ed8f3a4d54c",
+      "size": 11827
+    },
+    {
+      "path": "evals/external/geoanalystbench/cases/gab-08-facility-coverage/validate_artifacts.py",
+      "sha256": "9ac795133ef10e6e327f795c04ba537115da48c822fa335fa44510a6d293ea3f",
+      "size": 9217
+    },
+    {
+      "path": "evals/external/geoanalystbench/cases/gab-36-vegetation-change/case.json",
+      "sha256": "bc499fa848294e6b734fde349ab29cd17ef4b45370867abe70bc35e870ae2cbc",
+      "size": 1953
+    },
+    {
+      "path": "evals/external/geoanalystbench/cases/gab-36-vegetation-change/generate_fixture.py",
+      "sha256": "1e4eb284e2984c35e08edb918390ec172149156bceecca20de2f8fd0192622d2",
+      "size": 2873
+    },
+    {
+      "path": "evals/external/geoanalystbench/cases/gab-36-vegetation-change/reference.py",
+      "sha256": "b84186687a017eb2e910e00e2c05711b7a486cb1cb43303a6b52b24203ecaf1d",
+      "size": 10764
+    },
+    {
+      "path": "evals/external/geoanalystbench/cases/gab-36-vegetation-change/validate_artifacts.py",
+      "sha256": "c5d67bc1b0ea444f7b391f7b2e1dad4e6daa579e784f8340da78d2ab3e9a7bdb",
+      "size": 9833
+    },
+    {
+      "path": "evals/external/geoanalystbench/cases/gab-38-travel-time/case.json",
+      "sha256": "41633b66968ca1b025b85b4f1d181dfa55dd839f8c70a7a7ee27093eb711dc77",
+      "size": 1626
+    },
+    {
+      "path": "evals/external/geoanalystbench/cases/gab-38-travel-time/generate_fixture.py",
+      "sha256": "590693a1fa007a56dc7af0fc177f2125f04b331c12a21bfe7d64b573c2cd4055",
+      "size": 2476
+    },
+    {
+      "path": "evals/external/geoanalystbench/cases/gab-38-travel-time/reference.py",
+      "sha256": "7b10105ef4d6c21cc6af732471092eb47a2e5561b73413caa3df8cde06b58d90",
+      "size": 7960
+    },
+    {
+      "path": "evals/external/geoanalystbench/cases/gab-38-travel-time/validate_artifacts.py",
+      "sha256": "35801e374e32693cbc8873e572d01eb19d1a53deea192fea206b04a4247e6e8c",
+      "size": 7352
+    },
+    {
+      "path": "evals/external/geoanalystbench/cases/gab-39-spatial-regression/case.json",
+      "sha256": "f7c544bff19184fd9c32e42c35bda900709a022874f0f4bb07e4880387804d9b",
+      "size": 2527
+    },
+    {
+      "path": "evals/external/geoanalystbench/cases/gab-39-spatial-regression/generate_fixture.py",
+      "sha256": "e7ef22f7880e2905049ea4e824fa1be912252044faa26ba1e63768f532c86a15",
+      "size": 5214
+    },
+    {
+      "path": "evals/external/geoanalystbench/cases/gab-39-spatial-regression/reference.py",
+      "sha256": "001ff6fecf12a05d89789839aa73ce2a17cc43814bee5bb2e1ace760f52316c3",
+      "size": 28136
+    },
+    {
+      "path": "evals/external/geoanalystbench/cases/gab-39-spatial-regression/validate_artifacts.py",
+      "sha256": "8b82ccc180f720ab06a565470a355372b5a551eb269655a7812cbeb589863d26",
+      "size": 9964
+    },
+    {
+      "path": "evals/external/geoanalystbench/contracts/v2/gab-01-urban-heat.json",
+      "sha256": "39a798a37d1bea70fadcdb9aa8ef0366917044754f07676b11e2afb0d7741483",
+      "size": 4271
+    },
+    {
+      "path": "evals/external/geoanalystbench/contracts/v2/gab-08-facility-coverage.json",
+      "sha256": "00ee032fced65ca8f4fa261821b6defdb3e8dedb3c475890e215b6091fced0ff",
+      "size": 3474
+    },
+    {
+      "path": "evals/external/geoanalystbench/contracts/v2/gab-36-vegetation-change.json",
+      "sha256": "0b0a0e90ea29dcd07e6a2e4c92b28cbb306246fe5cd22fa912efa870c25e002d",
+      "size": 3770
+    },
+    {
+      "path": "evals/external/geoanalystbench/contracts/v2/gab-38-travel-time.json",
+      "sha256": "a54b78c79bb836434c02ab8ef3cd29b1ba0c71328cbd1417492652f4212397cc",
+      "size": 3508
+    },
+    {
+      "path": "evals/external/geoanalystbench/contracts/v2/gab-39-spatial-regression.json",
+      "sha256": "40fb7efea8635b526e6a09df479aa6685926d38f1ee77581a219da482b5a33c8",
+      "size": 4563
+    },
+    {
+      "path": "evals/external/geoanalystbench/contracts/v2/schema.json",
+      "sha256": "aaa676c261eb6c90baa563c05b0ad2c3ec3487a4a7dc01bc235c26fe71e01bb1",
+      "size": 3086
+    },
+    {
+      "path": "evals/external/geoanalystbench/freeze-v1.json",
+      "sha256": "37a1c253b5f057c0ce1ee68486915263b05f96a233287fb00d45ea2d52ab5d82",
+      "size": 4302
+    },
+    {
+      "path": "evals/external/geoanalystbench/freeze-v2.json",
+      "sha256": "2d2e588b940d18ce224967e4e7435d0dfa2e7d6aca285541cf7ef59d0ebfa012",
+      "size": 1706
+    },
+    {
+      "path": "evals/external/geoanalystbench/freeze-v3.json",
+      "sha256": "e6f265b74ab3bae581aa1351519ce66e9f64ea81b6ea07cd9ead3a63020243c1",
+      "size": 1133
+    },
+    {
+      "path": "evals/external/geoanalystbench/producer-interface-v1.json",
+      "sha256": "14b92c7ae1d5e4ceade46b7914349660bffd8cc438c135da49e0f28f71682b2b",
+      "size": 1792
+    },
+    {
+      "path": "evals/external/geoanalystbench/producer-interface-v2.json",
+      "sha256": "8ec09c66d87b6fa8eb231bc6642acfb298482e4c7bb387b7b5c23db3cc4c7003",
+      "size": 1849
+    },
+    {
+      "path": "evals/external/geoanalystbench/producer-interface-v3.json",
+      "sha256": "166614e14025272d9c4b4976039e412a0337da6eebdc435ac962ece972cc51de",
+      "size": 1849
+    },
+    {
+      "path": "evals/external/geoanalystbench/producer-interfaces/v1/gab-01-urban-heat.json",
+      "sha256": "b411959358d61b8e343673105a28d5c52fddef165524b5f8097ccbb9107989cf",
+      "size": 3187
+    },
+    {
+      "path": "evals/external/geoanalystbench/producer-interfaces/v1/gab-08-facility-coverage.json",
+      "sha256": "75a1d09925d143652a29161495e068f3492fd9de93dbbfd22ac2da58a4917752",
+      "size": 2202
+    },
+    {
+      "path": "evals/external/geoanalystbench/producer-interfaces/v1/gab-36-vegetation-change.json",
+      "sha256": "417ac7e5879fdf23488b8f4370da3dfb9244e43c06ed2fc2f67a23ecba1339c3",
+      "size": 2489
+    },
+    {
+      "path": "evals/external/geoanalystbench/producer-interfaces/v1/gab-38-travel-time.json",
+      "sha256": "2c031a7b6bd3d35927cdf5207e36a0313d3fc05a943d73836f5e9fd0f901d4f9",
+      "size": 1794
+    },
+    {
+      "path": "evals/external/geoanalystbench/producer-interfaces/v1/gab-39-spatial-regression.json",
+      "sha256": "ec8d22d9e9adb4e878495756617a855efd7bf78632b51d0c5e8d021acdd7fc58",
+      "size": 4128
+    },
+    {
+      "path": "evals/external/geoanalystbench/producer-interfaces/v1/schema.json",
+      "sha256": "c0bf79b3f56baad376e1b0c766fa9f42439f58eb88389e8d5b9852ede641ccdf",
+      "size": 2393
+    },
+    {
+      "path": "evals/external/geoanalystbench/producer-interfaces/v2/gab-01-urban-heat.json",
+      "sha256": "5f2f42338e815c38990e2e755e3012f10269c0d41bd4903d64d63e9b3f686d7b",
+      "size": 5919
+    },
+    {
+      "path": "evals/external/geoanalystbench/producer-interfaces/v2/gab-08-facility-coverage.json",
+      "sha256": "e95a48e091741ac44b78d284cadde65de992af89b1de7d0618fc7b862785e8d8",
+      "size": 3616
+    },
+    {
+      "path": "evals/external/geoanalystbench/producer-interfaces/v2/gab-36-vegetation-change.json",
+      "sha256": "753789e7b074da40031a93f019627896cb5d28394dd3056305e8bf68f49e00cd",
+      "size": 3790
+    },
+    {
+      "path": "evals/external/geoanalystbench/producer-interfaces/v2/gab-38-travel-time.json",
+      "sha256": "81d7bcdbb61e9bea29499b5342aa7f924e726ba578301c5320a297ea2a3826f3",
+      "size": 3050
+    },
+    {
+      "path": "evals/external/geoanalystbench/producer-interfaces/v2/gab-39-spatial-regression.json",
+      "sha256": "79150d7c3e5f1d4c849949f00d00639d0e193d16c1e21eb155aa9cfc7b4c17ea",
+      "size": 7035
+    },
+    {
+      "path": "evals/external/geoanalystbench/producer-interfaces/v2/schema.json",
+      "sha256": "1294026c5ec8a1b2fa2de4e68c0a3cc81d1e34ec99a673a9e5958488ad45fdb9",
+      "size": 2792
+    },
+    {
+      "path": "evals/external/geoanalystbench/producer-interfaces/v3/gab-01-urban-heat.json",
+      "sha256": "8066de351afbeaf43c9b47cd5f65e95085f0b4933e93d28b0a3c0d6bab753b6f",
+      "size": 7360
+    },
+    {
+      "path": "evals/external/geoanalystbench/producer-interfaces/v3/gab-08-facility-coverage.json",
+      "sha256": "72b0f27de2aba303c40317b9c06c763efc6471357a3d2446623cb44c92081de2",
+      "size": 3583
+    },
+    {
+      "path": "evals/external/geoanalystbench/producer-interfaces/v3/gab-36-vegetation-change.json",
+      "sha256": "31527e2dbe190018c34322d5ecb2dbc98873e5a12e88b3ac50cfa3c96cabec62",
+      "size": 3770
+    },
+    {
+      "path": "evals/external/geoanalystbench/producer-interfaces/v3/gab-38-travel-time.json",
+      "sha256": "cbdebb05f5e5dd1b8cbdd6cc94d392b8be4a77378a2b9cf7d753fbbf9093741f",
+      "size": 3113
+    },
+    {
+      "path": "evals/external/geoanalystbench/producer-interfaces/v3/gab-39-spatial-regression.json",
+      "sha256": "76ecd4811b599c37c3ae1ea7061bab1dc75ae4a1d22d1fa19275b5125924e17d",
+      "size": 10337
+    },
+    {
+      "path": "evals/external/geoanalystbench/producer-interfaces/v3/schema.json",
+      "sha256": "80c8a6622fc9d434488ef580331f8b00bc8f8aa9ce586115defca11ef612248f",
+      "size": 2796
+    },
+    {
+      "path": "evals/external/geoanalystbench/provenance.json",
+      "sha256": "dac61c163d56b6d3983f1003c75713f46d115f8fcd91a628d8b432b5d543a865",
+      "size": 697
+    },
+    {
+      "path": "evals/external/geoanalystbench/result-schema.json",
+      "sha256": "6ac47b5b79ba87fd10eaa9e25a7eb63ca47528b12b61c9259d99f7c58a5db32a",
+      "size": 8838
+    },
+    {
+      "path": "evals/external/geoanalystbench/run-schema.json",
+      "sha256": "4275136a1b9be69d76abed9dc02e32cee2bf40f681b4b3ec3a98ad151822dbd9",
+      "size": 7521
+    },
+    {
+      "path": "evals/external/geoanalystbench/run-template-v2.json",
+      "sha256": "493a51b89036e1308485c6768f006a009421d4ebe5f18573eb4fda24235c87f5",
+      "size": 3671
+    },
+    {
+      "path": "evals/external/geoanalystbench/run-template-v3.json",
+      "sha256": "5b921e5934cdf6697f20ebe7040074836cb02eaf13c51a2796605b4973512b3a",
+      "size": 3671
+    },
+    {
+      "path": "evals/external/geoanalystbench/run-template.json",
+      "sha256": "ac58002ce338a0e1b06352668bfa7b4e86217313b848d0aab282de4e427e01a9",
+      "size": 3671
+    },
+    {
+      "path": "evals/external/geoanalystbench/schema.json",
+      "sha256": "a9bc4e7313ebb5b8d173c6740e53c8a2998ea5189f3bcf52e7322a5c2ca3e980",
+      "size": 2590
+    },
+    {
+      "path": "evals/external/geoanalystbench/validators/v3/validate_artifacts.py",
+      "sha256": "5f9239cb4d886a43299aa48a9f87f425021f7586d454d168cc4753f3214d7182",
+      "size": 9430
+    },
+    {
+      "path": "evals/judge-clauses.json",
+      "sha256": "716a7b42b9c74183425f7a2209e8b057b2aeb41a4c54552b69006e1e80ef9012",
+      "size": 7171
+    },
+    {
+      "path": "evals/rubric-baseline.json",
+      "sha256": "dede7c651acd538d73849680cf899ef71c457ea13bb404d01e7405d23f410396",
+      "size": 73178
+    },
+    {
+      "path": "evals/run-schema.json",
+      "sha256": "7a337120cbe7e597d62728d12c73f1d454b32025bdefd8f9ae42f3f853971ea3",
+      "size": 20123
+    },
+    {
+      "path": "evals/runtime-hashes/registry.json",
+      "sha256": "d734f6ee8aa216e2518818ad3621821f28a274178f7f66e173cbd6cb1a4542f1",
+      "size": 1081
+    },
+    {
+      "path": "evals/runtime-hashes/runtime-v1.json",
+      "sha256": "1948103a38d3b360365249dab5126b74d5c0e733482e7f84aefad72f84810375",
+      "size": 16456
+    },
+    {
+      "path": "evals/runtime-hashes/runtime-v2.json",
+      "sha256": "3e4f8bb26bc0c131e1890e4b7baa28fda2c3dc090ebc82f3849ea3072c6ebfcc",
+      "size": 16851
+    },
+    {
+      "path": "evals/schema.json",
+      "sha256": "9cf7d360b7d9b3b79211f28541f77b8d8016e356902b6b6105bb75a04f44b306",
+      "size": 6943
+    },
+    {
+      "path": "evals/split-inputs.json",
+      "sha256": "180843fedc141ea16102f11c8201f6bf47c692348219797a597953d829a2f36c",
+      "size": 6704
+    },
+    {
+      "path": "evals/split.json",
+      "sha256": "f5a19ed7509e5e7d859ed4eb6428a542f59018a7eee20683547a6e707ce61d05",
+      "size": 14086
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "32f222838dc55d99629ea667b78070528f5a20bc2bbcf02c8bbde5c977525d87",
+      "size": 2002
+    },
+    {
+      "path": "requirements-dev.txt",
+      "sha256": "bb39899a28a000a6fbf42e0b5eb85be8289d2298c70658bef9fcd42449dbdd9d",
+      "size": 166
+    },
+    {
+      "path": "skills/arcgis-pro-automation/SKILL.md",
+      "sha256": "2ba2568f704576602a2176e7f7011e5852050af60a2feaa4b5c590d977602125",
+      "size": 7042
+    },
+    {
+      "path": "skills/arcgis-pro-automation/agents/openai.yaml",
+      "sha256": "28f46271e98248666b0f04f600987e2dc5ea74cd2b377b90a2cd8eb4862aafbd",
+      "size": 217
+    },
+    {
+      "path": "skills/arcgis-pro-automation/references/authoritative-sources.md",
+      "sha256": "13962aa1fa305393da471cb1d5a0deb07cc5ffbea5363385c9dc1c7ba4e405e9",
+      "size": 1612
+    },
+    {
+      "path": "skills/arcgis-pro-automation/references/runtime-and-licensing.md",
+      "sha256": "83274a66ed8d5da14f65c15b0eb0afee2727bf65bf57f9648db9e91d1339a2ec",
+      "size": 4000
+    },
+    {
+      "path": "skills/arcgis-pro-automation/references/safety-and-validation.md",
+      "sha256": "ba0c451be54f447a6bb00952559737001bfb445ef7926f6fdaa91ddbc7011796",
+      "size": 4955
+    },
+    {
+      "path": "skills/arcgis-pro-automation/references/tool-routing.md",
+      "sha256": "642d766030a3ad5eddd2ae1a9d445351beda09bbeffc9f8cd1d6e53027588d52",
+      "size": 5644
+    },
+    {
+      "path": "skills/cartography-geoviz/SKILL.md",
+      "sha256": "acf568d4ca4da64dcaba0887c6546f022d76867d5516fe6796b204a8bea73004",
+      "size": 6359
+    },
+    {
+      "path": "skills/cartography-geoviz/agents/openai.yaml",
+      "sha256": "22f392ad2ed8d47b88708ddbdd73f46042f1eff28dfbd6669763d0d6d99b899e",
+      "size": 224
+    },
+    {
+      "path": "skills/cartography-geoviz/references/authoritative-sources.md",
+      "sha256": "fc19c54efa27e5df4b923956b082c205c6c1ee8e107a2febf2e9dcba57a3db8a",
+      "size": 793
+    },
+    {
+      "path": "skills/change-detection/SKILL.md",
+      "sha256": "fd0a6a28083e4c644ff28cc8d3ed72e6297eb3834be16c415f6d6ecec8849ff1",
+      "size": 7719
+    },
+    {
+      "path": "skills/change-detection/agents/openai.yaml",
+      "sha256": "4635f626b1d2a969c761eec67e1d837d080cdc81c0e2fa8436d49bef20db4b95",
+      "size": 204
+    },
+    {
+      "path": "skills/change-detection/references/authoritative-sources.md",
+      "sha256": "6ef65870f5ecbfb45d76f10952a61f18d7637f06bffb44f539c28ef09d3b1099",
+      "size": 854
+    },
+    {
+      "path": "skills/geo-data-engineering/SKILL.md",
+      "sha256": "f1c004afc1558361a71a1a7d8567d9a6822cfa989477b23932619626264b7d26",
+      "size": 5775
+    },
+    {
+      "path": "skills/geo-data-engineering/agents/openai.yaml",
+      "sha256": "08c903f7c84dbbbba53e20d4760b2172375ddc635238c865f7753d2e2deef410",
+      "size": 220
+    },
+    {
+      "path": "skills/geo-data-engineering/references/authoritative-sources.md",
+      "sha256": "aea0ac624604b0f655257e3080ac33c2be1d3f74aad7728ae9f586866ce3f4d6",
+      "size": 811
+    },
+    {
+      "path": "skills/geo-data-engineering/scripts/clean_vector.py",
+      "sha256": "9fe937ac0c6774ff2f746c53d89d9b49fcfcebf82bcfacdb9b72ee9cc2881067",
+      "size": 3639
+    },
+    {
+      "path": "skills/geo-deep-learning/SKILL.md",
+      "sha256": "5d71a76337dc52df949431543c1f75c6caeadf53bd0eb38490e5d49f50414116",
+      "size": 7507
+    },
+    {
+      "path": "skills/geo-deep-learning/agents/openai.yaml",
+      "sha256": "165a2a2ced9f0f4303299f2f6576f85ef18b0089f5ee3a4562bb5b9e84673e1c",
+      "size": 224
+    },
+    {
+      "path": "skills/geo-deep-learning/references/authoritative-sources.md",
+      "sha256": "a26b55e6e71d03753721bfc8afabe91b5404f5b16f4221e09ad01e6a03a752e7",
+      "size": 792
+    },
+    {
+      "path": "skills/geoai-orchestrator/SKILL.md",
+      "sha256": "6925301bb4417e9f05ec2026c53dbc97252ffc184b875203b3e4c6b878b4907a",
+      "size": 10115
+    },
+    {
+      "path": "skills/geoai-orchestrator/agents/openai.yaml",
+      "sha256": "80127c0926680bf198d75dfb6fdb955c36474d85865f82ae3af322e8def970fa",
+      "size": 207
+    },
+    {
+      "path": "skills/geoai-orchestrator/references/authoritative-sources.md",
+      "sha256": "d64eeed9eb8e382bf9912d37170372d38175454ff8138fe43cf42c14c4a4dd2e",
+      "size": 740
+    },
+    {
+      "path": "skills/geostatistics-interpolation/SKILL.md",
+      "sha256": "f5d39feca5fa35beb6ffece505e1b2b4fbba023213ddf0ea453b9aa2633e33ec",
+      "size": 6333
+    },
+    {
+      "path": "skills/geostatistics-interpolation/agents/openai.yaml",
+      "sha256": "f423a20aa7213b56e74483af9c00d921197d35748a70229b55bef368bebd8cc8",
+      "size": 231
+    },
+    {
+      "path": "skills/geostatistics-interpolation/references/authoritative-sources.md",
+      "sha256": "7abdd8884f7ce97ed8121ecce8b00e31ee30121dfb220eb345ddbdbbeb0fb552",
+      "size": 800
+    },
+    {
+      "path": "skills/google-earth-engine/SKILL.md",
+      "sha256": "bb323b7286377577426ac9966b7c00d34de6834920eef4a23c45222d6baf65f9",
+      "size": 10019
+    },
+    {
+      "path": "skills/google-earth-engine/agents/openai.yaml",
+      "sha256": "32e186fa0217647fbe0a23a623ab0d12dbadf605235d34e6435d73fcfebc6105",
+      "size": 219
+    },
+    {
+      "path": "skills/google-earth-engine/references/authoritative-sources.md",
+      "sha256": "c4afa61fae9faa86ec01450baef09e5f400eebed10e637a3cc5cf40ad52d73b9",
+      "size": 920
+    },
+    {
+      "path": "skills/mcda-suitability-analysis/SKILL.md",
+      "sha256": "57b93518aeea15509009e021c8cde35c297c6c3e01eb0abe2c8048b274b2a63c",
+      "size": 5896
+    },
+    {
+      "path": "skills/mcda-suitability-analysis/agents/openai.yaml",
+      "sha256": "28ffc2a7ca7149a6481652913f73e8b4490911cfe79cd3314bf630ec06e73690",
+      "size": 229
+    },
+    {
+      "path": "skills/mcda-suitability-analysis/references/authoritative-sources.md",
+      "sha256": "5d764d1392d61dc531330d0085fbb09d998fd9201b9e5878c5f98c26c9ddaaee",
+      "size": 867
+    },
+    {
+      "path": "skills/mcda-suitability-analysis/scripts/ahp_weights.py",
+      "sha256": "fae9d1ea349aa4dc9aa2e4870a27ea329eae5f46e0618203abda343afc3722ae",
+      "size": 2846
+    },
+    {
+      "path": "skills/ml-experiment-standards/SKILL.md",
+      "sha256": "ee9407d47e45846b7ed275d7e39b69539397ed49bd8ac59537c8312f7eb6333f",
+      "size": 6320
+    },
+    {
+      "path": "skills/ml-experiment-standards/agents/openai.yaml",
+      "sha256": "d2795defca12faff9b882ddfb6209d7f867be230d9770c399a72814b2ffd44b5",
+      "size": 232
+    },
+    {
+      "path": "skills/ml-experiment-standards/references/authoritative-sources.md",
+      "sha256": "975fb536963e644de7cc350dc9eb48f49f5cb5898fc1ef397dafa3a9d16d7a50",
+      "size": 767
+    },
+    {
+      "path": "skills/ml-experiment-standards/references/spatial-cv-protocol.md",
+      "sha256": "f3757f094edc749d6667ab8f3ae12681c51fd89338fdffa84a195028e79fe59b",
+      "size": 3293
+    },
+    {
+      "path": "skills/movement-trajectory/SKILL.md",
+      "sha256": "cb33346e42f43587acb631853fd094c608d5e4cbd5f47e5de0e1c63ed40de174",
+      "size": 8168
+    },
+    {
+      "path": "skills/movement-trajectory/agents/openai.yaml",
+      "sha256": "aacd9165a4289523bf1cec31b103a2f2b90461edede07309ca1fa12a7229b6d3",
+      "size": 228
+    },
+    {
+      "path": "skills/movement-trajectory/references/authoritative-sources.md",
+      "sha256": "701a083df7a579d4c8785486a0004dda9f0aa71dab60f5c65c58bacd239a0918",
+      "size": 783
+    },
+    {
+      "path": "skills/network-accessibility-analysis/SKILL.md",
+      "sha256": "07553d4b6be7e2042341fddb79fd903eede9cf83aeebabb8593458631df2e37b",
+      "size": 6608
+    },
+    {
+      "path": "skills/network-accessibility-analysis/agents/openai.yaml",
+      "sha256": "5eb76def022d8be4ea30d9b834e4e62d995d5ae81c335de144f76db3e5b3087a",
+      "size": 237
+    },
+    {
+      "path": "skills/network-accessibility-analysis/references/authoritative-sources.md",
+      "sha256": "49cd117025ef1f7298b14ba82d249fe3505c89a93dcedc861cc962510b059aff",
+      "size": 755
+    },
+    {
+      "path": "skills/point-cloud-lidar/SKILL.md",
+      "sha256": "312980ba13d9c9b0be735c3244490017ae48f04d219838c745789b7dbd7a16f2",
+      "size": 9431
+    },
+    {
+      "path": "skills/point-cloud-lidar/agents/openai.yaml",
+      "sha256": "7db2a8b5034b60dd88cdc3cc043ebdde5f1b4cb54f27ee624411d3235fc2799c",
+      "size": 207
+    },
+    {
+      "path": "skills/point-cloud-lidar/references/authoritative-sources.md",
+      "sha256": "4fe53c49f84c4fdc1b6b5722c3fe2af64e3f9ecc103c6e4dd1501f654014ca31",
+      "size": 781
+    },
+    {
+      "path": "skills/postgis-spatial-sql/SKILL.md",
+      "sha256": "8fb45469e8defb5a358ab7845f15d6b05a0c2ef10698a1e869c5b812d19d095a",
+      "size": 9592
+    },
+    {
+      "path": "skills/postgis-spatial-sql/agents/openai.yaml",
+      "sha256": "6ff231ccb9755404e3dd521ffec145f021b30f4f585b4f4503a2c48f091cbc70",
+      "size": 216
+    },
+    {
+      "path": "skills/postgis-spatial-sql/references/authoritative-sources.md",
+      "sha256": "b3e95048285c12afb3e55ebfb3dc4072cde35e6318b833d71df711d59f852419",
+      "size": 781
+    },
+    {
+      "path": "skills/remote-sensing-analysis/SKILL.md",
+      "sha256": "e2ad170f6ec0a502e5a92ea286a29327b4d6c85be4ddcd533838562f731d6955",
+      "size": 8442
+    },
+    {
+      "path": "skills/remote-sensing-analysis/agents/openai.yaml",
+      "sha256": "3084076b5322b74e760f3aa7ce91e1f17343f6d85908de5096622edb7097ff47",
+      "size": 220
+    },
+    {
+      "path": "skills/remote-sensing-analysis/references/authoritative-sources.md",
+      "sha256": "5e05efe65169f3af2238e641127fb37ce4106f81a858a2388a870b6afaab59e3",
+      "size": 1382
+    },
+    {
+      "path": "skills/spatial-statistics/SKILL.md",
+      "sha256": "331ddcc85a58e733ca6d377222daceca5f9961fca521e0435fc41c5bf39f76f1",
+      "size": 6302
+    },
+    {
+      "path": "skills/spatial-statistics/agents/openai.yaml",
+      "sha256": "07234a37e2e48385213702e30831f4301d5ecda46458ec4304b52007c2faf807",
+      "size": 214
+    },
+    {
+      "path": "skills/spatial-statistics/references/authoritative-sources.md",
+      "sha256": "4aaa0e9120be4e61300dbbe037c57d6e940886c61a17cc0e7dae11987d3f1f3d",
+      "size": 750
+    },
+    {
+      "path": "skills/swe-devops-standards/SKILL.md",
+      "sha256": "34af23292b7ee838256c9a87ec4c6e7c30a9e16cf389f7bbb8e58980b2854298",
+      "size": 6451
+    },
+    {
+      "path": "skills/swe-devops-standards/agents/openai.yaml",
+      "sha256": "815a48b32df0f37b285c112ad01290e14062a46e1dfcbb162f7c63b18648d5c0",
+      "size": 215
+    },
+    {
+      "path": "skills/swe-devops-standards/references/authoritative-sources.md",
+      "sha256": "76481f229270dca2d96b2a724fbf15400ddf9d23cd7d9f3a1bbc7f4610ce02d5",
+      "size": 844
+    },
+    {
+      "path": "skills/terrain-hydrology/SKILL.md",
+      "sha256": "391051e89b612760565c758b6e7db0a7a15993e2372c0ba300f8195c487c3304",
+      "size": 7272
+    },
+    {
+      "path": "skills/terrain-hydrology/agents/openai.yaml",
+      "sha256": "416f99aad664b1c0578f7f075c324f6d3c6aac0db7143585d3e77feb33348f86",
+      "size": 213
+    },
+    {
+      "path": "skills/terrain-hydrology/references/authoritative-sources.md",
+      "sha256": "d516c6abdb21d06990a4fbe800367c0b84102ebcb6cabe2a5546b18cae99eb8f",
+      "size": 784
+    },
+    {
+      "path": "tests/test_ahp_weights.py",
+      "sha256": "933548788a665b8788c20b27522b9f505b70b0160c5c9ca97dd3c9e733d1acf4",
+      "size": 1607
+    },
+    {
+      "path": "tests/test_case_cap_visibility.py",
+      "sha256": "5d373eb46447bb6ed81071839ff6ebf132dc0bbdfea457385d4a4b99ee0ce7b0",
+      "size": 3413
+    },
+    {
+      "path": "tests/test_check_links.py",
+      "sha256": "6021506468424a263c15c1e7870a9f8910f66ae4737b7b0b17adccee6538f967",
+      "size": 3033
+    },
+    {
+      "path": "tests/test_claude_code_adapter.py",
+      "sha256": "8b7f1165cb929a44bd26e0e0fadc0693462c0cd24cad810841f46b091c11bc5a",
+      "size": 14767
+    },
+    {
+      "path": "tests/test_claude_plugin_package.py",
+      "sha256": "d983b587d265e84ccc1be180110b8a46e68fdac1f115b6a44450fe597636abc1",
+      "size": 3511
+    },
+    {
+      "path": "tests/test_clean_vector.py",
+      "sha256": "aadbbff8f2f85be12e2213de047749b5114377dcc528de225683bf02963ac58a",
+      "size": 1922
+    },
+    {
+      "path": "tests/test_codex_cli_adapter.py",
+      "sha256": "b539ad0f97acfadefbcaa84687157a7d8931493c321b0086853b3953c4a60985",
+      "size": 11006
+    },
+    {
+      "path": "tests/test_eval_runner.py",
+      "sha256": "ee71a2f542599ed3797f5d02d14bdedb95dbc1d8854ee58f9c9345a3748444db",
+      "size": 24216
+    },
+    {
+      "path": "tests/test_external_eval_run_protocol.py",
+      "sha256": "5bee64890f6fee41dae9d797edad1c996063731d408c669ca8d5369d413442c0",
+      "size": 18252
+    },
+    {
+      "path": "tests/test_external_link_workflow.py",
+      "sha256": "223aeade2ae12c0399b2fc0cbd53c4019f8bc71f44dd4cc562e16098fb0670ee",
+      "size": 2737
+    },
+    {
+      "path": "tests/test_external_producer_interface.py",
+      "sha256": "e2a31efcbf31baca7920501e244b300a5bb158521fb6c6793223c1e73ad68d5c",
+      "size": 5335
+    },
+    {
+      "path": "tests/test_external_producer_interface_v2.py",
+      "sha256": "d87a0b2f3e6c4434c023e1e6ef869d9f44923bf7b1adbb39d3613a4017d6ee73",
+      "size": 4496
+    },
+    {
+      "path": "tests/test_external_producer_interface_v3.py",
+      "sha256": "43df155ac237b97acddacaf9941458b508bc0956c8fb28b41e1523447f9f5119",
+      "size": 5323
+    },
+    {
+      "path": "tests/test_fixture_backed_critical_cases.py",
+      "sha256": "668d6290efaf032dc016cdf408006c75ac2409d4424d7a4746261b9709afc46f",
+      "size": 5233
+    },
+    {
+      "path": "tests/test_gemini_api_adapter.py",
+      "sha256": "83f1c8182e27f6f713567cef92bc9087bb0f25ad3bb79cdaad2dd50dd8abcac5",
+      "size": 8194
+    },
+    {
+      "path": "tests/test_geoanalystbench_contracts_v2.py",
+      "sha256": "c35d8fba8219cd6080e6e96d3c4e043de1088b78b834072694b51bdb1f27416e",
+      "size": 5722
+    },
+    {
+      "path": "tests/test_geoanalystbench_contracts_v3.py",
+      "sha256": "ce06084eb3bd53f1d21108d9d7c458b1c84969c4c75bb40039dafdf7d1356721",
+      "size": 5194
+    },
+    {
+      "path": "tests/test_geoanalystbench_facility_coverage.py",
+      "sha256": "2dc13ba60289e10f21a79745416a200eed6d7d80fd305396306dcc7b6c3149b3",
+      "size": 5830
+    },
+    {
+      "path": "tests/test_geoanalystbench_freeze.py",
+      "sha256": "171034895c41313b15ed58fafab1f584ab6e0744e6167b3e0c31df69819faea1",
+      "size": 3819
+    },
+    {
+      "path": "tests/test_geoanalystbench_spatial_regression.py",
+      "sha256": "9f15678c4a28ff992ecea0fa6bb1990bfce68a7c0f2763921bc9cec3d4ff8078",
+      "size": 7579
+    },
+    {
+      "path": "tests/test_geoanalystbench_subset.py",
+      "sha256": "cc9b75f4bb21df03f9c3735d43142230da9f454474d06fff937496df19c458b8",
+      "size": 6416
+    },
+    {
+      "path": "tests/test_geoanalystbench_urban_heat.py",
+      "sha256": "256a9f711dddbfa69050aee05f05b4e84bc04448e40f3b772cc5b02eb8c41cee",
+      "size": 7064
+    },
+    {
+      "path": "tests/test_geoanalystbench_vegetation_change.py",
+      "sha256": "f60969f72a14421e832db291da51e8ba8af6cfb18a552cf26695daa62de8ef18",
+      "size": 6627
+    },
+    {
+      "path": "tests/test_geoverify_cli_robustness.py",
+      "sha256": "d040aea51116f98e6d06543926e01f50ea88f4409d7536d3562d018cb59f3ed4",
+      "size": 5874
+    },
+    {
+      "path": "tests/test_geoverify_crs_and_ordering.py",
+      "sha256": "c0dcd8967dbe94ccd8824170ad957a3c271b1f31c16d672546ccdeedee27c7f7",
+      "size": 5440
+    },
+    {
+      "path": "tests/test_geoverify_provenance_privacy_params.py",
+      "sha256": "6891e6d68fa44021e9c6749b9eb0a0c1909a8aee9aef34f0d5553333d0e42145",
+      "size": 11268
+    },
+    {
+      "path": "tests/test_geoverify_result_vocabulary.py",
+      "sha256": "c640e72f701447f6c3cdfc7deda66d56e0bead64bd5b68cf2a4f5d4c6741cb25",
+      "size": 4412
+    },
+    {
+      "path": "tests/test_geoverify_statistics_and_equity.py",
+      "sha256": "872044fe76a8c142a67613f27dbec63ccda99eda24c6b177957f4dc79cca660d",
+      "size": 6225
+    },
+    {
+      "path": "tests/test_holdout_split.py",
+      "sha256": "9058720cf8c91d205d0aa2bf517907ab61ed177212dfd20b2c2632a47d01765c",
+      "size": 21091
+    },
+    {
+      "path": "tests/test_judge_contract.py",
+      "sha256": "0468296dd9a180e1adaa0818269d24f744298fb10e827ea5dd7ecf3964757cf6",
+      "size": 7805
+    },
+    {
+      "path": "tests/test_openai_plugin_package.py",
+      "sha256": "36ad1ba9a6ecc23077af78fe316ba3ea43188707cc7a14e197fd6ee46a48d0d7",
+      "size": 4919
+    },
+    {
+      "path": "tests/test_orchestrator_routing_contract.py",
+      "sha256": "2d8030ae11c5d1b76474518ebdd039b02409ce51dba2da0179fcbcf128f47104",
+      "size": 5591
+    },
+    {
+      "path": "tests/test_paired_analysis.py",
+      "sha256": "18c876d9d42ad6e1ccd00f1e12945f9e1068fe335e197463160cf1d114ad0538",
+      "size": 13221
+    },
+    {
+      "path": "tests/test_point_cloud_lidar_datum_contract.py",
+      "sha256": "156095b49be7504f60df202536d2f515ba5220bd0e531a7c5000f5179ed16ac5",
+      "size": 5379
+    },
+    {
+      "path": "tests/test_postgis_skill_quality.py",
+      "sha256": "bd1d0a6c1bc4752394a525cdb49356f10ff3660de7db7b144248929407b24e76",
+      "size": 3004
+    },
+    {
+      "path": "tests/test_project_state_docs.py",
+      "sha256": "29ff972c7b89956f51de2c1602fab02d4bdae48ffdfc5ec002e395c2fb3cb13b",
+      "size": 3192
+    },
+    {
+      "path": "tests/test_publish_routing_benchmark.py",
+      "sha256": "656daab8c1e4adb01f231ce6aee00df0b6fe48eeecc9fa9fa2cbd1cd71314a23",
+      "size": 4071
+    },
+    {
+      "path": "tests/test_readme_behavior_assets.py",
+      "sha256": "96f5ca0a6489c767727d627c294e539893187b2dcdb53b5115faf52af39abfe7",
+      "size": 4079
+    },
+    {
+      "path": "tests/test_regression_gates.py",
+      "sha256": "11884774fdffc6d061fc8932b04bfb8dbd57eb96518b6d5e27273cc2796d6814",
+      "size": 14794
+    },
+    {
+      "path": "tests/test_release_candidate_docs.py",
+      "sha256": "a07e7d29886e19be78d24ad0e517cdf384bcd577f894dbce27395aca63a4738b",
+      "size": 2861
+    },
+    {
+      "path": "tests/test_runtime_hash_registry.py",
+      "sha256": "30b19a8d3561032636c3c2e0d18166f31fa2c17b5c20b9011a8e087d9582c7fc",
+      "size": 8157
+    },
+    {
+      "path": "tests/test_runtime_provenance.py",
+      "sha256": "8e558aaa596abd5cd5deaf4a208075815eab73158f67a57b968673abb4141559",
+      "size": 4596
+    },
+    {
+      "path": "tests/test_runtime_skill_layout.py",
+      "sha256": "30f99f4d863e41d5085e49599400d9cbd021d6df445093371536644922593190",
+      "size": 1910
+    },
+    {
+      "path": "tests/test_security_hardening.py",
+      "sha256": "ef220b077e12f3a83ff149eaa90c4966e8a185ce947000bc33ea79e776502d85",
+      "size": 8457
+    },
+    {
+      "path": "tests/test_skill_archives.py",
+      "sha256": "a743e48dc127ad89d27b5f2954ffff38f24f5490f48f6bf9ca79f2f4ee3f3c78",
+      "size": 7206
+    },
+    {
+      "path": "tests/test_skill_description_contracts.py",
+      "sha256": "944bbf68e6c14567d37b3581976c3b5a3d6a6c36444a3721354292110b42089d",
+      "size": 8924
+    },
+    {
+      "path": "tests/test_skill_release_workflow.py",
+      "sha256": "3afc4b6fb3c508dc715cd5c55066b89282a791b1830d58e41dccd980977a9809",
+      "size": 2039
+    },
+    {
+      "path": "tests/test_unmet_criteria_remediation.py",
+      "sha256": "e42584a86cf34f49b865f83d030514f475c7a98b7804baf60141ac3ab19c0bae",
+      "size": 9387
+    },
+    {
+      "path": "tests/test_workspace_isolation.py",
+      "sha256": "fb5300d02924521de3cf15a0ba263bda16f6bda29d989aa50c7e5955b9be241c",
+      "size": 3113
+    },
+    {
+      "path": "tools/adapters/claude_code.py",
+      "sha256": "30f1b535244b578ab0afea48879e5f43957a06c0c1d39e456f4f5da4918b404f",
+      "size": 40398
+    },
+    {
+      "path": "tools/adapters/codex_cli.py",
+      "sha256": "a1fa9dd6ca0cbfeab27746781d472cfa3292df8795a018f39980d43aea9ec69d",
+      "size": 25981
+    },
+    {
+      "path": "tools/adapters/gemini_api.py",
+      "sha256": "7637eedbb7ad6f0f22408535a0bbe9616f8e3caed5d100b6eea83df44087f536",
+      "size": 21779
+    },
+    {
+      "path": "tools/adapters/judge_contract.py",
+      "sha256": "4e857bbda1663d5ba7ef9912d571e3938a8d74826b28cbe466739d2ac53e74b7",
+      "size": 11283
+    },
+    {
+      "path": "tools/build_external_eval_freeze.py",
+      "sha256": "e51e08b03396d171c6e47a640cbfd1a58d7dea1413b0633a79399e4696ce922b",
+      "size": 8096
+    },
+    {
+      "path": "tools/build_external_eval_freeze_v2.py",
+      "sha256": "5777c873475b0b8c80ea922682a553cdadae36ea7f958e069864042dbc311cae",
+      "size": 10430
+    },
+    {
+      "path": "tools/build_external_eval_freeze_v3.py",
+      "sha256": "9dd6be585360ca3d5a6dafc607b837ddc624eb3f62de509cf75cfbf3d7ce47f9",
+      "size": 5621
+    },
+    {
+      "path": "tools/build_external_producer_interface.py",
+      "sha256": "405dd06397e24b1f3c3c09047b3f72bba8f81b0d95f6e2f965992f37c97ad858",
+      "size": 9533
+    },
+    {
+      "path": "tools/build_external_producer_interface_v2.py",
+      "sha256": "6c52f3d8bb62a4559fedc46bf4cc7b37e96abbcc17f2c65fdc7566b87460fd64",
+      "size": 9620
+    },
+    {
+      "path": "tools/build_external_producer_interface_v3.py",
+      "sha256": "9c15be4a2ce1720e81b29c7fc09e248da93c4bd8f2c4c049037749ef810ecd03",
+      "size": 9597
+    },
+    {
+      "path": "tools/build_openai_plugin_bundle.py",
+      "sha256": "665d4cf656e3dd907465569820df0955fcf3474965f1efe312d8398c8a1bc9aa",
+      "size": 4238
+    },
+    {
+      "path": "tools/build_runtime_hash_registry.py",
+      "sha256": "0af7bc8fa5e2c37817f5ec67720604f020802208259a2983a5361641f362f3cf",
+      "size": 19967
+    },
+    {
+      "path": "tools/build_skill_archives.py",
+      "sha256": "a1cbdbfc7272fd3f3220dbaecba8cc274b0bac589fd005448ea47f46f09c9ee6",
+      "size": 7401
+    },
+    {
+      "path": "tools/build_split.py",
+      "sha256": "3b5dbbabfef98c3c8963f6154f03e19ebea134daaad7a18fba11bf784b8e4b7e",
+      "size": 12624
+    },
+    {
+      "path": "tools/check_links.py",
+      "sha256": "f1f0fb929102148e596df8b2fa3e5a679f1d5f5ad039f7f18896a6a37d5d3f77",
+      "size": 10360
+    },
+    {
+      "path": "tools/check_regression_gates.py",
+      "sha256": "9928923fa70822c9b01207cfa83f9fc82a4fbd541115cf5562c41969f0d56b44",
+      "size": 23273
+    },
+    {
+      "path": "tools/eval_runner.py",
+      "sha256": "60529befd9cced60e3dc9c003925872f591c5b7717626fbd9d25785d07b930cc",
+      "size": 41676
+    },
+    {
+      "path": "tools/evaluate_external_run.py",
+      "sha256": "18eb56f05210a4f9bbc6d57dca4701bcdca11ab4f3739d95c6ed9ab15b343f60",
+      "size": 22821
+    },
+    {
+      "path": "tools/paired_analysis.py",
+      "sha256": "9f8ed158f05b08779bd3ca109e96fdd5a882610a05bdcb4c0c35f9fd6b88420e",
+      "size": 19189
+    },
+    {
+      "path": "tools/publish_routing_benchmark.py",
+      "sha256": "ed48e743cac59e2bee9e9128e92f6eaec2e7e95ee6ec814c7d1a6514e9780a7b",
+      "size": 11598
+    },
+    {
+      "path": "tools/render_external_case_prompt.py",
+      "sha256": "c6da58841cba17c3222d4993b2678ff533472eede45ff6cb8143fb68a6f40fc6",
+      "size": 5477
+    },
+    {
+      "path": "tools/validate_evals.py",
+      "sha256": "16c4d5ce1de102a9085becdcbca463912d39771c1325c4c9f0206275c957d639",
+      "size": 9868
+    },
+    {
+      "path": "tools/validate_external_evals.py",
+      "sha256": "c670b10e37ef6889715d2b67fd60e99532bc31c6476c4e9aa36bedc16abfedd7",
+      "size": 10575
+    },
+    {
+      "path": "tools/validate_skills.py",
+      "sha256": "ba6177e536f74041c0cf287bf7a8a399866303921b930a435afc693caf5d6485",
+      "size": 9029
+    },
+    {
+      "path": "tools/verification/README.md",
+      "sha256": "4dbe3eb6eb51f51f520d0bd71615ee15a23f64dcc625e673f9356af9d73a78ac",
+      "size": 4269
+    },
+    {
+      "path": "tools/verification/__init__.py",
+      "sha256": "40c42a5e7b39e0312676c0c267c8252b73cbcf1459cbbc5ccd1363705eabe543",
+      "size": 3057
+    },
+    {
+      "path": "tools/verification/comparability.py",
+      "sha256": "b29e8565ad1aa16f5b0ed98e45ef17fce54cdd5e06cb02f62d26d1288ec07504",
+      "size": 7615
+    },
+    {
+      "path": "tools/verification/crs_units.py",
+      "sha256": "441e828a46f26da3bcec69a8b2287c51aac32c37ce4a902fd3d00136144eb763",
+      "size": 6838
+    },
+    {
+      "path": "tools/verification/equity.py",
+      "sha256": "221018cd18b23c7fbc6d5d31539bdb6f8712aae971622a170444c22c168f02fa",
+      "size": 5316
+    },
+    {
+      "path": "tools/verification/multiplicity.py",
+      "sha256": "bcf3af0105582c46103f1477aeb3004d9b91d122a2f3a5c215f2a2ace7b6871f",
+      "size": 6289
+    },
+    {
+      "path": "tools/verification/ordering.py",
+      "sha256": "8b38c8bbb02b683d4adbcdbd9c36f1a6a1dc120c80943bec2f96c869213f7751",
+      "size": 4801
+    },
+    {
+      "path": "tools/verification/parameters.py",
+      "sha256": "4d5eab9b7d849cf02c51ed85b514c3a016989901a8975753e074f315cc20f4c0",
+      "size": 5647
+    },
+    {
+      "path": "tools/verification/privacy.py",
+      "sha256": "3809f724812151023a45b05eded2392cc73a00b90cfd2b6db06023b7d875a589",
+      "size": 6640
+    },
+    {
+      "path": "tools/verification/provenance.py",
+      "sha256": "fa3f4e96c10200204dc8528c9b22a4231a92bca0efe0e51810e50ceaf4cbb98c",
+      "size": 6692
+    },
+    {
+      "path": "tools/verification/result.py",
+      "sha256": "c16b1cdc6a8d480482a54a1efd210ac049e46332f779d7f29c5861cc0790de2c",
+      "size": 5455
+    },
+    {
+      "path": "tools/verify.py",
+      "sha256": "ed7dc590925e039bd81681a9e9bb6f544b530c2989b8b1e9a325cc3556b35837",
+      "size": 8489
+    }
+  ],
+  "kind": "committed-source-snapshot",
+  "note": "Exact committed blobs. Only CRLF/LF differ from base.lock.json; no skill bytes differ.",
+  "schema_version": 1
+}
