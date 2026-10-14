@@ -1,6 +1,7 @@
 {
-  "agent_runtime_sha256": "09247154c69c3929d096ae6ea1415b2e1ee687a6f32d2e906504b5aa6e3eecbc",
-  "archive_sha256": "e5e7fcf015a6c99e74a349d0faac339b3c0b7b460ebd17bdfc6c7336f62c1189",
+  "agent_runtime_sha256": "534e6e43a49cd87ba8e2476929508261aad668aeed5fe52f4c37bb4704a58dcb",
+  "archive_filename": "geoai-agents-0.1.0-reviewed-final.zip",
+  "archive_sha256": "6bb10aec42f9745845e0827302c24ec6161dfdb60fac7854366e6feaf6eae4af",
   "base": {
     "freeze_id": "runtime-v2",
     "legacy_native_suite_sha256": "efe27d8c1736c80fd001cfd1e037c8fe5d6f013767d0c710a151250ffeeb8e77",
@@ -13,7 +14,8 @@
   "branch": "feat/geoai-agent-kit",
   "checks": {
     "addon_tests": {
-      "passed": 69
+      "new_review_regression_cases": 19,
+      "passed": 88
     },
     "captured_files_unchanged": 308,
     "deterministic_pilots": {
@@ -34,6 +36,15 @@
         "C:pass"
       ]
     },
+    "pinned_repo_lint": "pass (ruff 0.16.0)",
+    "reviewed_standalone_archive": {
+      "claude_install": "pass",
+      "codex_install": "pass",
+      "installed_manifests": "pass",
+      "manifest": "pass",
+      "model_calls": 0,
+      "preview_no_writes": "pass"
+    },
     "standalone_archive": {
       "install": "pass",
       "installed_manifest": "pass",
@@ -41,12 +52,15 @@
       "manifest": "pass",
       "preview_no_writes": "pass"
     },
+    "unchanged_core_tests": {
+      "passed": 539
+    },
     "unchanged_legacy_validator_tests": {
       "passed": 130
     }
   },
   "date": "2026-10-14",
-  "evaluation_suite_sha256": "7ce9f153aeb52605d691b84c82e3283d3515979ba77b7dffe59189fb6ba06c70",
+  "evaluation_suite_sha256": "c44a12b4eeaa72eff0943531646dc8b4d5aa20100ee910395dfcef99231b07f5",
   "kind": "preview-verification",
   "live_comparative_quality_measured": false,
   "native_runs": {
@@ -64,6 +78,7 @@
       "trace_sha256": "3f965ff7dcbba2a155e32296daddb365814d2dee318dbdf2ef09a2f13d79fb61"
     }
   },
+  "observation_scope": "local pre-push review; current remote status is in PR checks",
   "package_version": "0.1.0",
   "placetwin_incidents_reproduced": false,
   "remote_ci_executed": false,

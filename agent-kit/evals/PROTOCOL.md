@@ -27,6 +27,12 @@ Record counterbalanced execution order, fixed budgets and tool access, and use
 the same original case for all three conditions. Retain interruptions and quota
 failures. A later retry is a new run and must not erase the failed attempt.
 Codex and Claude results must remain separate, also separated by model/version.
+The preview comparer accepts one attempt per case/condition/runtime version/model/suite.
+If more than one is supplied, all duplicates are excluded rather than selecting the
+first or a successful attempt. Retain retries separately with their provenance;
+this preview does not estimate replicated-run statistics. Different model/version
+groups do not count as duplicates. `missing_runs` counts staged environments without
+a contract-valid submitted record, not the number of excluded or incomplete attempts.
 
 ## Evidence and judgments
 

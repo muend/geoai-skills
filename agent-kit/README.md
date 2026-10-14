@@ -105,7 +105,10 @@ The walkability validator supports projected metre LineStrings, explicit network
 foot access, levels and barrier polygons. It recognizes explicit same-network bridges
 over water. It does not infer unrecorded gates, current access or pedestrian safety.
 The SVG check handles explicitly marked polylines without CSS style resolution;
-unsupported graphics abstain. Terrain checks a one-dimensional east-slope diagnostic.
+unsupported graphics abstain. Legend checks account for inherited paint opacity
+and font size; reusable definitions, animation and complex text are unsupported.
+This remains a structural check, not a browser rendering or contrast assessment.
+Terrain checks a one-dimensional east-slope diagnostic.
 Model split checks point distances/groups, not chip footprint overlap. MCDA checks
 normalized benefit scores and a declared +/-0.1 perturbation experiment.
 
@@ -131,6 +134,9 @@ present with matching hashes. Judgment separates calculation, evidence sufficien
 and presentation meaning. Aggregate summaries use only cases with all three
 conditions present for the same runtime/model/suite. Profile inspection remains an
 attestation; a self-reported inventory is not proof of OS isolation.
+Malformed records are excluded before comparison. Duplicate case/condition records
+within the same runtime version, model and suite are all excluded, regardless of
+input order. Distinct models and runtime versions remain eligible in separate groups.
 
 `tools/smoke.py` previews a bounded native model call; only `--run` calls a model.
 It is development tooling and is excluded from runtime archives. A CLI returning

@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from collections import Counter
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 from .checks import run_check
 from .core import (
@@ -14,6 +16,15 @@ from .distribution import adapters, package_manifest, payload
 from .integrity import base_manifest, tree_digest, verify_base, verify_inventory
 
 CONDITIONS = ("skills-only", "structured-single", "agent-team")
+ENVIRONMENT_ID = ("runtime", "condition", "case_id", "producer_suite_sha256")
+RUN_ID = (*ENVIRONMENT_ID, "runtime_version", "model")
+
+
+def _valid_run(record: Any) -> bool:
+    from jsonschema import Draft202012Validator
+
+    schema = read_json(KIT / "schemas/evaluation-run.schema.json")
+    return Draft202012Validator(schema).is_valid(record)
 
 
 def evaluate_pilots() -> dict[str, Any]:
@@ -89,16 +100,15 @@ def prepare(destination: Path, skills_root: Path, runtime: str) -> dict[str, Any
             "producer_suite_sha256": suite_sha}
 
 
-def audit_run(environment: dict[str, Any], record: dict[str, Any],
+def audit_run(environment: dict[str, Any], record: Any,
               evidence_root: Path | None = None) -> dict[str, Any]:
     """Exclude unknown profiles and contamination, rather than trusting a success exit."""
     reasons = []
     reasons.extend(environment.get("isolation_issues", []))
-    from jsonschema import Draft202012Validator
-
-    schema = read_json(KIT / "schemas/evaluation-run.schema.json")
-    if not Draft202012Validator(schema).is_valid(record):
+    note = "Profile inspection is an attestation, not an OS isolation certificate."
+    if not _valid_run(record):
         reasons.append("invalid evaluation run contract")
+        return {"eligible": False, "reasons": reasons, "note": note}
     for key in ("latency_seconds", "tokens", "cost_usd"):
         try:
             if record.get(key) is not None and finite(record[key]) < 0:
@@ -142,7 +152,8 @@ def audit_run(environment: dict[str, Any], record: dict[str, Any],
             judged = read_json(contained(evidence_root, record["judgment_path"]))
             if judged["output_sha256"] != record["output_sha256"]:
                 reasons.append("judgment refers to a different output")
-            if (not judged["reviewer_id"] or judged["reviewer_id"] == record.get("producer_id")
+            if (not isinstance(judged["reviewer_id"], str) or not judged["reviewer_id"].strip()
+                    or judged["reviewer_id"] == record.get("producer_id")
                     or judged["status"] != "completed"):
                 reasons.append("independent judgment incomplete")
             for dimension in ("calculation", "evidence", "presentation"):
@@ -150,8 +161,7 @@ def audit_run(environment: dict[str, Any], record: dict[str, Any],
                     reasons.append("invalid judgment dimension")
         except (OSError, KeyError, ValueError, TypeError):
             reasons.append("judgment evidence unavailable")
-    return {"eligible": not reasons, "reasons": reasons,
-            "note": "Profile inspection is an attestation, not an OS isolation certificate."}
+    return {"eligible": not reasons, "reasons": reasons, "note": note}
 
 
 def verify_environment(root: Path) -> dict[str, Any]:
@@ -167,28 +177,38 @@ def verify_environment(root: Path) -> dict[str, Any]:
     return report(results)
 
 
-def compare(environments: list[dict[str, Any]], runs: list[dict[str, Any]],
+def compare(environments: list[dict[str, Any]], runs: list[Any],
             evidence_roots: list[Path] | None = None) -> dict[str, Any]:
     """Retain exclusions, report each runtime/model separately; no pooled headline."""
-    indexed = {(e["runtime"], e["condition"], e["case_id"], e["producer_suite_sha256"]): e
-               for e in environments}
+    if evidence_roots is not None and len(evidence_roots) != len(runs):
+        raise ValueError("each run must have a corresponding evidence directory")
+    indexed = {tuple(e[k] for k in ENVIRONMENT_ID): e for e in environments}
+    valid = [_valid_run(run) for run in runs]
+    counts = Counter(tuple(run[k] for k in RUN_ID)
+                     for run, ok in zip(runs, valid, strict=True) if ok)
     groups: dict[str, Any] = {}
     excluded = []
     seen = set()
     for index, run in enumerate(runs):
-        key = tuple(run.get(k) for k in
-                    ("runtime", "condition", "case_id", "producer_suite_sha256"))
-        if key not in indexed or key in seen:
-            excluded.append({"case_id": run.get("case_id"),
-                             "reasons": ["unknown or duplicate run"]})
+        if not valid[index]:
+            excluded.append({"run_index": index,
+                             "reasons": ["invalid evaluation run contract"]})
+            continue
+        key = tuple(run[k] for k in ENVIRONMENT_ID)
+        identity = {k: run[k] for k in RUN_ID}
+        if key not in indexed:
+            excluded.append({**identity, "reasons": ["unknown environment"]})
             continue
         seen.add(key)
-        evidence_root = evidence_roots[index] if evidence_roots else None
+        if counts[tuple(run[k] for k in RUN_ID)] > 1:
+            excluded.append({**identity, "reasons": ["duplicate run identity"]})
+            continue
+        evidence_root = evidence_roots[index] if evidence_roots is not None else None
         audit = audit_run(indexed[key], run, evidence_root)
         if not audit["eligible"]:
-            excluded.append({"case_id": run["case_id"], "condition": run["condition"], **audit})
+            excluded.append({**identity, **audit})
             continue
-        group_key = "/".join(str(run[k]) for k in
+        group_key = "/".join(quote(run[k], safe="") for k in
                              ("runtime", "runtime_version", "model", "producer_suite_sha256"))
         group = groups.setdefault(group_key, {})
         judgment = read_json(contained(evidence_root, run["judgment_path"]))

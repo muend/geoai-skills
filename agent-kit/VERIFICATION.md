@@ -1,6 +1,7 @@
 # GeoAI Agents 0.1.0 preview — verification record
 
-Date: 2026-10-14. Implementation is local; no release or repository push occurred.
+Date: 2026-10-14. This is the local review snapshot recorded before the branch push.
+Current remote CI status belongs to the pull request checks, not this local record.
 Machine-readable identities and observations are in `verification.json`.
 
 ## Delivered
@@ -23,12 +24,13 @@ Machine-readable identities and observations are in `verification.json`.
 | Captured pre-addon files | 308 unchanged |
 | Frozen skill tree | runtime-v2, unchanged |
 | Existing native benchmark gates | A/B/C pass, 167 cases |
-| Addon tests | 69 pass |
+| Addon tests | 88 pass, including 19 review regression cases |
+| Existing complete core test suite | 539 pass, unchanged |
 | Reused legacy verifier regression tests | 130 pass |
 | Six synthetic pilots | All 18 expected outcomes matched |
 | Generated adapters | 6 Codex TOML and 6 Claude frontmatters parse; generation current |
 | Lint | Pass |
-| CI on GitHub | Added, not remotely executed |
+| CI on GitHub | Separate Windows/Linux workflow; consult the PR for remote results |
 
 The 18 pilot outcomes include intentional FAIL and ABSTAIN results. Matching those
 outcomes is a validator test result, not successful geographic verification of
@@ -43,6 +45,17 @@ The protected skill-tree identity remains:
 The complete local inventory and exact committed-blob inventory are independently
 pinned. Their skill bytes are identical; 148 non-skill files differ only in LF/CRLF
 checkout representation. No native hash algorithm or frozen record was changed.
+
+## Pre-push review corrections
+
+Regression cases reproduced and corrected malformed evaluation records crashing
+instead of being excluded, distinct model/version runs being counted as duplicates,
+order-dependent selection among duplicate attempts, non-string reviewer identities
+being accepted, invisible SVG legends being counted, and malformed GeoJSON geometry
+escaping the ABSTAIN path. Of the first 18 added cases, 16 failed before the corrections.
+All 19 review cases now pass, including a further guard against model names containing
+slashes merging separate result groups. The unchanged pilot fixtures retain their
+original expected outcomes.
 
 ## Limits and remaining milestones
 

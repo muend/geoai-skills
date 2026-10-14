@@ -7,6 +7,7 @@ abstains; a concrete contradiction fails. No model or network calls are made.
 from __future__ import annotations
 
 import math
+import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any
@@ -24,12 +25,20 @@ def projected(crs: str) -> None:
 
 def features(root: Path, filename: str) -> list[dict[str, Any]]:
     value = read_json(contained(root, filename))
-    if value["type"] != "FeatureCollection" or not isinstance(value["features"], list):
+    if (not isinstance(value, dict) or value["type"] != "FeatureCollection"
+            or not isinstance(value["features"], list)):
         raise ValueError("expected a GeoJSON FeatureCollection")
+    for feature in value["features"]:
+        if (not isinstance(feature, dict) or feature.get("type") != "Feature"
+                or not isinstance(feature.get("properties"), dict)
+                or not isinstance(feature.get("geometry"), dict)
+                or not isinstance(feature["geometry"].get("type"), str)):
+            raise ValueError("expected features with geometry and property objects")
     return value["features"]
 
 
 def walkability(root: Path, spec: dict[str, Any]) -> dict[str, Any]:
+    from shapely.errors import ShapelyError
     from shapely.geometry import shape
     from shapely.ops import unary_union
 
@@ -43,8 +52,15 @@ def walkability(root: Path, spec: dict[str, Any]) -> dict[str, Any]:
     if tolerance < 0 or tolerance > 1:
         raise ValueError("tolerance must be between 0 and 1 metre")
     issues = []
+
+    def geometry_from(value: dict[str, Any]) -> Any:
+        try:
+            return shape(value)
+        except (ShapelyError, IndexError) as exc:
+            raise ValueError("malformed geometry evidence") from exc
+
     for edge in edges:
-        g = shape(edge["geometry"])
+        g = geometry_from(edge["geometry"])
         if g.geom_type != "LineString" or not g.is_valid or g.is_empty:
             raise ValueError("network evidence must contain valid LineStrings")
         if edge["properties"]["foot_access"] not in {"yes", "no"}:
@@ -55,7 +71,7 @@ def walkability(root: Path, spec: dict[str, Any]) -> dict[str, Any]:
         return (network.buffer(tolerance) if tolerance else network).covers(geometry)
 
     for i, route in enumerate(routes):
-        geometry = shape(route["geometry"])
+        geometry = geometry_from(route["geometry"])
         level = route["properties"]["level"]
         if not geometry.is_valid or geometry.is_empty or geometry.geom_type != "LineString":
             return outcome("walkability", "fail", "Invalid route geometry", feature=i)
@@ -63,12 +79,12 @@ def walkability(root: Path, spec: dict[str, Any]) -> dict[str, Any]:
         for edge in edges:
             p = edge["properties"]
             if p["level"] == level and p["foot_access"] == "yes":
-                allowed.append(shape(edge["geometry"]))
+                allowed.append(geometry_from(edge["geometry"]))
         if not allowed or not covers(allowed, geometry):
             issues.append({"route": i, "reason": "outside permitted same-level network"})
         for barrier in barriers:
             p = barrier["properties"]
-            obstacle = shape(barrier["geometry"])
+            obstacle = geometry_from(barrier["geometry"])
             if (not obstacle.is_valid or obstacle.is_empty
                     or obstacle.geom_type not in {"Polygon", "MultiPolygon"}):
                 return outcome("walkability", "abstain", "Invalid barrier geometry")
@@ -76,7 +92,7 @@ def walkability(root: Path, spec: dict[str, Any]) -> dict[str, Any]:
                 continue
             crossing = geometry.intersection(obstacle)
             # Water crossing requires a matching explicit bridge, not mere proximity.
-            bridges = [shape(e["geometry"]) for e in edges
+            bridges = [geometry_from(e["geometry"]) for e in edges
                        if e["properties"].get("bridge") is True
                        and e["properties"]["level"] == level
                        and e["properties"]["foot_access"] == "yes"]
@@ -95,12 +111,33 @@ def line_semantics(root: Path, spec: dict[str, Any]) -> dict[str, Any]:
     if "<!DOCTYPE" in raw.upper() or "<!ENTITY" in raw.upper():
         raise ValueError("SVG entities are unsupported")
     tree = ET.fromstring(raw)  # noqa: S314 - entities rejected; local bounded fixture
-    if any(n.tag.rsplit("}", 1)[-1] in {"style", "use", "script", "image", "foreignObject"}
+    if any(n.tag.rsplit("}", 1)[-1] not in {"svg", "g", "polyline", "text", "title", "desc"}
            or any(n.get(a) is not None for a in
                   ("style", "class", "transform", "clip-path", "mask", "filter"))
            for n in tree.iter()):
         return outcome("line-semantics", "abstain", "CSS/transforms/embedded content unsupported")
     parents = {child: node for node in tree.iter() for child in node}
+
+    def inherited(node: Any, name: str, default: str) -> str:
+        while node is not None:
+            if node.get(name) is not None:
+                return node.get(name)
+            node = parents.get(node)
+        return default
+
+    def painted(node: Any, kind: str, default: str) -> bool:
+        color = inherited(node, kind, default).strip().lower()
+        if color in {"none", "transparent"}:
+            return False
+        if color in {"inherit", "initial", "unset", "currentcolor", "revert"} or not re.fullmatch(
+                r"[a-z]+|#[0-9a-f]{3}(?:[0-9a-f]{3})?", color):
+            raise ValueError("only explicit named or RGB hex paint is supported")
+        return finite(float(inherited(node, kind + "-opacity", "1"))) > 0
+
+    def legible_text(node: Any) -> bool:
+        size = inherited(node, "font-size", "16")
+        return (visible(node) and finite(float(size.removesuffix("px"))) > 0
+                and (painted(node, "fill", "black") or painted(node, "stroke", "none")))
 
     def visible(node: Any) -> bool:
         while node is not None:
@@ -118,8 +155,7 @@ def line_semantics(root: Path, spec: dict[str, Any]) -> dict[str, Any]:
         if node.tag.rsplit("}", 1)[-1] != "polyline" or node.get("style"):
             return outcome("line-semantics", "abstain", "Only explicit polyline strokes supported")
         widths.append(finite(float(node.attrib["stroke-width"])))
-        if (widths[-1] <= 0 or not visible(node) or node.get("stroke") in {None, "none"}
-                or finite(float(node.get("stroke-opacity", "1"))) <= 0):
+        if widths[-1] <= 0 or not visible(node) or not painted(node, "stroke", "none"):
             return outcome("line-semantics", "fail", "Non-visible segment width")
         pts = [tuple(finite(float(v)) for v in p.split(","))
                for p in node.attrib["points"].split()]
@@ -127,7 +163,7 @@ def line_semantics(root: Path, spec: dict[str, Any]) -> dict[str, Any]:
             raise ValueError("invalid polyline points")
         points.append(pts)
     legends = {n.get("id"): "".join(n.itertext()).strip() for n in tree.iter()
-               if n.tag.rsplit("}", 1)[-1] == "text" and visible(n)}
+               if n.tag.rsplit("}", 1)[-1] == "text" and legible_text(n)}
     issues = []
     if len(set(widths)) > 1 and not legends.get("width-legend"):
         issues.append("Width changes without a visible width legend")
@@ -223,6 +259,8 @@ def spatial_split(root: Path, spec: dict[str, Any]) -> dict[str, Any]:
 def suitability(root: Path, spec: dict[str, Any]) -> dict[str, Any]:
     data = read_json(contained(root, spec["criteria"]))
     result = read_json(contained(root, spec["result"]))
+    if not isinstance(data, dict):
+        raise ValueError("expected criterion evidence object")
     if not data.get("weight_rationale") or not data.get("normalization"):
         return outcome("suitability-sensitivity", "abstain", "Weight/normalization evidence absent")
     weights = [finite(v) for v in data["weights"]]
@@ -269,6 +307,8 @@ CHECKS = {"walkability": walkability, "line-semantics": line_semantics,
 
 def run_check(name: str, root: Path, spec: dict[str, Any]) -> dict[str, Any]:
     try:
+        if not isinstance(spec, dict):
+            raise ValueError("expected check specification object")
         if name not in CHECKS:
             return report([outcome(name, "abstain", "No executable validator registered")])
         return report([CHECKS[name](root, spec)])
