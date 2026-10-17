@@ -1,0 +1,473 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://muend.github.io/geoai-agents/records-v1.schema.json",
+  "title": "GeoAI Agents record v1",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "task"
+        },
+        "task_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "objective": {
+          "type": "string",
+          "minLength": 1
+        },
+        "audience": {
+          "type": "string",
+          "minLength": 1
+        },
+        "task_type": {
+          "enum": [
+            "explanation",
+            "analysis",
+            "code",
+            "map"
+          ]
+        },
+        "skills": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "uses_data": {
+          "type": "boolean"
+        },
+        "physical_claim": {
+          "type": "boolean"
+        },
+        "user_facing_visual": {
+          "type": "boolean"
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?![A-Za-z]:)(?![/\\\\])(?!.*(?:^|[/\\\\])\\.\\.(?:[/\\\\]|$)).+"
+          },
+          "uniqueItems": true
+        },
+        "required_checks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schema_version",
+        "kind",
+        "task_id",
+        "objective",
+        "audience",
+        "task_type",
+        "skills",
+        "uses_data",
+        "physical_claim",
+        "user_facing_visual",
+        "outputs",
+        "required_checks"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "artifacts"
+        },
+        "task_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "producer_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "files": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string",
+                "pattern": "^(?![A-Za-z]:)(?![/\\\\])(?!.*(?:^|[/\\\\])\\.\\.(?:[/\\\\]|$)).+"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "size": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "path",
+              "sha256",
+              "size"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "source": {
+                "type": "string",
+                "minLength": 1
+              },
+              "retrieved_at": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            },
+            "required": [
+              "name",
+              "source",
+              "retrieved_at",
+              "sha256"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "parameters": {
+          "type": "object"
+        },
+        "environment": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "schema_version",
+        "kind",
+        "task_id",
+        "producer_id",
+        "files",
+        "sources",
+        "parameters",
+        "environment"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "review"
+        },
+        "task_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reviewer_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "enum": [
+            "reality-reviewer",
+            "method-reviewer",
+            "presentation-reviewer"
+          ]
+        },
+        "status": {
+          "enum": [
+            "completed",
+            "interrupted",
+            "quota-exhausted",
+            "error"
+          ]
+        },
+        "artifact_hashes": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "checks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "check": {
+                "type": "string",
+                "minLength": 1
+              },
+              "outcome": {
+                "enum": [
+                  "pass",
+                  "fail",
+                  "abstain"
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              },
+              "severity": {
+                "enum": [
+                  "info",
+                  "warning",
+                  "critical"
+                ]
+              },
+              "evidence": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "remedy": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "check",
+              "outcome",
+              "reason",
+              "severity",
+              "evidence",
+              "remedy"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "evidence_files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string",
+                "pattern": "^(?![A-Za-z]:)(?![/\\\\])(?!.*(?:^|[/\\\\])\\.\\.(?:[/\\\\]|$)).+"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "size": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "path",
+              "sha256",
+              "size"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "kind",
+        "task_id",
+        "reviewer_id",
+        "role",
+        "status",
+        "artifact_hashes",
+        "checks",
+        "evidence_files"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "failure"
+        },
+        "task_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expected": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observed": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reproduction": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "root_cause": {
+          "enum": [
+            "data",
+            "addon-tool",
+            "role",
+            "presentation",
+            "core-limitation",
+            "unknown"
+          ]
+        },
+        "sharing": {
+          "const": "project-local"
+        },
+        "core_change_proposal": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "kind",
+        "task_id",
+        "expected",
+        "observed",
+        "reproduction",
+        "evidence",
+        "root_cause",
+        "sharing",
+        "core_change_proposal"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "run"
+        },
+        "task_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "runtime": {
+          "type": "string",
+          "minLength": 1
+        },
+        "runtime_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1
+        },
+        "condition": {
+          "enum": [
+            "skills-only",
+            "structured-single",
+            "agent-team"
+          ]
+        },
+        "status": {
+          "enum": [
+            "completed",
+            "interrupted",
+            "quota-exhausted",
+            "error"
+          ]
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "base_runtime_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "agent_runtime_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "latency_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "tokens": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "cost_usd": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "required": [
+        "schema_version",
+        "kind",
+        "task_id",
+        "runtime",
+        "runtime_version",
+        "model",
+        "condition",
+        "status",
+        "roles",
+        "base_runtime_sha256",
+        "agent_runtime_sha256",
+        "latency_seconds",
+        "tokens",
+        "cost_usd"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

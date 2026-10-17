@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GeoAI addon evaluation run v1",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "kind": {
+      "const": "evaluation-run"
+    },
+    "status": {
+      "enum": [
+        "completed",
+        "interrupted",
+        "quota-exhausted",
+        "error"
+      ]
+    },
+    "runtime": {
+      "enum": [
+        "codex",
+        "claude"
+      ]
+    },
+    "condition": {
+      "enum": [
+        "skills-only",
+        "structured-single",
+        "agent-team"
+      ]
+    },
+    "producer_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "case_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runtime_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model": {
+      "type": "string",
+      "minLength": 1
+    },
+    "producer_suite_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "trace_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "trace_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "output_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "output_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "profile_evidence_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "profile_evidence_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "judgment_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "judgment_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "latency_seconds": {
+      "type": "number",
+      "minimum": 0
+    },
+    "tokens": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "cost_usd": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "customization_inventory": {
+      "type": "object",
+      "required": [
+        "complete",
+        "source",
+        "roles",
+        "external_instructions",
+        "external_plugins"
+      ],
+      "properties": {
+        "complete": {
+          "type": "boolean"
+        },
+        "source": {
+          "const": "runtime-inspection"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "external_instructions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "external_plugins": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "kind",
+    "status",
+    "runtime",
+    "condition",
+    "producer_id",
+    "case_id",
+    "runtime_version",
+    "model",
+    "producer_suite_sha256",
+    "trace_path",
+    "trace_sha256",
+    "output_path",
+    "output_sha256",
+    "profile_evidence_path",
+    "profile_evidence_sha256",
+    "judgment_path",
+    "judgment_sha256",
+    "latency_seconds",
+    "tokens",
+    "cost_usd",
+    "customization_inventory"
+  ],
+  "additionalProperties": true
+}

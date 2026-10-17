@@ -1,0 +1,5 @@
+{
+  "crs": "EPSG:32635",
+  "samples": "samples.json",
+  "minimum_separation_m": 100
+}

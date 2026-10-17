@@ -1,0 +1,32 @@
+name: validate-agent-kit
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  optional-agent-kit:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        # Verify the pinned committed-source profile on both operating systems.
+        # The Windows runner's default CRLF conversion creates a different profile.
+        env:
+          GIT_CONFIG_COUNT: "1"
+          GIT_CONFIG_KEY_0: core.autocrlf
+          GIT_CONFIG_VALUE_0: "false"
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Install addon validation dependencies
+        run: python -m pip install -r agent-kit/requirements.txt -r agent-kit/requirements-dev.txt
+      - name: Check frozen base and optional addon
+        run: python agent-kit/tools/validate.py
