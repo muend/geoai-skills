@@ -57,6 +57,21 @@ rationale, not styling.
   scheme in the caption/metadata. Try two schemes — if the story changes
   materially, the story is the classification, and the reader must be told.
 
+## Comparative maps are one measurement scale
+
+Treat a map series as one visual measurement instrument. If a request asks for
+independent breaks and then asks the reader to infer change from colour,
+explicitly reject that comparison design before producing the panels. Use one
+shared set of fixed class edges, identical units, the same ramp and the same
+NoData treatment for every panel; alternatively, map the computed difference
+directly with a justified diverging scale.
+
+For every comparative deliverable, write the shared class edges, units,
+classification method, ramp, NoData symbol and extent policy into the legend or
+machine-readable metadata. If defensible shared edges cannot be chosen, deliver
+the values or a qualified exploratory view but do not describe colour changes
+as changes in the underlying phenomenon.
+
 ## Color
 
 - Ramps from ColorBrewer/`cmcrameri`/viridis family: sequential (ordered),

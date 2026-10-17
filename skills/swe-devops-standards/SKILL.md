@@ -129,6 +129,20 @@ performance (N+1, needless copies, O(n²)) → readability. Every finding
 ships with the suggested fix as code — never "this is bad" and nothing
 else.
 
+## Completion and termination budget
+
+Define done from the user's requested paths and acceptance checks before using
+tools. Once every required artifact exists, is reopened, and passes the focused
+checks, stop expanding the implementation. Do not spend additional turns on
+optional refactors, extra documentation, repeated inspection or broader tests
+that are outside the stated contract.
+
+Finish with one concise response that lists the artifacts, verification run and
+any unresolved blocker. A task that produced the files but continued calling
+tools until the runtime stopped is a delivery failure. If a required check
+cannot run, preserve the artifacts, state the exact unverified boundary and
+terminate instead of looping.
+
 ## Execution contract
 
 - **Workflow:** clarify the geospatial code's contract; reproduce the environment; inspect correctness and data invariants; implement the smallest safe change; test; package; document operations and rollback.
