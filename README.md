@@ -23,6 +23,7 @@ reported, and when the available data cannot support the requested conclusion.
 [![Browse on skills.sh](https://img.shields.io/badge/skills.sh-browse-111111.svg)](https://www.skills.sh/muend/geoai-skills)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22288662.svg)](https://doi.org/10.5281/zenodo.22288662)
 [![Spec](https://img.shields.io/badge/agentskills.io-compliant-orange.svg)](https://agentskills.io)
+[![Mentioned in Awesome Claude Code](https://awesome.re/mentioned-badge.svg)](https://github.com/hesreallyhim/awesome-claude-code)
 
 Two measurements are shown above and they are deliberately not pooled. The
 routing card covers 167 cases on Claude Code `2.1.214`, `claude-sonnet-5`, suite
