@@ -1,0 +1,23 @@
+{
+  "processing_level": "L2A",
+  "season": "spring",
+  "crs": "EPSG:32635",
+  "transform": [
+    10,
+    0,
+    0,
+    0,
+    -10,
+    100
+  ],
+  "values": [
+    0.4,
+    0.2,
+    0.1
+  ],
+  "mask": [
+    true,
+    true,
+    false
+  ]
+}

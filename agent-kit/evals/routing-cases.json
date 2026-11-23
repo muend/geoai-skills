@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "kind": "addon-routing-scenarios",
+  "measured": false,
+  "cases": [
+    {
+      "id": "geo-data-engineering/positive",
+      "skill": "geo-data-engineering",
+      "prompt": "Access remote data and reconcile CRS before joining",
+      "expected": "select-relevant-skill-and-controls"
+    },
+    {
+      "id": "geo-data-engineering/negative",
+      "skill": "geo-data-engineering",
+      "prompt": "An undefined CRS is not permission to assume WGS84",
+      "expected": "withhold-unsupported-claim"
+    },
+    {
+      "id": "postgis-spatial-sql/positive",
+      "skill": "postgis-spatial-sql",
+      "prompt": "Audit a spatial join against known geometries",
+      "expected": "select-relevant-skill-and-controls"
+    },
+    {
+      "id": "postgis-spatial-sql/negative",
+      "skill": "postgis-spatial-sql",
+      "prompt": "An index plan alone does not prove predicate correctness",
+      "expected": "withhold-unsupported-claim"
+    },
+    {
+      "id": "remote-sensing-analysis/positive",
+      "skill": "remote-sensing-analysis",
+      "prompt": "Validate sensors and masks before reflectance comparison",
+      "expected": "select-relevant-skill-and-controls"
+    },
+    {
+      "id": "remote-sensing-analysis/negative",
+      "skill": "remote-sensing-analysis",
+      "prompt": "Unknown processing level requires narrower claims",
+      "expected": "withhold-unsupported-claim"
+    },
+    {
+      "id": "google-earth-engine/positive",
+      "skill": "google-earth-engine",
+      "prompt": "Plan a versioned collection query and export",
+      "expected": "select-relevant-skill-and-controls"
+    },
+    {
+      "id": "google-earth-engine/negative",
+      "skill": "google-earth-engine",
+      "prompt": "Missing credentials cannot be represented as a completed export",
+      "expected": "withhold-unsupported-claim"
+    },
+    {
+      "id": "change-detection/positive",
+      "skill": "change-detection",
+      "prompt": "Assess comparable dates and a common observation mask",
+      "expected": "select-relevant-skill-and-controls"
+    },
+    {
+      "id": "change-detection/negative",
+      "skill": "change-detection",
+      "prompt": "Different seasons must not become a definitive change area",
+      "expected": "withhold-unsupported-claim"
+    },
+    {
+      "id": "geo-deep-learning/positive",
+      "skill": "geo-deep-learning",
+      "prompt": "Evaluate spatially separated train and test samples",
+      "expected": "select-relevant-skill-and-controls"
+    },
+    {
+      "id": "geo-deep-learning/negative",
+      "skill": "geo-deep-learning",
+      "prompt": "Random adjacent chips are not independent validation",
+      "expected": "withhold-unsupported-claim"
+    },
+    {
+      "id": "ml-experiment-standards/positive",
+      "skill": "ml-experiment-standards",
+      "prompt": "Audit experiment splits and baseline comparisons",
+      "expected": "select-relevant-skill-and-controls"
+    },
+    {
+      "id": "ml-experiment-standards/negative",
+      "skill": "ml-experiment-standards",
+      "prompt": "High accuracy cannot excuse spatial leakage",
+      "expected": "withhold-unsupported-claim"
+    },
+    {
+      "id": "spatial-statistics/positive",
+      "skill": "spatial-statistics",
+      "prompt": "Correct local testing and diagnose spatial dependence",
+      "expected": "select-relevant-skill-and-controls"
+    },
+    {
+      "id": "spatial-statistics/negative",
+      "skill": "spatial-statistics",
+      "prompt": "An uncorrected significance map is not established inference",
+      "expected": "withhold-unsupported-claim"
+    },
+    {
+      "id": "geostatistics-interpolation/positive",
+      "skill": "geostatistics-interpolation",
+      "prompt": "Validate kriging with spatially separated holdouts",
+      "expected": "select-relevant-skill-and-controls"
+    },
+    {
+      "id": "geostatistics-interpolation/negative",
+      "skill": "geostatistics-interpolation",
+      "prompt": "Sparse observations cannot justify uniform certainty",
+      "expected": "withhold-unsupported-claim"
+    },
+    {
+      "id": "mcda-suitability-analysis/positive",
+      "skill": "mcda-suitability-analysis",
+      "prompt": "Test sensitivity of a weighted suitability ranking",
+      "expected": "select-relevant-skill-and-controls"
+    },
+    {
+      "id": "mcda-suitability-analysis/negative",
+      "skill": "mcda-suitability-analysis",
+      "prompt": "Unexplained weights cannot establish an objective best site",
+      "expected": "withhold-unsupported-claim"
+    },
+    {
+      "id": "terrain-hydrology/positive",
+      "skill": "terrain-hydrology",
+      "prompt": "Check elevation units and NoData before slope analysis",
+      "expected": "select-relevant-skill-and-controls"
+    },
+    {
+      "id": "terrain-hydrology/negative",
+      "skill": "terrain-hydrology",
+      "prompt": "Unknown vertical datum prevents definitive elevation comparison",
+      "expected": "withhold-unsupported-claim"
+    },
+    {
+      "id": "point-cloud-lidar/positive",
+      "skill": "point-cloud-lidar",
+      "prompt": "Check point classes and vertical reference before DTM production",
+      "expected": "select-relevant-skill-and-controls"
+    },
+    {
+      "id": "point-cloud-lidar/negative",
+      "skill": "point-cloud-lidar",
+      "prompt": "Mixed datums must not become a subsidence claim",
+      "expected": "withhold-unsupported-claim"
+    },
+    {
+      "id": "network-accessibility-analysis/positive",
+      "skill": "network-accessibility-analysis",
+      "prompt": "Inspect a walking route against its permitted network and barriers",
+      "expected": "select-relevant-skill-and-controls"
+    },
+    {
+      "id": "network-accessibility-analysis/negative",
+      "skill": "network-accessibility-analysis",
+      "prompt": "A straight connection is not a verified walking route",
+      "expected": "withhold-unsupported-claim"
+    },
+    {
+      "id": "movement-trajectory/positive",
+      "skill": "movement-trajectory",
+      "prompt": "Map-match dated traces and inspect uncertainty",
+      "expected": "select-relevant-skill-and-controls"
+    },
+    {
+      "id": "movement-trajectory/negative",
+      "skill": "movement-trajectory",
+      "prompt": "A modelled route is not an observed movement trace",
+      "expected": "withhold-unsupported-claim"
+    },
+    {
+      "id": "cartography-geoviz/positive",
+      "skill": "cartography-geoviz",
+      "prompt": "Compare widths, breaks and legends with the represented data",
+      "expected": "select-relevant-skill-and-controls"
+    },
+    {
+      "id": "cartography-geoviz/negative",
+      "skill": "cartography-geoviz",
+      "prompt": "Correct numbers do not validate a misleading map",
+      "expected": "withhold-unsupported-claim"
+    },
+    {
+      "id": "arcgis-pro-automation/positive",
+      "skill": "arcgis-pro-automation",
+      "prompt": "Inspect project inputs before an authorized geoprocessing operation",
+      "expected": "select-relevant-skill-and-controls"
+    },
+    {
+      "id": "arcgis-pro-automation/negative",
+      "skill": "arcgis-pro-automation",
+      "prompt": "A missing licensed runtime must not be simulated as execution",
+      "expected": "withhold-unsupported-claim"
+    },
+    {
+      "id": "swe-devops-standards/positive",
+      "skill": "swe-devops-standards",
+      "prompt": "Deliver tested geospatial code in the actual environment",
+      "expected": "select-relevant-skill-and-controls"
+    },
+    {
+      "id": "swe-devops-standards/negative",
+      "skill": "swe-devops-standards",
+      "prompt": "An unexecuted test is not a passing test",
+      "expected": "withhold-unsupported-claim"
+    },
+    {
+      "id": "geoai-orchestrator/positive",
+      "skill": "geoai-orchestrator",
+      "prompt": "Compose acquisition, analysis and publication stages",
+      "expected": "select-relevant-skill-and-controls"
+    },
+    {
+      "id": "geoai-orchestrator/negative",
+      "skill": "geoai-orchestrator",
+      "prompt": "A single specialist task does not require a second orchestration layer",
+      "expected": "withhold-unsupported-claim"
+    }
+  ]
+}

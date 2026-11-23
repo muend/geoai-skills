@@ -1,0 +1,8 @@
+{
+  "crs": "EPSG:32635",
+  "route": "route.geojson",
+  "network": "network.geojson",
+  "barriers": "barriers.geojson",
+  "coverage_complete": false,
+  "tolerance_m": 0.1
+}

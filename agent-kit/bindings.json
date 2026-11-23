@@ -1,0 +1,277 @@
+{
+  "geo-data-engineering": {
+    "domain": "Data acquisition, CRS, formats and joins",
+    "checks": [
+      "crs-units",
+      "source-provenance",
+      "row-accounting"
+    ],
+    "producer": "specialist",
+    "reviewers": [
+      "reality-reviewer",
+      "method-reviewer"
+    ],
+    "positive_scenario": "Access remote data and reconcile CRS before joining",
+    "negative_scenario": "An undefined CRS is not permission to assume WGS84",
+    "missing_evidence": "ABSTAIN on unsupported claims; report what is needed"
+  },
+  "postgis-spatial-sql": {
+    "domain": "Spatial SQL and query behavior",
+    "checks": [
+      "crs-units",
+      "predicate-semantics",
+      "row-accounting"
+    ],
+    "producer": "specialist",
+    "reviewers": [
+      "reality-reviewer",
+      "method-reviewer"
+    ],
+    "positive_scenario": "Audit a spatial join against known geometries",
+    "negative_scenario": "An index plan alone does not prove predicate correctness",
+    "missing_evidence": "ABSTAIN on unsupported claims; report what is needed"
+  },
+  "remote-sensing-analysis": {
+    "domain": "Earth observation processing",
+    "checks": [
+      "imagery-comparability",
+      "source-provenance"
+    ],
+    "producer": "specialist",
+    "reviewers": [
+      "reality-reviewer",
+      "method-reviewer"
+    ],
+    "positive_scenario": "Validate sensors and masks before reflectance comparison",
+    "negative_scenario": "Unknown processing level requires narrower claims",
+    "missing_evidence": "ABSTAIN on unsupported claims; report what is needed"
+  },
+  "google-earth-engine": {
+    "domain": "Earth Engine computation and exports",
+    "checks": [
+      "source-provenance",
+      "scale-mask-projection"
+    ],
+    "producer": "specialist",
+    "reviewers": [
+      "reality-reviewer",
+      "method-reviewer"
+    ],
+    "positive_scenario": "Plan a versioned collection query and export",
+    "negative_scenario": "Missing credentials cannot be represented as a completed export",
+    "missing_evidence": "ABSTAIN on unsupported claims; report what is needed"
+  },
+  "change-detection": {
+    "domain": "Temporal change inference",
+    "checks": [
+      "imagery-comparability",
+      "uncertainty"
+    ],
+    "producer": "specialist",
+    "reviewers": [
+      "reality-reviewer",
+      "method-reviewer"
+    ],
+    "positive_scenario": "Assess comparable dates and a common observation mask",
+    "negative_scenario": "Different seasons must not become a definitive change area",
+    "missing_evidence": "ABSTAIN on unsupported claims; report what is needed"
+  },
+  "geo-deep-learning": {
+    "domain": "Geospatial model training and inference",
+    "checks": [
+      "spatial-split",
+      "model-evidence"
+    ],
+    "producer": "specialist",
+    "reviewers": [
+      "reality-reviewer",
+      "method-reviewer"
+    ],
+    "positive_scenario": "Evaluate spatially separated train and test samples",
+    "negative_scenario": "Random adjacent chips are not independent validation",
+    "missing_evidence": "ABSTAIN on unsupported claims; report what is needed"
+  },
+  "ml-experiment-standards": {
+    "domain": "Experiment and validation discipline",
+    "checks": [
+      "spatial-split",
+      "reproducibility"
+    ],
+    "producer": "specialist",
+    "reviewers": [
+      "reality-reviewer",
+      "method-reviewer"
+    ],
+    "positive_scenario": "Audit experiment splits and baseline comparisons",
+    "negative_scenario": "High accuracy cannot excuse spatial leakage",
+    "missing_evidence": "ABSTAIN on unsupported claims; report what is needed"
+  },
+  "spatial-statistics": {
+    "domain": "Spatial inference",
+    "checks": [
+      "multiplicity",
+      "spatial-dependence"
+    ],
+    "producer": "specialist",
+    "reviewers": [
+      "reality-reviewer",
+      "method-reviewer"
+    ],
+    "positive_scenario": "Correct local testing and diagnose spatial dependence",
+    "negative_scenario": "An uncorrected significance map is not established inference",
+    "missing_evidence": "ABSTAIN on unsupported claims; report what is needed"
+  },
+  "geostatistics-interpolation": {
+    "domain": "Interpolation and uncertainty",
+    "checks": [
+      "spatial-split",
+      "prediction-uncertainty"
+    ],
+    "producer": "specialist",
+    "reviewers": [
+      "reality-reviewer",
+      "method-reviewer"
+    ],
+    "positive_scenario": "Validate kriging with spatially separated holdouts",
+    "negative_scenario": "Sparse observations cannot justify uniform certainty",
+    "missing_evidence": "ABSTAIN on unsupported claims; report what is needed"
+  },
+  "mcda-suitability-analysis": {
+    "domain": "Multi-criteria decisions",
+    "checks": [
+      "suitability-sensitivity",
+      "weight-rationale"
+    ],
+    "producer": "specialist",
+    "reviewers": [
+      "reality-reviewer",
+      "method-reviewer"
+    ],
+    "positive_scenario": "Test sensitivity of a weighted suitability ranking",
+    "negative_scenario": "Unexplained weights cannot establish an objective best site",
+    "missing_evidence": "ABSTAIN on unsupported claims; report what is needed"
+  },
+  "terrain-hydrology": {
+    "domain": "Terrain and drainage",
+    "checks": [
+      "terrain-units-nodata",
+      "resolution-fitness"
+    ],
+    "producer": "specialist",
+    "reviewers": [
+      "reality-reviewer",
+      "method-reviewer"
+    ],
+    "positive_scenario": "Check elevation units and NoData before slope analysis",
+    "negative_scenario": "Unknown vertical datum prevents definitive elevation comparison",
+    "missing_evidence": "ABSTAIN on unsupported claims; report what is needed"
+  },
+  "point-cloud-lidar": {
+    "domain": "Point clouds and elevation products",
+    "checks": [
+      "vertical-reference",
+      "classification-evidence"
+    ],
+    "producer": "specialist",
+    "reviewers": [
+      "reality-reviewer",
+      "method-reviewer"
+    ],
+    "positive_scenario": "Check point classes and vertical reference before DTM production",
+    "negative_scenario": "Mixed datums must not become a subsidence claim",
+    "missing_evidence": "ABSTAIN on unsupported claims; report what is needed"
+  },
+  "network-accessibility-analysis": {
+    "domain": "Routing and access",
+    "checks": [
+      "walkability",
+      "connectivity-snapping"
+    ],
+    "producer": "specialist",
+    "reviewers": [
+      "reality-reviewer",
+      "method-reviewer"
+    ],
+    "positive_scenario": "Inspect a walking route against its permitted network and barriers",
+    "negative_scenario": "A straight connection is not a verified walking route",
+    "missing_evidence": "ABSTAIN on unsupported claims; report what is needed"
+  },
+  "movement-trajectory": {
+    "domain": "Observed movement",
+    "checks": [
+      "trajectory-privacy",
+      "map-matching"
+    ],
+    "producer": "specialist",
+    "reviewers": [
+      "reality-reviewer",
+      "method-reviewer"
+    ],
+    "positive_scenario": "Map-match dated traces and inspect uncertainty",
+    "negative_scenario": "A modelled route is not an observed movement trace",
+    "missing_evidence": "ABSTAIN on unsupported claims; report what is needed"
+  },
+  "cartography-geoviz": {
+    "domain": "Maps and visual communication",
+    "checks": [
+      "presentation-review",
+      "legend-semantics"
+    ],
+    "producer": "specialist",
+    "reviewers": [
+      "reality-reviewer",
+      "method-reviewer",
+      "presentation-reviewer"
+    ],
+    "positive_scenario": "Compare widths, breaks and legends with the represented data",
+    "negative_scenario": "Correct numbers do not validate a misleading map",
+    "missing_evidence": "ABSTAIN on unsupported claims; report what is needed"
+  },
+  "arcgis-pro-automation": {
+    "domain": "Licensed local GIS operations",
+    "checks": [
+      "runtime-capability",
+      "mutation-authorization",
+      "output-evidence"
+    ],
+    "producer": "specialist",
+    "reviewers": [
+      "reality-reviewer",
+      "method-reviewer"
+    ],
+    "positive_scenario": "Inspect project inputs before an authorized geoprocessing operation",
+    "negative_scenario": "A missing licensed runtime must not be simulated as execution",
+    "missing_evidence": "ABSTAIN on unsupported claims; report what is needed"
+  },
+  "swe-devops-standards": {
+    "domain": "Geospatial software delivery",
+    "checks": [
+      "tests-execution",
+      "error-handling",
+      "reproducibility"
+    ],
+    "producer": "specialist",
+    "reviewers": [
+      "reality-reviewer",
+      "method-reviewer"
+    ],
+    "positive_scenario": "Deliver tested geospatial code in the actual environment",
+    "negative_scenario": "An unexecuted test is not a passing test",
+    "missing_evidence": "ABSTAIN on unsupported claims; report what is needed"
+  },
+  "geoai-orchestrator": {
+    "domain": "Ambiguous and multi-domain method routing",
+    "checks": [
+      "handoff-evidence",
+      "stage-coverage"
+    ],
+    "producer": "specialist",
+    "reviewers": [
+      "reality-reviewer",
+      "method-reviewer"
+    ],
+    "positive_scenario": "Compose acquisition, analysis and publication stages",
+    "negative_scenario": "A single specialist task does not require a second orchestration layer",
+    "missing_evidence": "ABSTAIN on unsupported claims; report what is needed"
+  }
+}

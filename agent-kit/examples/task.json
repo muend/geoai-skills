@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "kind": "task",
+  "task_id": "walking-review",
+  "objective": "Assess a modelled walking route against mapped barriers",
+  "audience": "Non-specialist project users",
+  "task_type": "analysis",
+  "skills": [
+    "network-accessibility-analysis"
+  ],
+  "uses_data": true,
+  "physical_claim": true,
+  "user_facing_visual": false,
+  "outputs": [
+    "route.geojson"
+  ],
+  "required_checks": []
+}

@@ -1,0 +1,10 @@
+attrs==26.1.0
+certifi==2026.7.22
+jsonschema==4.25.0
+jsonschema-specifications==2025.9.1
+numpy==2.5.4
+pyproj==3.7.2
+referencing==0.37.0
+rpds-py==2026.9.1
+shapely==2.1.2
+typing-extensions==4.16.0

@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "kind": "agent-comparison-producer-interface",
+  "structured_protocol": "\nUse a recorded task, original evidence, explicit applicable checks, and a separate check of the conclusion. Do not silently treat missing evidence as a pass. Complete within two repair rounds. Keep one agent for this condition unless the next instruction explicitly requests a team.\n",
+  "team_protocol": "\nExplicitly delegate the relevant geoai specialist and reviewer roles as independent subagents using the installed definitions. The main session is coordinator. Pass original evidence and artifacts, not the producer's private reasoning, to reviewers. Record role identities and reviewed hashes. Do not spawn nested teams.\n",
+  "cases": [
+    {
+      "id": "case-001",
+      "inputs": [
+        "case-001/route.geojson",
+        "case-001/network.geojson",
+        "case-001/barriers.geojson",
+        "case-001/check.json"
+      ],
+      "prompt": "Audit the supplied walking evidence in inputs/case-001. Load the relevant frozen GeoAI skills. Inspect source data and any candidate output. You may use python toolkit/geoai_agents.py check walkability --root inputs/case-001 --spec inputs/case-001/check.json. Write decision.json with fields outcome (pass, fail, or abstain), reason, evidence (array of file references), and limitations. A passed bounded check is not a general scientific or field-safety guarantee."
+    },
+    {
+      "id": "case-002",
+      "inputs": [
+        "case-002/route.geojson",
+        "case-002/network.geojson",
+        "case-002/barriers.geojson",
+        "case-002/check.json"
+      ],
+      "prompt": "Audit the supplied walking evidence in inputs/case-002. Load the relevant frozen GeoAI skills. Inspect source data and any candidate output. You may use python toolkit/geoai_agents.py check walkability --root inputs/case-002 --spec inputs/case-002/check.json. Write decision.json with fields outcome (pass, fail, or abstain), reason, evidence (array of file references), and limitations. A passed bounded check is not a general scientific or field-safety guarantee."
+    },
+    {
+      "id": "case-003",
+      "inputs": [
+        "case-003/route.geojson",
+        "case-003/network.geojson",
+        "case-003/barriers.geojson",
+        "case-003/check.json"
+      ],
+      "prompt": "Audit the supplied walking evidence in inputs/case-003. Load the relevant frozen GeoAI skills. Inspect source data and any candidate output. You may use python toolkit/geoai_agents.py check walkability --root inputs/case-003 --spec inputs/case-003/check.json. Write decision.json with fields outcome (pass, fail, or abstain), reason, evidence (array of file references), and limitations. A passed bounded check is not a general scientific or field-safety guarantee."
+    },
+    {
+      "id": "case-004",
+      "inputs": [
+        "case-004/map.svg",
+        "case-004/check.json"
+      ],
+      "prompt": "Audit the supplied line-meaning evidence in inputs/case-004. Load the relevant frozen GeoAI skills. Inspect source data and any candidate output. You may use python toolkit/geoai_agents.py check line-semantics --root inputs/case-004 --spec inputs/case-004/check.json. Write decision.json with fields outcome (pass, fail, or abstain), reason, evidence (array of file references), and limitations. A passed bounded check is not a general scientific or field-safety guarantee."
+    },
+    {
+      "id": "case-005",
+      "inputs": [
+        "case-005/map.svg",
+        "case-005/check.json"
+      ],
+      "prompt": "Audit the supplied line-meaning evidence in inputs/case-005. Load the relevant frozen GeoAI skills. Inspect source data and any candidate output. You may use python toolkit/geoai_agents.py check line-semantics --root inputs/case-005 --spec inputs/case-005/check.json. Write decision.json with fields outcome (pass, fail, or abstain), reason, evidence (array of file references), and limitations. A passed bounded check is not a general scientific or field-safety guarantee."
+    },
+    {
+      "id": "case-006",
+      "inputs": [
+        "case-006/map.svg",
+        "case-006/check.json"
+      ],
+      "prompt": "Audit the supplied line-meaning evidence in inputs/case-006. Load the relevant frozen GeoAI skills. Inspect source data and any candidate output. You may use python toolkit/geoai_agents.py check line-semantics --root inputs/case-006 --spec inputs/case-006/check.json. Write decision.json with fields outcome (pass, fail, or abstain), reason, evidence (array of file references), and limitations. A passed bounded check is not a general scientific or field-safety guarantee."
+    },
+    {
+      "id": "case-007",
+      "inputs": [
+        "case-007/before.json",
+        "case-007/after.json",
+        "case-007/difference.json",
+        "case-007/check.json"
+      ],
+      "prompt": "Audit the supplied imagery evidence in inputs/case-007. Load the relevant frozen GeoAI skills. Inspect source data and any candidate output. You may use python toolkit/geoai_agents.py check imagery-comparability --root inputs/case-007 --spec inputs/case-007/check.json. Write decision.json with fields outcome (pass, fail, or abstain), reason, evidence (array of file references), and limitations. A passed bounded check is not a general scientific or field-safety guarantee."
+    },
+    {
+      "id": "case-008",
+      "inputs": [
+        "case-008/before.json",
+        "case-008/after.json",
+        "case-008/difference.json",
+        "case-008/check.json"
+      ],
+      "prompt": "Audit the supplied imagery evidence in inputs/case-008. Load the relevant frozen GeoAI skills. Inspect source data and any candidate output. You may use python toolkit/geoai_agents.py check imagery-comparability --root inputs/case-008 --spec inputs/case-008/check.json. Write decision.json with fields outcome (pass, fail, or abstain), reason, evidence (array of file references), and limitations. A passed bounded check is not a general scientific or field-safety guarantee."
+    },
+    {
+      "id": "case-009",
+      "inputs": [
+        "case-009/before.json",
+        "case-009/after.json",
+        "case-009/difference.json",
+        "case-009/check.json"
+      ],
+      "prompt": "Audit the supplied imagery evidence in inputs/case-009. Load the relevant frozen GeoAI skills. Inspect source data and any candidate output. You may use python toolkit/geoai_agents.py check imagery-comparability --root inputs/case-009 --spec inputs/case-009/check.json. Write decision.json with fields outcome (pass, fail, or abstain), reason, evidence (array of file references), and limitations. A passed bounded check is not a general scientific or field-safety guarantee."
+    },
+    {
+      "id": "case-010",
+      "inputs": [
+        "case-010/dem.json",
+        "case-010/slope.json",
+        "case-010/check.json"
+      ],
+      "prompt": "Audit the supplied terrain evidence in inputs/case-010. Load the relevant frozen GeoAI skills. Inspect source data and any candidate output. You may use python toolkit/geoai_agents.py check terrain-units-nodata --root inputs/case-010 --spec inputs/case-010/check.json. Write decision.json with fields outcome (pass, fail, or abstain), reason, evidence (array of file references), and limitations. A passed bounded check is not a general scientific or field-safety guarantee."
+    },
+    {
+      "id": "case-011",
+      "inputs": [
+        "case-011/dem.json",
+        "case-011/slope.json",
+        "case-011/check.json"
+      ],
+      "prompt": "Audit the supplied terrain evidence in inputs/case-011. Load the relevant frozen GeoAI skills. Inspect source data and any candidate output. You may use python toolkit/geoai_agents.py check terrain-units-nodata --root inputs/case-011 --spec inputs/case-011/check.json. Write decision.json with fields outcome (pass, fail, or abstain), reason, evidence (array of file references), and limitations. A passed bounded check is not a general scientific or field-safety guarantee."
+    },
+    {
+      "id": "case-012",
+      "inputs": [
+        "case-012/dem.json",
+        "case-012/slope.json",
+        "case-012/check.json"
+      ],
+      "prompt": "Audit the supplied terrain evidence in inputs/case-012. Load the relevant frozen GeoAI skills. Inspect source data and any candidate output. You may use python toolkit/geoai_agents.py check terrain-units-nodata --root inputs/case-012 --spec inputs/case-012/check.json. Write decision.json with fields outcome (pass, fail, or abstain), reason, evidence (array of file references), and limitations. A passed bounded check is not a general scientific or field-safety guarantee."
+    },
+    {
+      "id": "case-013",
+      "inputs": [
+        "case-013/samples.json",
+        "case-013/check.json"
+      ],
+      "prompt": "Audit the supplied model-split evidence in inputs/case-013. Load the relevant frozen GeoAI skills. Inspect source data and any candidate output. You may use python toolkit/geoai_agents.py check spatial-split --root inputs/case-013 --spec inputs/case-013/check.json. Write decision.json with fields outcome (pass, fail, or abstain), reason, evidence (array of file references), and limitations. A passed bounded check is not a general scientific or field-safety guarantee."
+    },
+    {
+      "id": "case-014",
+      "inputs": [
+        "case-014/samples.json",
+        "case-014/check.json"
+      ],
+      "prompt": "Audit the supplied model-split evidence in inputs/case-014. Load the relevant frozen GeoAI skills. Inspect source data and any candidate output. You may use python toolkit/geoai_agents.py check spatial-split --root inputs/case-014 --spec inputs/case-014/check.json. Write decision.json with fields outcome (pass, fail, or abstain), reason, evidence (array of file references), and limitations. A passed bounded check is not a general scientific or field-safety guarantee."
+    },
+    {
+      "id": "case-015",
+      "inputs": [
+        "case-015/samples.json",
+        "case-015/check.json"
+      ],
+      "prompt": "Audit the supplied model-split evidence in inputs/case-015. Load the relevant frozen GeoAI skills. Inspect source data and any candidate output. You may use python toolkit/geoai_agents.py check spatial-split --root inputs/case-015 --spec inputs/case-015/check.json. Write decision.json with fields outcome (pass, fail, or abstain), reason, evidence (array of file references), and limitations. A passed bounded check is not a general scientific or field-safety guarantee."
+    },
+    {
+      "id": "case-016",
+      "inputs": [
+        "case-016/criteria.json",
+        "case-016/ranking.json",
+        "case-016/check.json"
+      ],
+      "prompt": "Audit the supplied suitability evidence in inputs/case-016. Load the relevant frozen GeoAI skills. Inspect source data and any candidate output. You may use python toolkit/geoai_agents.py check suitability-sensitivity --root inputs/case-016 --spec inputs/case-016/check.json. Write decision.json with fields outcome (pass, fail, or abstain), reason, evidence (array of file references), and limitations. A passed bounded check is not a general scientific or field-safety guarantee."
+    },
+    {
+      "id": "case-017",
+      "inputs": [
+        "case-017/criteria.json",
+        "case-017/ranking.json",
+        "case-017/check.json"
+      ],
+      "prompt": "Audit the supplied suitability evidence in inputs/case-017. Load the relevant frozen GeoAI skills. Inspect source data and any candidate output. You may use python toolkit/geoai_agents.py check suitability-sensitivity --root inputs/case-017 --spec inputs/case-017/check.json. Write decision.json with fields outcome (pass, fail, or abstain), reason, evidence (array of file references), and limitations. A passed bounded check is not a general scientific or field-safety guarantee."
+    },
+    {
+      "id": "case-018",
+      "inputs": [
+        "case-018/criteria.json",
+        "case-018/ranking.json",
+        "case-018/check.json"
+      ],
+      "prompt": "Audit the supplied suitability evidence in inputs/case-018. Load the relevant frozen GeoAI skills. Inspect source data and any candidate output. You may use python toolkit/geoai_agents.py check suitability-sensitivity --root inputs/case-018 --spec inputs/case-018/check.json. Write decision.json with fields outcome (pass, fail, or abstain), reason, evidence (array of file references), and limitations. A passed bounded check is not a general scientific or field-safety guarantee."
+    }
+  ]
+}

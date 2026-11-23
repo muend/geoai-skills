@@ -1,0 +1,19 @@
+[
+  {
+    "split": "train",
+    "group": "A",
+    "x": 0,
+    "y": 0
+  },
+  {
+    "split": "train",
+    "group": "A",
+    "x": 10,
+    "y": 0
+  },
+  {
+    "split": "test",
+    "x": 1000,
+    "y": 0
+  }
+]

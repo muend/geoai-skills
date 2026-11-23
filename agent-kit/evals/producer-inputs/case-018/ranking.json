@@ -1,0 +1,9 @@
+{
+  "winner": 0,
+  "scores": [
+    0.85,
+    0.25
+  ],
+  "stable_under_test": true,
+  "claim": "robust"
+}

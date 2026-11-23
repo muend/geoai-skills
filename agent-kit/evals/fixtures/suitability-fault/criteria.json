@@ -1,0 +1,18 @@
+{
+  "weights": [
+    0.5,
+    0.5
+  ],
+  "alternatives": [
+    [
+      1,
+      0
+    ],
+    [
+      0,
+      1
+    ]
+  ],
+  "weight_rationale": "Equal importance agreed for this synthetic diagnostic.",
+  "normalization": "0..1 benefit"
+}
