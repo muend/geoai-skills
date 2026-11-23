@@ -1,5 +1,5 @@
 attrs==26.1.0
-certifi==2026.7.22
+certifi==2026.10.18
 jsonschema==4.25.0
 jsonschema-specifications==2025.9.1
 numpy==2.5.4
