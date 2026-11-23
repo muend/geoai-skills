@@ -21,7 +21,7 @@ Machine-readable identities and observations are in `verification.json`.
 
 | Check | Result |
 |---|---|
-| Captured pre-addon files | 308 unchanged |
+| Captured pre-addon files | 280 unchanged (documentation and README media excluded) |
 | Frozen skill tree | runtime-v2, unchanged |
 | Existing native benchmark gates | A/B/C pass, 167 cases |
 | Addon tests | 88 pass, including 19 review regression cases |

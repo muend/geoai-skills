@@ -17,7 +17,7 @@
       "new_review_regression_cases": 19,
       "passed": 88
     },
-    "captured_files_unchanged": 308,
+    "captured_files_unchanged": 280,
     "deterministic_pilots": {
       "expected_outcomes_matched": 18,
       "total": 18

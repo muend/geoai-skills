@@ -53,7 +53,11 @@ verification; structural SVG checks are not proof of human comprehension.
 
 ## Protection and distribution
 
-`base.lock.json` inventories all 308 pre-addon tracked files. Its digest is pinned
+`base.lock.json` inventories the 280 pre-addon tracked files that carry behaviour:
+skills, evaluations, benchmarks, tools, tests, plugin manifests, CI workflows and
+project configuration. Top-level documentation (`*.md`, `CITATION.cff`, `CODEOWNERS`)
+and README media under `assets/` are outside the freeze, so documentation edits do
+not invalidate the addon; the core test suite still checks those assets. Its digest is pinned
 in `package.json`; it must not be regenerated to hide a core change. Closed skill,
 evaluation, benchmark, tool and plugin directories also reject new runtime inputs.
 `source.lock.json` separately pins the exact committed source blobs at the same

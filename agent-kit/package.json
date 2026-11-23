@@ -1,10 +1,10 @@
 {
-  "base_manifest_sha256": "f95ca90841fa32a1897649788233b3bef37589b6a0d0ba9099f79c070ce24997",
+  "base_manifest_sha256": "04e0bd902b43b48a1c756476007aaeb3d2dba7716fd3c3943a4eaa37c5ed4406",
   "core_mutation": false,
   "name": "geoai-agents",
   "python_requires": ">=3.12",
   "schema_version": 1,
-  "source_manifest_sha256": "8bb7a043c9c90260a15da976b78ddade041ab7535023cd767c13cc468916e677",
+  "source_manifest_sha256": "f89ef6d34ae8cfe070ef3511f818e3db82b021cff4d8f5f4a9303a1137f13f5d",
   "status": "preview",
   "version": "0.1.0"
 }
