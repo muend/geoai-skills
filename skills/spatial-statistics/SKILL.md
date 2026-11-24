@@ -92,7 +92,16 @@ GWR is exploratory — resist causal language on local coefficients.
 ## Inference honesty
 
 - Permutation p-values over analytical ones wherever available.
-- Multiple testing: n local tests = n units; FDR-correct.
+- Multiple testing: define the complete family of claims before correction. A
+  local statistic repeated across places, dates, variables or thresholds forms
+  one space × time × variable family unless a smaller family was independently
+  preregistered. Apply a declared FDR procedure to that family before mapping
+  or naming significant locations; do not correct each day separately and then
+  pool the discoveries.
+- Report effect magnitude beside corrected significance. For every local-test
+  product, record the spatial weights definition (including islands and
+  standardization), permutation count, family size, correction method and
+  adjusted threshold or q-values.
 - MAUP (modifiable areal unit problem): results can flip with unit
   aggregation — if the aggregation level is a choice, test one alternative
   and disclose.

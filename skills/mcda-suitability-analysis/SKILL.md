@@ -57,6 +57,20 @@ geometric mean BEFORE computing weights; report the full matrix, weights,
 inconsistent triad and ask the expert to revisit it — do not silently
 massage numbers.
 
+## Equity evidence belongs in the decision record
+
+Do not silently omit a burden, protected group or affected community because
+it makes approval slower or changes the ranking. Refuse the requested omission,
+name the missing decision dimension and keep the ranking provisional until the
+record is complete. Report burden distributions separately for the affected
+socioeconomic groups; a citywide mean can hide concentrated harm.
+
+Apply legal, safety and ethically unacceptable locations as non-compensatory
+constraints before weighted aggregation. Record who selected every weight and
+why, then test plausible alternatives around decision-maker-selected weights.
+If the ranking changes materially, publish the instability rather than a single
+definitive winner.
+
 ## Aggregation
 
 ```python
